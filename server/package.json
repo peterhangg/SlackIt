@@ -9,7 +9,8 @@
     "start2": "ts-node src/index.ts",
     "build": "tsc",
     "watch": "tsc -w",
-    "dev": "nodemon dist/index.js"
+    "dev": "nodemon dist/index.js",
+    "gen-env": "npx gen-env-types .env -o src/env.d.ts -e ."
   },
   "keywords": [],
   "author": "",
