@@ -25,6 +25,6 @@ export class Team extends BaseEntity {
   @JoinTable()
   users: User[];
 
-  @ManyToOne(() => User, user => user.ownedTeams)
+  @ManyToOne(() => User, user => user.teamsOwned)
   owner: User
 }

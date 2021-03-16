@@ -38,5 +38,5 @@ export class User extends BaseEntity {
   teams: Team[];
 
   @OneToMany(() => Team, team => team.owner)
-  ownedTeams: Team[]
+  teamsOwned: Team[]
 }

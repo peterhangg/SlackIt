@@ -3,8 +3,15 @@ import dotenv from 'dotenv';
 dotenv.config();
 import 'reflect-metadata';
 import { createConnection, ConnectionOptions } from 'typeorm';
-import { User } from './entities/User';
 import path from 'path';
+import express, { Request, Response } from 'express';
+import { ApolloServer } from 'apollo-server-express';
+
+import { User } from './entities/User';
+import { getSchema } from './utils/schema';
+import { Message } from './entities/Message';
+import { Channel } from './entities/Channel';
+import { Team } from './entities/Team';
 
 const main = async () => {
   const options: ConnectionOptions = {
@@ -16,23 +23,34 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User],
+    entities: [User, Message, Channel, Team],
   };
 
   const dbConnection = await createConnection(options);
-
-  // dbConnection
-  //   .createQueryBuilder()
-  //   .insert()
-  //   .into(User)
-  //   .values({
-  //     username: 'peter',
-  //     email: 'peter@example.com',
-  //     password: 'peter',
-  //   })
-  //   .execute();
-
   console.log('IS DB CONNECTED?: ', dbConnection.isConnected);
+
+  const app = express();
+
+  app.get('/', (_: Request, res: Response) => {
+    res.send('SERVER IS RUNNING!');
+    res.end();
+  });
+
+  const schema = await getSchema();
+
+  const apolloServer = new ApolloServer({
+    schema,
+    context: ({ req, res }) => ({ req, res }),
+  });
+
+  apolloServer.applyMiddleware({
+    app,
+    cors: false,
+  });
+
+  app.listen(parseInt(process.env.PORT), () => {
+    console.log(`Server listening on port ${process.env.PORT}`);
+  });
 };
 
 main().catch((err) => {
