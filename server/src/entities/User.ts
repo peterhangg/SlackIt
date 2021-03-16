@@ -5,7 +5,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
+import { Message } from './Message';
+import { Team } from './Team';
 
 @Entity()
 export class User extends BaseEntity {
@@ -26,4 +30,13 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Message, (message) => message.user)
+  messages: Message[];
+
+  @ManyToMany(() => Team, (team) => team.users)
+  teams: Team[];
+
+  @OneToMany(() => Team, team => team.owner)
+  ownedTeams: Team[]
 }
