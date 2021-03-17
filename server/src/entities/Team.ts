@@ -1,4 +1,4 @@
-import { Field } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Entity,
@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { User } from './User';
 
+@ObjectType()
 @Entity()
 export class Team extends BaseEntity {
   @Field(() => Number)

@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "apollo-server-express": "^2.21.1",
+    "argon2": "^0.27.1",
     "dotenv": "^8.2.0",
     "graphql": "^15.5.0",
     "pg": "^8.5.1",

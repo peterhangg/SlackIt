@@ -1,4 +1,4 @@
-import { Field } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Entity,
@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Message } from './Message';
 
+@ObjectType()
 @Entity()
 export class Channel extends BaseEntity {
   @Field(() => Number)
