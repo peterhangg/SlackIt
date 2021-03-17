@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 dotenv.config();
-import 'reflect-metadata';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import path from 'path';
 import express, { Request, Response } from 'express';
@@ -49,7 +48,7 @@ const main = async () => {
   });
 
   app.listen(parseInt(process.env.PORT), () => {
-    console.log(`Server listening on port ${process.env.PORT}`);
+    console.log(`🚀 Server ready at http://localhost:${process.env.PORT}/graphql`);
   });
 };
 

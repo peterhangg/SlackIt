@@ -1,3 +1,4 @@
+import { Field } from 'type-graphql';
 import {
   BaseEntity,
   Entity,
@@ -10,15 +11,19 @@ import { Message } from './Message';
 
 @Entity()
 export class Channel extends BaseEntity {
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Field(() => String)
   @Column()
   name!: string;
 
+  @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;
 
   @OneToMany(() => Message, (message) => message.channel, { nullable: true })
+  @Field(() => [Message], { nullable: true })
   messages: Message[] | null;
 }
