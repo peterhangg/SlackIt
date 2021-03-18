@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const useForm = (initial = {}) => {
+const useForm = (initial: any) => {
   const [inputs, setInputs] = useState(initial);
 
   useEffect(() => {
