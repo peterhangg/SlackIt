@@ -6,8 +6,11 @@ import {
   Column,
   CreateDateColumn,
   OneToMany,
+  UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Message } from './Message';
+import { Team } from './Team';
 
 @ObjectType()
 @Entity()
@@ -24,7 +27,14 @@ export class Channel extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Field(() => String)
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @OneToMany(() => Message, (message) => message.channel, { nullable: true })
   @Field(() => [Message], { nullable: true })
   messages: Message[] | null;
+
+  @ManyToOne(() => Team, (team) => team.channels)
+  team: Team;
 }

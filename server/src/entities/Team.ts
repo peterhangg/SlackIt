@@ -8,7 +8,10 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
+  UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Channel } from './Channel';
 import { User } from './User';
 
 @ObjectType()
@@ -26,6 +29,10 @@ export class Team extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
+  @Field(() => String)
+  @UpdateDateColumn()
+  updatedAt: Date;
+
   @ManyToMany(() => User, (user) => user.teams)
   @Field(() => [User])
   @JoinTable()
@@ -34,4 +41,7 @@ export class Team extends BaseEntity {
   @ManyToOne(() => User, (user) => user.teamsOwned)
   @Field(() => User)
   owner: User;
+
+  @OneToMany(() => Channel, (channel) => channel.team)
+  channels: Channel[];
 }
