@@ -1,17 +1,18 @@
-
 import argon2 from 'argon2';
 import { getConnection } from 'typeorm';
-import {
-  Arg,
-  Ctx,
-  Mutation,
-  Resolver,
-} from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
 
 @Resolver()
 export class UserResolver {
+  // FETCH ALL USERS
+  @Query(() => [User])
+  async getAllUsers() {
+    const allUsers = await User.find();
+    return allUsers;
+  }
+
   // REGISTER USER
   @Mutation(() => User)
   async register(

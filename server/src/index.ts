@@ -5,6 +5,7 @@ import { createConnection, ConnectionOptions } from 'typeorm';
 import path from 'path';
 import express, { Request, Response } from 'express';
 import { ApolloServer } from 'apollo-server-express';
+import cors from 'cors';
 
 import { User } from './entities/User';
 import { getSchema } from './utils/schema';
@@ -29,6 +30,13 @@ const main = async () => {
   console.log('IS DB CONNECTED?: ', dbConnection.isConnected);
 
   const app = express();
+
+  app.use(
+    cors({
+      origin: process.env.CORS_ORIGIN,
+      credentials: true,
+    })
+  );
 
   app.get('/', (_: Request, res: Response) => {
     res.send('SERVER IS RUNNING!');
