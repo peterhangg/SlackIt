@@ -1,20 +1,22 @@
-import Document, {
-  Html,
-  Head,
-  Main,
-  NextScript,
-  DocumentContext,
-} from 'next/document';
+
+import React from 'react';
+import Document, { Html, Head, NextScript, Main } from 'next/document';
+import { ServerStyleSheet } from 'styled-components';
 
 class MyDocument extends Document {
-  static async getInitialProps(ctx: DocumentContext) {
-    const initialProps = await Document.getInitialProps(ctx);
-    return { ...initialProps };
+  // server side rendering stylesheets and css in next.js
+  static getInitialProps(ctx: any) {
+    const sheet = new ServerStyleSheet();
+    const page = ctx.renderPage((App: any) => (props: JSX.IntrinsicAttributes) =>
+      sheet.collectStyles(<App {...props} />)
+    );
+    const styleTags = sheet.getStyleElement();
+    return { ...page, styleTags };
   }
 
   render() {
     return (
-      <Html>
+      <Html lang="en-CA">
         <Head />
         <body>
           <Main />
