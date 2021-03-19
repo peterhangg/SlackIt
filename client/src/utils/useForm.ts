@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { IFormInputs } from './types';
 
-const useForm = (initial: any) => {
+const useForm = (initial: IFormInputs) => {
   const [inputs, setInputs] = useState(initial);
 
   useEffect(() => {
