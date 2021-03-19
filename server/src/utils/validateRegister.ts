@@ -4,39 +4,19 @@ export const validateRegister = (
   password: string
 ) => {
   if (!email.includes('@')) {
-    return [
-      {
-        field: 'email',
-        message: 'Please enter a validate email address',
-      },
-    ];
+    throw new Error('Please enter a validate email address');
   }
 
   if (username.length <= 2 || username.length > 25) {
-    return [
-      {
-        field: 'username',
-        message: 'Username must be between 3 to 25 characters long!',
-      },
-    ];
+    throw new Error('Username must be between 3 to 25 characters long!');
   }
 
   if (username.includes('@')) {
-    return [
-      {
-        field: 'username',
-        message: 'Username cannot include an @',
-      },
-    ];
+    throw new Error('Username cannot include an @');
   }
 
   if (password.length <= 2) {
-    return [
-      {
-        field: 'password',
-        message: 'password must be greater than 2 characters!',
-      },
-    ];
+    throw new Error('password must be greater than 2 characters!')
   }
 
   return null;

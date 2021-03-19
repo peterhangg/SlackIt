@@ -3,7 +3,6 @@ import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validateRegister';
-import { UserResponse } from '../utils/types';
 
 @Resolver()
 export class UserResolver {
@@ -15,84 +14,49 @@ export class UserResolver {
   }
 
   // REGISTER USER
-  @Mutation(() => UserResponse)
+  @Mutation(() => User)
   async register(
     @Arg('username') username: string,
     @Arg('email') email: string,
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
-  ): Promise<UserResponse> {
+  ): Promise<User> {
     const hashedPassword = await argon2.hash(password);
-    const errors = validateRegister(email, username, password);
-
-    if (errors) {
-      return { errors };
-    }
+    validateRegister(email, username, password);
 
     try {
-      const user = await User.create({
+      const newUser = await User.create({
         username,
         email,
         password: hashedPassword,
       }).save();
 
-      return { user };
+      return newUser;
     } catch (err) {
       if (err.code === '23505') {
-        return {
-          errors: [
-            {
-              field: 'username',
-              message: 'username already exist!',
-            },
-          ],
-        };
+        throw new Error("username already exist!");
       } else {
-        return {
-          errors: [
-            {
-              field: '',
-              message: 'Something went wrong!',
-            },
-          ],
-        };
+        throw new Error("Something went wrong!");
       }
     }
   }
 
   // LOGIN
-  @Mutation(() => UserResponse)
+  @Mutation(() => User)
   async login(
     @Arg('email') email: string,
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
-  ): Promise<UserResponse> {
+  ): Promise<User> {
     const user = await User.findOne({ where: { email } });
-
     if (!user) {
-      return {
-        errors: [
-          {
-            field: 'email',
-            message: 'Either this password or email address is incorrect.',
-          },
-        ],
-      };
+      throw new Error('Either the password or email address is incorrect.');
     }
 
     const validatePassword = await argon2.verify(user.password, password);
-
     if (!validatePassword) {
-      return {
-        errors: [
-          {
-            field: 'password',
-            message: 'Either this password or email address is incorrect.',
-          },
-        ],
-      };
+      throw new Error('Either the password or email address is incorrect.');
     }
-
-    return { user };
+    return user;
   }
 }

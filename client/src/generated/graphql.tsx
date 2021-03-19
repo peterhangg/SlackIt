@@ -44,6 +44,7 @@ export type Team = {
 export type Mutation = {
   __typename?: 'Mutation';
   register: User;
+  login: UserResponse;
   createTeam: Scalars['Boolean'];
   createChannel: Scalars['Boolean'];
   createMessage: Scalars['Boolean'];
@@ -54,6 +55,12 @@ export type MutationRegisterArgs = {
   password: Scalars['String'];
   email: Scalars['String'];
   username: Scalars['String'];
+};
+
+
+export type MutationLoginArgs = {
+  password: Scalars['String'];
+  email: Scalars['String'];
 };
 
 
@@ -71,6 +78,18 @@ export type MutationCreateChannelArgs = {
 export type MutationCreateMessageArgs = {
   channelId: Scalars['Float'];
   text: Scalars['String'];
+};
+
+export type UserResponse = {
+  __typename?: 'UserResponse';
+  errors?: Maybe<Array<FieldError>>;
+  user?: Maybe<User>;
+};
+
+export type FieldError = {
+  __typename?: 'FieldError';
+  field: Scalars['String'];
+  message: Scalars['String'];
 };
 
 export type RegisterMutationVariables = Exact<{
