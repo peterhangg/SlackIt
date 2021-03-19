@@ -1,6 +1,7 @@
 import React from 'react';
 import useForm from '../src/utils/useForm';
 import { IRegisterInputs } from '../src/utils/types';
+import { useRegisterMutation } from '../src/generated/graphql';
 
 const register: React.FC = () => {
   const { inputs, handleChange, resetForm } = useForm({
@@ -9,14 +10,19 @@ const register: React.FC = () => {
     username: '',
   } as IRegisterInputs);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [register, { error }] = useRegisterMutation();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(inputs);
+    const result = await register({
+      variables: inputs
+    })
     resetForm();
   };
 
   return (
     <>
+      {error && <h2>{error.message}</h2>}
       <h2>Register Page</h2>
       <form onSubmit={handleSubmit}>
         <div>
