@@ -3,6 +3,7 @@ import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validateRegister';
+import { COOKIE_NAME } from '../utils/constants';
 
 @Resolver()
 export class UserResolver {
@@ -11,6 +12,17 @@ export class UserResolver {
   async getAllUsers() {
     const allUsers = await User.find();
     return allUsers;
+  }
+
+  // GET CURRENT USER
+  @Query(() => User, { nullable: true })
+  async getMe(@Ctx() { req }: MyContext) {
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const user = await User.findOne(req.session.userId);
+    return user;
   }
 
   // REGISTER USER
@@ -31,12 +43,15 @@ export class UserResolver {
         password: hashedPassword,
       }).save();
 
+      if (newUser) {
+        req.session.userId = newUser.id;
+      }
       return newUser;
     } catch (err) {
       if (err.code === '23505') {
-        throw new Error("username already exist!");
+        throw new Error('username already exist!');
       } else {
-        throw new Error("Something went wrong!");
+        throw new Error('Something went wrong!');
       }
     }
   }
@@ -57,6 +72,24 @@ export class UserResolver {
     if (!validatePassword) {
       throw new Error('Either the password or email address is incorrect.');
     }
+
+    req.session.userId = user.id;
     return user;
+  }
+
+  // LOGOUT
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) => {
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      });
+    });
   }
 }
