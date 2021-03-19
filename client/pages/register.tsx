@@ -2,6 +2,7 @@ import React from 'react';
 import useForm from '../src/utils/useForm';
 import { IRegisterInputs } from '../src/utils/types';
 import { useRegisterMutation } from '../src/generated/graphql';
+import console from 'node:console';
 
 const register: React.FC = () => {
   const { inputs, handleChange, resetForm } = useForm({
@@ -17,6 +18,7 @@ const register: React.FC = () => {
     const result = await register({
       variables: inputs
     })
+    console.log("REGISTER RESULT:", result);
     resetForm();
   };
 
