@@ -1,9 +1,11 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-import { useAllUsersQuery } from '../src/generated/graphql';
+import { useAllUsersQuery, useGetMeQuery } from '../src/generated/graphql';
+import { withApollo } from '../src/apollo/client';
 
-export default function Home() {
+const Index = () => {
   const { data, loading, error } = useAllUsersQuery();
+  useGetMeQuery();
 
   if (loading) return  <div>Loading...</div>;
   if (error) return <div>`Error! ${error.message}`</div>;
@@ -20,3 +22,5 @@ export default function Home() {
     </div>
   )
 }
+
+export default withApollo({ ssr: true })(Index);

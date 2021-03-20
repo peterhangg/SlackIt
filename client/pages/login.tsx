@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import { withApollo } from '../src/apollo/client';
 import {
   GetMeDocument,
   GetMeQuery,
@@ -71,4 +72,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default withApollo({ ssr: false })(Login);

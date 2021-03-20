@@ -6,8 +6,9 @@ import {
   GetMeQuery,
   useRegisterMutation,
 } from '../src/generated/graphql';
+import { withApollo } from '../src/apollo/client';
 
-const register: React.FC = () => {
+const Register: React.FC = () => {
   const router = useRouter();
   const { inputs, handleChange, resetForm } = useForm({
     email: '',
@@ -86,4 +87,4 @@ const register: React.FC = () => {
   );
 };
 
-export default register;
+export default withApollo({ ssr: false })(Register);
