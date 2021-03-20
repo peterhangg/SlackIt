@@ -1,29 +1,28 @@
 import React from 'react';
-import useForm from '../src/utils/useForm';
 import { useRouter } from 'next/router';
+import { withApollo } from '../src/apollo/client';
 import {
   GetMeDocument,
   GetMeQuery,
-  useRegisterMutation,
+  useLoginMutation,
 } from '../src/generated/graphql';
-import { withApollo } from '../src/apollo/client';
+import useForm from '../src/utils/useForm';
 
-const Register: React.FC = () => {
+const Login: React.FC = () => {
   const router = useRouter();
-  const { inputs, handleChange, resetForm } = useForm({
+  const { inputs, handleChange } = useForm({
     email: '',
     password: '',
-    username: '',
   });
 
-  const [registerMutation, { error, loading }] = useRegisterMutation({
+  const [loginMutation, { loading, error }] = useLoginMutation({
     variables: inputs as any,
-    update: (cache, { data }) => {
+    update(cache, { data }) {
       cache.writeQuery<GetMeQuery>({
         query: GetMeDocument,
         data: {
           __typename: 'Query',
-          getMe: data?.register,
+          getMe: data?.login,
         },
       });
     },
@@ -31,32 +30,18 @@ const Register: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await registerMutation().catch((err) =>
-      console.error(err)
-    );
+    const response = await loginMutation().catch((err) => console.error(err));
     if (!response) {
       return;
     }
-    resetForm();
     router.push('/');
   };
 
   return (
     <>
       {error && <h2>{error.message}</h2>}
-      <h2>Register Page</h2>
+      <h2>Login Page</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">username</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="username..."
-            onChange={handleChange}
-            value={inputs.username}
-            required
-          />
-        </div>
         <div>
           <label htmlFor="email">email</label>
           <input
@@ -73,18 +58,18 @@ const Register: React.FC = () => {
           <input
             type="password"
             name="password"
-            placeholder="password "
+            placeholder="password"
             onChange={handleChange}
             value={inputs.password}
             required
           />
         </div>
         <button type="submit" disabled={loading}>
-          Sign Up
+          Login
         </button>
       </form>
     </>
   );
 };
 
-export default withApollo({ ssr: false })(Register);
+export default withApollo({ ssr: false })(Login);

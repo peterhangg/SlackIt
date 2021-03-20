@@ -2,6 +2,8 @@ import argon2 from 'argon2';
 import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
+import { validateRegister } from '../utils/validateRegister';
+import { COOKIE_NAME } from '../utils/constants';
 
 @Resolver()
 export class UserResolver {
@@ -10,6 +12,17 @@ export class UserResolver {
   async getAllUsers() {
     const allUsers = await User.find();
     return allUsers;
+  }
+
+  // GET CURRENT USER
+  @Query(() => User, { nullable: true })
+  async getMe(@Ctx() { req }: MyContext) {
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const user = await User.findOne(req.session.userId);
+    return user;
   }
 
   // REGISTER USER
@@ -21,6 +34,7 @@ export class UserResolver {
     @Ctx() { req }: MyContext
   ): Promise<User> {
     const hashedPassword = await argon2.hash(password);
+    validateRegister(email, username, password);
 
     try {
       const newUser = await User.create({
@@ -28,14 +42,54 @@ export class UserResolver {
         email,
         password: hashedPassword,
       }).save();
-      
+
+      if (newUser) {
+        req.session.userId = newUser.id;
+      }
       return newUser;
     } catch (err) {
       if (err.code === '23505') {
-        throw new Error('Username or email already exist!');
+        throw new Error('username already exist!');
       } else {
         throw new Error('Something went wrong!');
       }
     }
+  }
+
+  // LOGIN
+  @Mutation(() => User)
+  async login(
+    @Arg('email') email: string,
+    @Arg('password') password: string,
+    @Ctx() { req }: MyContext
+  ): Promise<User> {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      throw new Error('Either the password or email address is incorrect.');
+    }
+
+    const validatePassword = await argon2.verify(user.password, password);
+    if (!validatePassword) {
+      throw new Error('Either the password or email address is incorrect.');
+    }
+
+    req.session.userId = user.id;
+    return user;
+  }
+
+  // LOGOUT
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) => {
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      });
+    });
   }
 }

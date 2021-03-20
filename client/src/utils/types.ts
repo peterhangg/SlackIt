@@ -1,5 +1,5 @@
-export interface IRegisterInputs {
-  email: string,
-  password: string,
-  username: string,
+export type IFormInputs =  {
+  email?: string,
+  password?: string,
+  username?: string,
 };
