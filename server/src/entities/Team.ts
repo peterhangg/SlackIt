@@ -33,12 +33,18 @@ export class Team extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToMany(() => User, (user) => user.teams)
+  @ManyToMany(() => User, (user) => user.teams, {
+    cascade: true,
+    eager: true
+  })
   @Field(() => [User])
   @JoinTable()
   users: User[];
 
-  @ManyToOne(() => User, (user) => user.teamsOwned)
+  @ManyToOne(() => User, (user) => user.teamsOwned, {
+    cascade: ['insert', 'update'],
+    eager: true
+  })
   @Field(() => User)
   owner: User;
 
