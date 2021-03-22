@@ -28,9 +28,14 @@ const Navbar: React.FC = () => {
           </NextLink>
         </ul>
       ) : (
-        <button onClick={logoutHandler} disabled={loading}>
-          Logout
-        </button>
+        <>
+          <button onClick={logoutHandler} disabled={loading}>
+            Logout
+          </button>
+          <NextLink href="/team">
+            <button>Create Team</button>
+          </NextLink>
+        </>
       )}
     </div>
   );

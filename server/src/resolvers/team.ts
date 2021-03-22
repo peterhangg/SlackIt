@@ -1,25 +1,128 @@
-import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from 'type-graphql';
+import { getRepository } from 'typeorm';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
 import { Team } from '../entities/Team';
+import { isAutenticated } from '../middleware/isAuthenticated';
 
-@Resolver()
+@Resolver(Team)
 export class TeamResolver {
+  // GET ALL TEAMS
+  @Query(() => [Team])
+  @UseMiddleware(isAutenticated)
+  async getAllTeams() {
+    try {
+      const allTeams = await Team.find({});
+      if (!allTeams) throw new Error('No teams currently exist');
+
+      return allTeams;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  // GET TEAM
+  @Query(() => Team)
+  @UseMiddleware(isAutenticated)
+  async getTeam(@Arg('teamId') teamId: number) {
+    try {
+      const team = await Team.findOne({ id: teamId });
+      if (!team) throw new Error('This team could not be found');
+
+      return team;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
   // CREATE TEAM
-  @Mutation(() => Boolean)
+  @Mutation(() => Team)
+  @UseMiddleware(isAutenticated)
   async createTeam(
     @Arg('name') name: string,
     @Ctx() { req }: MyContext
-  ): Promise<Boolean> {
+  ): Promise<Team> {
     try {
-      // TODO: PASS THE USER IN CONTEXT FOR OWNER
-      const owner = await User.findOne({ id: 1 });
-      if (!owner) throw new Error('Owner cound not be found');
+      const owner = await User.findOne({ id: req.session.userId });
+      if (!owner) throw new Error('User cound not be found');
+      const newTeam = await Team.create({ name, owner, users: [owner] }).save();
 
-      await Team.create({ name, owner }).save();
+      return newTeam;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  // JOIN TEAM
+  @Mutation(() => Team)
+  @UseMiddleware(isAutenticated)
+  async joinTeam(@Arg('teamId') teamId: number, @Ctx() { req }: MyContext) {
+    try {
+      const team = await Team.findOne({ id: teamId });
+      const user = await User.findOne({ id: req.session.userId });
+
+      if (!team) throw new Error('Team could not be found');
+      if (!user) throw new Error('User could not be found');
+
+      const userIds = team.users.map((user) => user.id);
+      const checkIfJoined = userIds.indexOf(user.id);
+
+      if (checkIfJoined !== -1) {
+        throw new Error('You already joined this team');
+      }
+
+      team.users = [...team.users, user];
+      const joinedTeam = await team.save();
+
+      return joinedTeam;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  // DELETE TEAM
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAutenticated)
+  async deleteTeam(@Arg('teamId') teamId: number, @Ctx() { req }: MyContext) {
+    try {
+      const team = await Team.findOne({ id: teamId });
+      if (!team) throw new Error('Team could not be found');
+
+      const owner = team.owner.id;
+
+      if (owner !== req.session.userId)
+        throw new Error('Only the owner can delete this team');
+
+      await team.remove();
       return true;
     } catch (err) {
-      return false;
+      throw new Error(err);
+    }
+  }
+
+  // GET USER"S TEAMS
+  @Query(() => [Team])
+  @UseMiddleware(isAutenticated)
+  async getUsersTeam(@Ctx() { req }: MyContext) {
+    try {
+      const userTeams = await getRepository(Team)
+        .createQueryBuilder('team')
+        .leftJoinAndSelect('team.owner', 'owner')
+        .leftJoinAndSelect('team.users', 'users')
+        .innerJoin('team.users', 'user')
+        .where('user.id = :id', { id: req.session.userId })
+        .getMany();
+
+      return userTeams;
+    } catch (error) {
+      throw new Error(error);
     }
   }
 }
