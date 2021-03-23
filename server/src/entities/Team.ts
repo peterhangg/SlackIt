@@ -48,6 +48,9 @@ export class Team extends BaseEntity {
   @Field(() => User)
   owner: User;
 
-  @OneToMany(() => Channel, (channel) => channel.team)
+  @OneToMany(() => Channel, (channel) => channel.team, {
+    cascade: true,
+    eager: true
+  })
   channels: Channel[];
 }

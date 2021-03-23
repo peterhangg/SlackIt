@@ -11,6 +11,7 @@ import { MyContext } from '../types';
 import { User } from '../entities/User';
 import { Team } from '../entities/Team';
 import { isAutenticated } from '../middleware/isAuthenticated';
+import { Channel } from '../entities/Channel';
 
 @Resolver(Team)
 export class TeamResolver {
@@ -52,7 +53,19 @@ export class TeamResolver {
     try {
       const owner = await User.findOne({ id: req.session.userId });
       if (!owner) throw new Error('User cound not be found');
-      const newTeam = await Team.create({ name, owner, users: [owner] }).save();
+      
+      const newTeam = await Team.create({
+        name,
+        owner,
+        users: [owner],
+      }).save();
+
+      const generalChannel = await Channel.create({
+        name: 'general',
+        team: newTeam,
+      }).save();
+
+      newTeam.channels = [generalChannel];
 
       return newTeam;
     } catch (err) {

@@ -38,8 +38,9 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Message, (message) => message.user, { nullable: true })
-  messages: Message[] | null;
+  @Field(() => [Message])
+  @OneToMany(() => Message, (message) => message.user)
+  messages: Message[];
 
   @ManyToMany(() => Team, (team) => team.users, { nullable: true })
   @Field(() => [Team], { nullable: true })

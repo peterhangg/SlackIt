@@ -18,7 +18,7 @@ export class Channel extends BaseEntity {
   @Field(() => Number)
   @PrimaryGeneratedColumn()
   id!: number;
-
+  
   @Field(() => String)
   @Column()
   name!: string;
@@ -36,8 +36,7 @@ export class Channel extends BaseEntity {
   messages: Message[] | null;
 
   @ManyToOne(() => Team, (team) => team.channels, {
-    cascade: true,
-    eager: true
+    onDelete: 'CASCADE'
   })
   team: Team;
 }
