@@ -16,13 +16,23 @@ export class UserResolver {
 
   // GET CURRENT USER
   @Query(() => User, { nullable: true })
-  async getMe(@Ctx() { req }: MyContext) {
-    if (!req.session.userId) {
-      return null;
-    }
+  async getMe(@Ctx() { req }: MyContext): Promise<User | null> {
+    try {
+      if (!req.session.userId) {
+        return null;
+      }
+  
+      const user = await User.findOne({
+        relations: ['teams', 'messages'], 
+        where: { id: req.session.userId }
+      });
 
-    const user = await User.findOne(req.session.userId);
-    return user;
+      if (!user) throw new Error('User could not be found');
+  
+      return user;
+    } catch (err) {
+      throw new Error(err);
+    }
   }
 
   // REGISTER USER

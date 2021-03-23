@@ -53,6 +53,7 @@ export class ChannelResolver {
       if (!team) throw new Error('Team cound not be found');
 
       const createdChannel = await Channel.create({ name, team }).save();
+
       // team.channels = [...team.channels, createdChannel];
 
       return createdChannel;
@@ -74,10 +75,11 @@ export class ChannelResolver {
         relations: ['team'],
       });
       if (!channel) throw new Error('Channel could not be found');
-      
+
       const owner = channel?.team.owner.id;
-      if (owner !== req.session.userId) throw new Error('Not authorized to delete this channel');
-      
+      if (owner !== req.session.userId)
+        throw new Error('Not authorized to delete this channel');
+
       await channel.remove();
 
       return true;

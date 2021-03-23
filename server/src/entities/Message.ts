@@ -14,8 +14,8 @@ import { User } from './User';
 @ObjectType()
 @Entity()
 export class Message extends BaseEntity {
-  @PrimaryGeneratedColumn()
   @Field(() => Number)
+  @PrimaryGeneratedColumn()
   id!: number;
 
   @Field(() => String)
@@ -30,12 +30,14 @@ export class Message extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.messages)
+  @ManyToOne(() => User, (user) => user.messages, {
+    cascade: true,
+    eager: true,
+  })
   @Field(() => User)
   user: User;
 
   @ManyToOne(() => Channel, (channel) => channel.messages, {
-    // onDelete: 'CASCADE',
     cascade: true,
     eager: true,
   })
