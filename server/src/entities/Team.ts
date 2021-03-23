@@ -42,7 +42,7 @@ export class Team extends BaseEntity {
   users: User[];
 
   @ManyToOne(() => User, (user) => user.teamsOwned, {
-    cascade: ['insert', 'update'],
+    cascade: true,
     eager: true
   })
   @Field(() => User)

@@ -35,6 +35,9 @@ export class Channel extends BaseEntity {
   @Field(() => [Message], { nullable: true })
   messages: Message[] | null;
 
-  @ManyToOne(() => Team, (team) => team.channels)
+  @ManyToOne(() => Team, (team) => team.channels, {
+    cascade: true,
+    eager: true
+  })
   team: Team;
 }

@@ -34,7 +34,11 @@ export class Message extends BaseEntity {
   @Field(() => User)
   user: User;
 
-  @ManyToOne(() => Channel, (channel) => channel.messages)
+  @ManyToOne(() => Channel, (channel) => channel.messages, {
+    // onDelete: 'CASCADE',
+    cascade: true,
+    eager: true,
+  })
   @Field(() => Channel)
   channel: Channel;
 }
