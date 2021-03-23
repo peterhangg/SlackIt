@@ -17,7 +17,7 @@ export class TeamResolver {
   // GET ALL TEAMS
   @Query(() => [Team])
   @UseMiddleware(isAutenticated)
-  async getAllTeams() {
+  async getAllTeams(): Promise<Team[]> {
     try {
       const allTeams = await Team.find({});
       if (!allTeams) throw new Error('No teams currently exist');
@@ -31,7 +31,7 @@ export class TeamResolver {
   // GET TEAM
   @Query(() => Team)
   @UseMiddleware(isAutenticated)
-  async getTeam(@Arg('teamId') teamId: number) {
+  async getTeam(@Arg('teamId') teamId: number): Promise<Team> {
     try {
       const team = await Team.findOne({ id: teamId });
       if (!team) throw new Error('This team could not be found');
@@ -63,7 +63,10 @@ export class TeamResolver {
   // JOIN TEAM
   @Mutation(() => Team)
   @UseMiddleware(isAutenticated)
-  async joinTeam(@Arg('teamId') teamId: number, @Ctx() { req }: MyContext) {
+  async joinTeam(
+    @Arg('teamId') teamId: number,
+    @Ctx() { req }: MyContext
+  ): Promise<Team> {
     try {
       const team = await Team.findOne({ id: teamId });
       const user = await User.findOne({ id: req.session.userId });
@@ -90,7 +93,10 @@ export class TeamResolver {
   // DELETE TEAM
   @Mutation(() => Boolean)
   @UseMiddleware(isAutenticated)
-  async deleteTeam(@Arg('teamId') teamId: number, @Ctx() { req }: MyContext) {
+  async deleteTeam(
+    @Arg('teamId') teamId: number,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
     try {
       const team = await Team.findOne({ id: teamId });
       if (!team) throw new Error('Team could not be found');
@@ -110,7 +116,7 @@ export class TeamResolver {
   // GET USER"S TEAMS
   @Query(() => [Team])
   @UseMiddleware(isAutenticated)
-  async getUsersTeam(@Ctx() { req }: MyContext) {
+  async getUsersTeam(@Ctx() { req }: MyContext): Promise<Team[]> {
     try {
       const userTeams = await getRepository(Team)
         .createQueryBuilder('team')
