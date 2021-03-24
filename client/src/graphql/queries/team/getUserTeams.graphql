@@ -1,0 +1,10 @@
+query GetUserTeams {
+    getUserTeams {
+    id
+    name
+    channels {
+      id
+      name
+    }
+  }
+}

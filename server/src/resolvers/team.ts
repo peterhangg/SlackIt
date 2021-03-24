@@ -46,12 +46,13 @@ export class TeamResolver {
   // GET USER"S TEAMS
   @Query(() => [Team])
   @UseMiddleware(isAutenticated)
-  async getUsersTeam(@Ctx() { req }: MyContext): Promise<Team[]> {
+  async getUserTeams(@Ctx() { req }: MyContext): Promise<Team[]> {
     try {
       const userTeams = await getRepository(Team)
         .createQueryBuilder('team')
         .leftJoinAndSelect('team.owner', 'owner')
         .leftJoinAndSelect('team.users', 'users')
+        .leftJoinAndSelect('team.channels', 'channel')
         .innerJoin('team.users', 'user')
         .where('user.id = :id', { id: req.session.userId })
         .getMany();

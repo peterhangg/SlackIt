@@ -1,9 +1,9 @@
 import React from 'react';
-import { withApollo } from '../src/apollo/client';
+import { withApollo } from '../../src/apollo/client';
 import styled from 'styled-components';
-import Sidebar from '../components/Sidebar';
-import Messages from '../components/Messages';
-import Members from '../components/Members';
+import Sidebar from '../../components/Sidebar';
+import Messages from '../../components/Messages';
+import Members from '../../components/Members';
 
 const DashboardContainer = styled.div`
   display: grid;
