@@ -19,7 +19,7 @@ const TeamContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
+  padding: 15px;
   border-right: 1px solid #d3d3d3;
 `;
 const TeamList = styled.ul`
@@ -49,12 +49,17 @@ export const Teams: React.FC<TeamsProps> = ({ teams }) => {
     <TeamContainer>
       <TeamList>
         {teams.map((team) => (
-          <NextLink key={`team-${team.id}`} href="/dashboard/[teamId]" as={`/dashboard/${team.id}`}>
-            <TeamListItem>
-              {team.name.charAt(0)}
-            </TeamListItem>
+          <NextLink
+            key={`team-${team.id}`}
+            href="/dashboard/[teamId]"
+            as={`/dashboard/${team.id}`}
+          >
+            <TeamListItem>{team.name.charAt(0)}</TeamListItem>
           </NextLink>
         ))}
+        <NextLink href="/createTeam">
+          <TeamListItem>+</TeamListItem>
+        </NextLink>
       </TeamList>
     </TeamContainer>
   );

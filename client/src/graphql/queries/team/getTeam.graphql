@@ -1,0 +1,10 @@
+query GetTeam($teamId: Float!) {
+  getTeam(teamId: $teamId) {
+    id
+    name
+    channels {
+      id
+      name
+    }
+  }
+}

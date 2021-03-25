@@ -13,6 +13,9 @@ const createTeam: React.FC = () => {
   });
   const [createTeamMutation, { loading, error }] = useCreateTeamMutation({
     variables: inputs as any,
+    update: (cache) => {
+      cache.evict({ fieldName: 'getUserTeams' });
+    },
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -20,10 +23,13 @@ const createTeam: React.FC = () => {
     const response = await createTeamMutation().catch((err) =>
       console.error(err)
     );
+
     if (!response) {
       return;
     }
-    router.push('/');
+
+    const createdTeamData = response.data.createTeam;
+    router.push(`/dashboard/${createdTeamData.id}`);
   };
 
   return (

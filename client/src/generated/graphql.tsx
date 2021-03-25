@@ -162,11 +162,11 @@ export type CreateTeamMutation = (
   { __typename?: 'Mutation' }
   & { createTeam: (
     { __typename?: 'Team' }
-    & Pick<Team, 'id' | 'name' | 'createdAt'>
-    & { owner: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username' | 'email'>
-    ) }
+    & Pick<Team, 'id' | 'name'>
+    & { channels: Array<(
+      { __typename?: 'Channel' }
+      & Pick<Channel, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -204,6 +204,36 @@ export type RegisterMutation = (
   & { register: (
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email' | 'createdAt'>
+  ) }
+);
+
+export type GetTeamChannelsQueryVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type GetTeamChannelsQuery = (
+  { __typename?: 'Query' }
+  & { getTeamChannels: Array<(
+    { __typename?: 'Channel' }
+    & Pick<Channel, 'id' | 'name'>
+  )> }
+);
+
+export type GetTeamQueryVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type GetTeamQuery = (
+  { __typename?: 'Query' }
+  & { getTeam: (
+    { __typename?: 'Team' }
+    & Pick<Team, 'id' | 'name'>
+    & { channels: Array<(
+      { __typename?: 'Channel' }
+      & Pick<Channel, 'id' | 'name'>
+    )> }
   ) }
 );
 
@@ -250,11 +280,9 @@ export const CreateTeamDocument = gql`
   createTeam(name: $name) {
     id
     name
-    createdAt
-    owner {
+    channels {
       id
-      username
-      email
+      name
     }
   }
 }
@@ -389,6 +417,82 @@ export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<Reg
 export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
 export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
 export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
+export const GetTeamChannelsDocument = gql`
+    query GetTeamChannels($teamId: Float!) {
+  getTeamChannels(teamId: $teamId) {
+    id
+    name
+  }
+}
+    `;
+
+/**
+ * __useGetTeamChannelsQuery__
+ *
+ * To run a query within a React component, call `useGetTeamChannelsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTeamChannelsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTeamChannelsQuery({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useGetTeamChannelsQuery(baseOptions: Apollo.QueryHookOptions<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>(GetTeamChannelsDocument, options);
+      }
+export function useGetTeamChannelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>(GetTeamChannelsDocument, options);
+        }
+export type GetTeamChannelsQueryHookResult = ReturnType<typeof useGetTeamChannelsQuery>;
+export type GetTeamChannelsLazyQueryHookResult = ReturnType<typeof useGetTeamChannelsLazyQuery>;
+export type GetTeamChannelsQueryResult = Apollo.QueryResult<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>;
+export const GetTeamDocument = gql`
+    query GetTeam($teamId: Float!) {
+  getTeam(teamId: $teamId) {
+    id
+    name
+    channels {
+      id
+      name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTeamQuery__
+ *
+ * To run a query within a React component, call `useGetTeamQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTeamQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTeamQuery({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useGetTeamQuery(baseOptions: Apollo.QueryHookOptions<GetTeamQuery, GetTeamQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTeamQuery, GetTeamQueryVariables>(GetTeamDocument, options);
+      }
+export function useGetTeamLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTeamQuery, GetTeamQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTeamQuery, GetTeamQueryVariables>(GetTeamDocument, options);
+        }
+export type GetTeamQueryHookResult = ReturnType<typeof useGetTeamQuery>;
+export type GetTeamLazyQueryHookResult = ReturnType<typeof useGetTeamLazyQuery>;
+export type GetTeamQueryResult = Apollo.QueryResult<GetTeamQuery, GetTeamQueryVariables>;
 export const GetUserTeamsDocument = gql`
     query GetUserTeams {
   getUserTeams {

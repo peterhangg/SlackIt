@@ -2,11 +2,9 @@ mutation CreateTeam($name: String!) {
 	createTeam(name: $name) {
     id
     name
-    createdAt
-    owner {
+    channels {
       id
-      username
-      email
+      name
     }
   }
 }

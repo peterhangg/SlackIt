@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
           <button onClick={logoutHandler} disabled={loading}>
             Logout
           </button>
-          <NextLink href="/team">
+          <NextLink href="/createTeam">
             <button>Create Team</button>
           </NextLink>
         </>
