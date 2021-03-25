@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
 
 interface ChannelsProps {}
@@ -41,19 +42,17 @@ const ChannelListHeader = styled.li`
 
 export const Channels: React.FC<ChannelsProps> = () => {
   const router = useRouter();
-  const teamId = parseInt(router.query.teamId as string);
-
   const { data: meData } = useGetMeQuery();
+  const queryId = parseInt(router.query.teamId as string);
+  let teamId = queryId ? queryId : meData?.getMe.teams[0].id;
   const { data: teamData, loading, error } = useGetTeamQuery({
     variables: { teamId },
-    skip: !teamId,
   });
 
   if (loading) return null;
   if (error) return <div>{error.message}</div>;
 
-  const team = teamData?.getTeam;
-  if (!team) return null;
+  const team = teamData.getTeam;
 
   return (
     <ChannelContainer>
@@ -64,9 +63,15 @@ export const Channels: React.FC<ChannelsProps> = () => {
       <ChannelList>
         <ChannelListHeader>Channels</ChannelListHeader>
         {team.channels.map((channel) => (
-          <ChannelListItem key={`channel-${channel.id}`}>
-            # {channel.name}
-          </ChannelListItem>
+          <NextLink
+            key={`channel-${channel.id}`}
+            href="/dashboard/[teamId]/[channelId]"
+            as={`/dashboard/${team.id}/${channel.id}`}
+          >
+            <ChannelListItem key={`channel-${channel.id}`}>
+              # {channel.name}
+            </ChannelListItem>
+          </NextLink>
         ))}
       </ChannelList>
     </ChannelContainer>

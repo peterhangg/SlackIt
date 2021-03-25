@@ -220,6 +220,23 @@ export type GetTeamChannelsQuery = (
   )> }
 );
 
+export type GetChannelMessagesQueryVariables = Exact<{
+  channelId: Scalars['Float'];
+}>;
+
+
+export type GetChannelMessagesQuery = (
+  { __typename?: 'Query' }
+  & { getChannelMessages: Array<(
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  )> }
+);
+
 export type GetTeamQueryVariables = Exact<{
   teamId: Scalars['Float'];
 }>;
@@ -271,6 +288,14 @@ export type GetMeQuery = (
   & { getMe?: Maybe<(
     { __typename?: 'User' }
     & Pick<User, 'id' | 'username' | 'email'>
+    & { teams?: Maybe<Array<(
+      { __typename?: 'Team' }
+      & Pick<Team, 'id' | 'name'>
+      & { channels: Array<(
+        { __typename?: 'Channel' }
+        & Pick<Channel, 'id' | 'name'>
+      )> }
+    )>> }
   )> }
 );
 
@@ -453,6 +478,47 @@ export function useGetTeamChannelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetTeamChannelsQueryHookResult = ReturnType<typeof useGetTeamChannelsQuery>;
 export type GetTeamChannelsLazyQueryHookResult = ReturnType<typeof useGetTeamChannelsLazyQuery>;
 export type GetTeamChannelsQueryResult = Apollo.QueryResult<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>;
+export const GetChannelMessagesDocument = gql`
+    query GetChannelMessages($channelId: Float!) {
+  getChannelMessages(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetChannelMessagesQuery__
+ *
+ * To run a query within a React component, call `useGetChannelMessagesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetChannelMessagesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetChannelMessagesQuery({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useGetChannelMessagesQuery(baseOptions: Apollo.QueryHookOptions<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>(GetChannelMessagesDocument, options);
+      }
+export function useGetChannelMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>(GetChannelMessagesDocument, options);
+        }
+export type GetChannelMessagesQueryHookResult = ReturnType<typeof useGetChannelMessagesQuery>;
+export type GetChannelMessagesLazyQueryHookResult = ReturnType<typeof useGetChannelMessagesLazyQuery>;
+export type GetChannelMessagesQueryResult = Apollo.QueryResult<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>;
 export const GetTeamDocument = gql`
     query GetTeam($teamId: Float!) {
   getTeam(teamId: $teamId) {
@@ -574,6 +640,14 @@ export const GetMeDocument = gql`
     id
     username
     email
+    teams {
+      id
+      name
+      channels {
+        id
+        name
+      }
+    }
   }
 }
     `;
