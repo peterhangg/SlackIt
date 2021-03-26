@@ -153,6 +153,17 @@ export type MutationDeleteMessageArgs = {
   messageId: Scalars['Float'];
 };
 
+export type CreateMessageMutationVariables = Exact<{
+  channelId: Scalars['Float'];
+  text: Scalars['String'];
+}>;
+
+
+export type CreateMessageMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'createMessage'>
+);
+
 export type CreateTeamMutationVariables = Exact<{
   name: Scalars['String'];
 }>;
@@ -321,6 +332,38 @@ export type GetMeQuery = (
 );
 
 
+export const CreateMessageDocument = gql`
+    mutation CreateMessage($channelId: Float!, $text: String!) {
+  createMessage(channelId: $channelId, text: $text)
+}
+    `;
+export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
+
+/**
+ * __useCreateMessageMutation__
+ *
+ * To run a mutation, you first call `useCreateMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createMessageMutation, { data, loading, error }] = useCreateMessageMutation({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOptions<CreateMessageMutation, CreateMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateMessageMutation, CreateMessageMutationVariables>(CreateMessageDocument, options);
+      }
+export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
+export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
+export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
 export const CreateTeamDocument = gql`
     mutation CreateTeam($name: String!) {
   createTeam(name: $name) {

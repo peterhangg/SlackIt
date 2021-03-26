@@ -3,4 +3,5 @@ export type IFormInputs =  {
   password?: string,
   username?: string,
   name?: string,
+  text?: string,
 };

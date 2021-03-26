@@ -7,12 +7,15 @@ import {
   useGetTeamQuery,
 } from '../src/generated/graphql';
 import { timeFormatter } from '../src/utils/timeFormatter';
+import MessageInput from './MessageInput';
+
 const MessageContainer = styled.div`
   height: 100%;
 `;
 
 const MessageList = styled.ul`
   width: 100%;
+  height: 90%;
   list-style: none;
 `;
 
@@ -42,7 +45,7 @@ const UserIcon = styled.div`
 
 const MessageListItems = styled.li`
   display: flex;
-  margin-bottom: 5px;
+  padding-bottom: 5px;
 `;
 
 const MessageAuther = styled.h3`
@@ -106,6 +109,7 @@ export const Messages: React.FC = () => {
           </MessageListItems>
         ))}
       </MessageList>
+      <MessageInput channelId={channelId}/>
     </MessageContainer>
   );
 };
