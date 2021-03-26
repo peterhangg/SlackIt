@@ -32,6 +32,9 @@ const ChannelList = styled.ul`
 const ChannelListItem = styled.li`
   padding: 2px;
   padding-left: 12px;
+  &:hover {
+    cursor: pointer
+  }
 `;
 
 const ChannelListHeader = styled.li`
@@ -43,10 +46,11 @@ const ChannelListHeader = styled.li`
 export const Channels: React.FC<ChannelsProps> = () => {
   const router = useRouter();
   const { data: meData } = useGetMeQuery();
-  const queryId = parseInt(router.query.teamId as string);
-  let teamId = queryId ? queryId : meData?.getMe.teams[0].id;
+  const teamIdQuery = parseInt(router.query.teamId as string);
+  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe.teams[0].id;
   const { data: teamData, loading, error } = useGetTeamQuery({
     variables: { teamId },
+    skip: !teamId
   });
 
   if (loading) return null;

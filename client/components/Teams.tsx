@@ -41,6 +41,7 @@ const TeamListItem = styled.li`
   &:hover {
     background-color: #fff;
     color: #763857;
+    cursor: pointer;
   }
 `;
 
@@ -54,7 +55,7 @@ export const Teams: React.FC<TeamsProps> = ({ teams }) => {
             href="/dashboard/[teamId]"
             as={`/dashboard/${team.id}`}
           >
-            <TeamListItem>{team.name.charAt(0)}</TeamListItem>
+            <TeamListItem>{team.name.charAt(0).toUpperCase()}</TeamListItem>
           </NextLink>
         ))}
         <NextLink href="/createTeam">
