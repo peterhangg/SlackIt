@@ -22,11 +22,12 @@ const MessageList = styled.ul`
 const MessageHeaderWrapper = styled.div`
   border-bottom: solid 1px #d3d3d3;
   padding: 1rem;
-`
+`;
 
 const ChannelHeader = styled.h1`
   font-size: 2rem;
-`
+`;
+
 const UserWrapper = styled.div`
   height: 100%;
   padding: 10px;
@@ -55,7 +56,7 @@ const MessageAuther = styled.h3`
 const MessageMetaDate = styled.span`
   margin-left: 10px;
   font-size: 12px;
-  color:#404040;
+  color: #404040;
 `;
 
 export const Messages: React.FC = () => {
@@ -74,16 +75,16 @@ export const Messages: React.FC = () => {
     : teamIdQuery
     ? teamData?.getTeam.channels[0].id
     : meData?.getMe.teams[0].channels[0].id;
-    
+
   const { data, error } = useGetChannelQuery({
     variables: { channelId },
-    skip: !channelId
+    skip: !channelId,
   });
 
   if (error) return <div>{error.message}</div>;
-  
+
   const messages = data?.getChannel.messages || [];
-  
+
   return (
     <MessageContainer>
       <MessageHeaderWrapper>
@@ -97,19 +98,19 @@ export const Messages: React.FC = () => {
                 {message.user.username.charAt(0).toUpperCase()}
               </UserIcon>
             </UserWrapper>
-            <MessageWrapper>              
-            <MessageAuther>
-              {message.user.username}              
-              <MessageMetaDate>
-                {timeFormatter(message.createdAt)}
-              </MessageMetaDate>
-            </MessageAuther>
-            <p>{message.text}</p>
+            <MessageWrapper>
+              <MessageAuther>
+                {message.user.username}
+                <MessageMetaDate>
+                  {timeFormatter(message.createdAt)}
+                </MessageMetaDate>
+              </MessageAuther>
+              <p>{message.text}</p>
             </MessageWrapper>
           </MessageListItems>
         ))}
       </MessageList>
-      <MessageInput channelId={channelId}/>
+      <MessageInput channelId={channelId} />
     </MessageContainer>
   );
 };
