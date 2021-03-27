@@ -15,7 +15,7 @@ const SidebarStyles = styled.div`
   display: flex;
 `;
 
-export const Sidebar: React.FC<SideBarProps> = ({ showModal, setShowModal }) => {
+export const Sidebar: React.FC<SideBarProps> = ({ setShowModal }) => {
   const { data, loading, error } = useGetUserTeamsQuery();
   if (loading) return null;
   if (error) return <div>{error.message}</div>;
@@ -23,7 +23,7 @@ export const Sidebar: React.FC<SideBarProps> = ({ showModal, setShowModal }) => 
   return (
     <SidebarStyles>
       <Teams teams={data?.getUserTeams}/>
-      <Channels showModal={showModal} setShowModal={setShowModal} />
+      <Channels setShowModal={setShowModal} />
     </SidebarStyles>
   );
 }

@@ -1,10 +1,15 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
+import {
+  useCreateChannelMutation,
+  useGetMeQuery,
+} from '../src/generated/graphql';
 import { IShowModal, Dispatcher } from '../src/utils/types';
-
+import useForm from '../src/utils/useForm';
 interface AddChannelModelProps {
   showModal: boolean;
-  setShowModal: Dispatcher<boolean>
+  setShowModal: Dispatcher<boolean>;
 }
 
 export const FadeIn = keyframes`
@@ -55,9 +60,37 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
   showModal,
   setShowModal,
 }: IShowModal) => {
+  const router = useRouter();
+  const { data: meData } = useGetMeQuery();
+  const { inputs, handleChange, resetForm } = useForm({
+    name: '',
+  });
+  const teamIdQuery = parseInt(router.query.teamId as string);
+  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe.teams[0].id;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [createChannelMutation, { error }] = useCreateChannelMutation({
+    variables: {
+      teamId,
+      name: inputs.name as any,
+    },
+    update: (cache) => {
+      cache.evict({ fieldName: 'getChannel' }),
+      cache.evict({ fieldName: 'getTeam' })
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const response = await createChannelMutation().catch((err) =>
+      console.error(err)
+    );
+    if (!response) {
+      return;
+    }
+    resetForm();
+    const createdChannelData = response.data.createChannel;
+    setShowModal(!showModal);
+    router.push(`/dashboard/${teamId}/${createdChannelData.id}/`);
   };
 
   const closeModal = () => {
@@ -69,9 +102,16 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
       {showModal && (
         <ModalWrapper>
           <h1>Add Channel</h1>
-          <form>
-            <input type="text" placeholder="Channel name..." />
-            <button>Submit</button>
+          {error && <div>{error.message}</div>}
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Channel name..."
+              value={inputs.name}
+              onChange={handleChange}
+            />
+            <button type="submit">Submit</button>
           </form>
           <ClosedModalButton onClick={closeModal}>x</ClosedModalButton>
         </ModalWrapper>
