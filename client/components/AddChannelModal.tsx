@@ -1,15 +1,13 @@
 import { useRouter } from 'next/router';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
-import {
-  useCreateChannelMutation,
-  useGetMeQuery,
-} from '../src/generated/graphql';
-import { IShowModal, Dispatcher } from '../src/utils/types';
+import { useCreateChannelMutation } from '../src/generated/graphql';
+import { Dispatcher } from '../src/utils/types';
 import useForm from '../src/utils/useForm';
 interface AddChannelModelProps {
   showModal: boolean;
   setShowModal: Dispatcher<boolean>;
+  teamId: number;
 }
 
 export const FadeIn = keyframes`
@@ -59,14 +57,12 @@ export const ClosedModalButton = styled.button`
 const AddChannelModal: React.FC<AddChannelModelProps> = ({
   showModal,
   setShowModal,
-}: IShowModal) => {
+  teamId,
+}) => {
   const router = useRouter();
-  const { data: meData } = useGetMeQuery();
   const { inputs, handleChange, resetForm } = useForm({
     name: '',
   });
-  const teamIdQuery = parseInt(router.query.teamId as string);
-  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe.teams[0].id;
 
   const [createChannelMutation, { error }] = useCreateChannelMutation({
     variables: {
@@ -75,7 +71,7 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
-      cache.evict({ fieldName: 'getTeam' })
+        cache.evict({ fieldName: 'getTeam' });
     },
   });
 

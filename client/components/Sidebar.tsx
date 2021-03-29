@@ -6,7 +6,8 @@ import Channels from './Channels';
 import { Dispatcher } from '../src/utils/types';
 interface SideBarProps {
   showModal: boolean;
-  setShowModal: Dispatcher<boolean>
+  setShowModal: Dispatcher<boolean>;
+  teamId: number;
 }
 
 const SidebarStyles = styled.div`
@@ -15,15 +16,16 @@ const SidebarStyles = styled.div`
   display: flex;
 `;
 
-export const Sidebar: React.FC<SideBarProps> = ({ setShowModal }) => {
+export const Sidebar: React.FC<SideBarProps> = ({ setShowModal, teamId }) => {
   const { data, loading, error } = useGetUserTeamsQuery();
+  
   if (loading) return null;
   if (error) return <div>{error.message}</div>;
   
   return (
     <SidebarStyles>
       <Teams teams={data?.getUserTeams}/>
-      <Channels setShowModal={setShowModal} />
+      <Channels teamId={teamId} setShowModal={setShowModal} />
     </SidebarStyles>
   );
 }

@@ -296,6 +296,9 @@ export type GetTeamQuery = (
     & { channels: Array<(
       { __typename?: 'Channel' }
       & Pick<Channel, 'id' | 'name'>
+    )>, users: Array<(
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
     )> }
   ) }
 );
@@ -685,6 +688,10 @@ export const GetTeamDocument = gql`
     channels {
       id
       name
+    }
+    users {
+      id
+      username
     }
   }
 }
