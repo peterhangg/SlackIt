@@ -13,6 +13,7 @@ const client = (ctx: NextPageContext) => {
           : undefined) || '',
     },
     cache: new InMemoryCache(),
+    connectToDevTools: true,
   });
 };
 

@@ -1,0 +1,15 @@
+query GetMe {
+  getMe {
+    id
+    username
+    email
+    teams {
+      id
+      name
+      channels {
+        id
+        name
+      }
+    }
+  }
+}

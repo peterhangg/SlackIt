@@ -18,7 +18,10 @@ export class ChannelResolver {
   @UseMiddleware(isAutenticated)
   async getChannel(@Arg('channelId') channelId: number): Promise<Channel> {
     try {
-      const channel = await Channel.findOne({ id: channelId });
+      const channel = await Channel.findOne({
+        relations: ['messages'],
+        where: { id: channelId },
+      });
       if (!channel) throw new Error('Channel could not be found');
 
       return channel;

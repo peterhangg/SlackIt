@@ -1,0 +1,6 @@
+query GetTeamChannels ($teamId: Float!) {
+  getTeamChannels(teamId: $teamId) {
+    id
+    name
+  }
+}

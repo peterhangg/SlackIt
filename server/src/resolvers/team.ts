@@ -43,6 +43,26 @@ export class TeamResolver {
     }
   }
 
+  // GET USER"S TEAMS
+  @Query(() => [Team])
+  @UseMiddleware(isAutenticated)
+  async getUserTeams(@Ctx() { req }: MyContext): Promise<Team[]> {
+    try {
+      const userTeams = await getRepository(Team)
+        .createQueryBuilder('team')
+        .leftJoinAndSelect('team.owner', 'owner')
+        .leftJoinAndSelect('team.users', 'users')
+        .leftJoinAndSelect('team.channels', 'channel')
+        .innerJoin('team.users', 'user')
+        .where('user.id = :id', { id: req.session.userId })
+        .getMany();
+
+      return userTeams;
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
   // CREATE TEAM
   @Mutation(() => Team)
   @UseMiddleware(isAutenticated)
@@ -53,7 +73,7 @@ export class TeamResolver {
     try {
       const owner = await User.findOne({ id: req.session.userId });
       if (!owner) throw new Error('User cound not be found');
-      
+
       const newTeam = await Team.create({
         name,
         owner,
@@ -123,25 +143,6 @@ export class TeamResolver {
       return true;
     } catch (err) {
       throw new Error(err);
-    }
-  }
-
-  // GET USER"S TEAMS
-  @Query(() => [Team])
-  @UseMiddleware(isAutenticated)
-  async getUsersTeam(@Ctx() { req }: MyContext): Promise<Team[]> {
-    try {
-      const userTeams = await getRepository(Team)
-        .createQueryBuilder('team')
-        .leftJoinAndSelect('team.owner', 'owner')
-        .leftJoinAndSelect('team.users', 'users')
-        .innerJoin('team.users', 'user')
-        .where('user.id = :id', { id: req.session.userId })
-        .getMany();
-
-      return userTeams;
-    } catch (error) {
-      throw new Error(error);
     }
   }
 }

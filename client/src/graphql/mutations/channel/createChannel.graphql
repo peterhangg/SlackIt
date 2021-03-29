@@ -1,0 +1,6 @@
+mutation CreateChannel($teamId: Float!, $name: String!) {
+  createChannel(teamId: $teamId, name: $name) {
+    id
+    name
+  }
+}

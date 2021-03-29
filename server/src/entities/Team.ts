@@ -52,5 +52,6 @@ export class Team extends BaseEntity {
     cascade: true,
     eager: true
   })
+  @Field(() => [Channel])
   channels: Channel[];
 }
