@@ -6,5 +6,9 @@ query GetTeam($teamId: Float!) {
       id
       name
     }
+    users {
+      id
+      username
+    }
   }
 }
