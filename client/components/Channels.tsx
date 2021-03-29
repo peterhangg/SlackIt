@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';

@@ -18,7 +18,7 @@ const DashboardLayout: React.FC = () => {
     <DashboardContainer>
       <Sidebar teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
       <Messages />
-      <AddChannelModal showModal={showModal} setShowModal={setShowModal} />
+      <AddChannelModal teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
       <Members teamId={teamId} />
     </DashboardContainer>
   );

@@ -6,9 +6,5 @@ export interface IFormInputs {
   name?: string,
   text?: string,
 };
-export interface IShowModal {
-  showModal: boolean,
-  setShowModal?: Dispatch<SetStateAction<boolean>>;
-};
 
 export type Dispatcher<S> = Dispatch<SetStateAction<S>>;

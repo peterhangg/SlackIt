@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
-import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
+import { useGetTeamQuery } from '../src/generated/graphql';
 
 interface MembersProps {
   teamId: number;
@@ -40,13 +39,13 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
   if (loading) return null;
   if (error) return <div>{error.message}</div>;
 
-  const team = teamData.getTeam;
+  const team = teamData?.getTeam;
   
   return (
     <MemberContainer>
       <MemberHeader>Members</MemberHeader>
       <MemberList>
-      {team.users.map((user) => (
+      {team?.users.map((user) => (
         <MemberListItems key={`member-${user.id}`}>
           {user.username}
         </MemberListItems>
