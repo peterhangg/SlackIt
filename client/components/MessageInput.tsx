@@ -4,6 +4,7 @@ import { useCreateMessageMutation } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
 interface MessageInputProps {
   channelId: number;
+  channelName: string;
 }
 
 const FormContainer = styled.div`
@@ -26,7 +27,7 @@ const TextAreaStyles = styled.input`
   left: 0;
 `;
 
-const MessageInput: React.FC<MessageInputProps> = ({ channelId }) => {
+const MessageInput: React.FC<MessageInputProps> = ({ channelId, channelName }) => {
   const { inputs, handleChange, resetForm } = useForm({
     text: '',
   });
@@ -59,7 +60,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId }) => {
         <TextAreaStyles
           type="textarea"
           name="text"
-          placeholder="# General"
+          placeholder={`Message # ${channelName}`}
           onChange={handleChange}
           value={inputs.text}
         />

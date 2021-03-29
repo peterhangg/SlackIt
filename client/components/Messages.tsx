@@ -110,7 +110,7 @@ export const Messages: React.FC = () => {
           </MessageListItems>
         ))}
       </MessageList>
-      <MessageInput channelId={channelId} />
+      <MessageInput channelId={channelId} channelName={data?.getChannel.name}/>
     </MessageContainer>
   );
 };
