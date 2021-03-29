@@ -7,6 +7,7 @@ import { Dispatcher } from '../src/utils/types';
 
 interface ChannelsProps {
   setShowModal: Dispatcher<boolean>;
+  teamId: number;
 }
 
 const ChannelContainer = styled.div`
@@ -68,11 +69,8 @@ const ChannelListHeader = styled.h4`
   color: #fff;
 `;
 
-export const Channels: React.FC<ChannelsProps> = ({ setShowModal }) => {
-  const router = useRouter();
+export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
   const { data: meData } = useGetMeQuery();
-  const teamIdQuery = parseInt(router.query.teamId as string);
-  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe.teams[0].id;
   const { data: teamData, loading, error } = useGetTeamQuery({
     variables: { teamId },
     skip: !teamId,
@@ -81,7 +79,7 @@ export const Channels: React.FC<ChannelsProps> = ({ setShowModal }) => {
   if (loading) return null;
   if (error) return <div>{error.message}</div>;
 
-  const team = teamData.getTeam;
+  const team = teamData?.getTeam;
   
   const showAddChannelModal = () => {
     setShowModal(true);

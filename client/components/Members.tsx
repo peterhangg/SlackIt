@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
 
+interface MembersProps {
+  teamId: number;
+}
 
 const MemberContainer = styled.div`
   height: 100%;
@@ -28,11 +31,7 @@ const MemberListItems = styled.li`
   padding-left: 12px;
 `;
 
-export const Members: React.FC = () => {
-  const router = useRouter();
-  const { data: meData } = useGetMeQuery();
-  const teamIdQuery = parseInt(router.query.teamId as string);
-  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe.teams[0].id;
+export const Members: React.FC<MembersProps> = ({ teamId }) => {
   const { data: teamData, loading, error } = useGetTeamQuery({
     variables: { teamId },
     skip: !teamId,
