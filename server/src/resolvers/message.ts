@@ -5,12 +5,17 @@ import {
   Query,
   Resolver,
   UseMiddleware,
+  PubSub,
+  PubSubEngine,
+  Subscription,
+  Root,
 } from 'type-graphql';
 import { MyContext } from '../types';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
+import { NEW_MESSAGE } from '../utils/subscriptions';
 
 @Resolver()
 export class MessageResolver {
@@ -44,7 +49,8 @@ export class MessageResolver {
   async createMessage(
     @Arg('text') text: string,
     @Arg('channelId') channelId: number,
-    @Ctx() { req }: MyContext
+    @Ctx() { req }: MyContext,
+    @PubSub() pubsub: PubSubEngine
   ): Promise<Boolean> {
     try {
       const channel = await Channel.findOne({
@@ -55,12 +61,29 @@ export class MessageResolver {
       if (!channel) throw new Error('channel cound not be found');
 
       const sender = await User.findOne({ id: req.session.userId });
+      const newMessage = await Message.create({
+        text,
+        channel,
+        user: sender,
+      }).save();
+      await pubsub.publish(NEW_MESSAGE, newMessage);
 
-      await Message.create({ text, channel, user: sender }).save();
       return true;
     } catch (err) {
       throw new Error(err);
     }
+  }
+  // SUBSCRIPTION LISTENING TO NEW
+  @Subscription(() => Message, {
+    topics: NEW_MESSAGE,
+    filter: ({ payload, args }) => args.channelId === payload.channelId,
+  })
+  newMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Message {
+    return payload;
   }
 
   // DELETE MESSAGE

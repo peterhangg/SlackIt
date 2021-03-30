@@ -31,11 +31,11 @@
     "dotenv": "^8.2.0",
     "express-session": "^1.17.1",
     "graphql": "^15.5.0",
+    "graphql-redis-subscriptions": "^2.3.1",
     "graphql-subscriptions": "^1.2.1",
     "ioredis": "^4.24.2",
     "pg": "^8.5.1",
     "reflect-metadata": "^0.1.13",
-    "subscriptions-transport-ws": "^0.9.18",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.31",
     "uuid": "^8.3.2"
