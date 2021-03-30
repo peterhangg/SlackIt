@@ -17,6 +17,7 @@ const MessageList = styled.ul`
   width: 100%;
   height: 90%;
   list-style: none;
+  overflow-y: auto;
 `;
 
 const MessageHeaderWrapper = styled.div`
