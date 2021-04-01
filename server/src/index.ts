@@ -1,36 +1,22 @@
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 dotenv.config();
-import { createConnection, ConnectionOptions } from 'typeorm';
-import path from 'path';
+import { createConnection } from 'typeorm';
 import express, { Request, Response } from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import session from 'express-session';
 import Redis from 'ioredis';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
-
-import { User } from './entities/User';
+import { createServer } from 'http';
 import { getSchema } from './utils/schema';
-import { Message } from './entities/Message';
-import { Channel } from './entities/Channel';
-import { Team } from './entities/Team';
 import { COOKIE_NAME, NODE_ENV } from './utils/constants';
+import { dbOptions } from './config/dbConfig'
+
 
 const main = async () => {
-  const options: ConnectionOptions = {
-    type: 'postgres',
-    url: process.env.DATABASE_URL,
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    logging: true,
-    synchronize: true,
-    migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Message, Channel, Team],
-  };
-
-  const dbConnection = await createConnection(options);
+  const dbConnection = await createConnection(dbOptions);
+  console.log('here')
   console.log('IS DB CONNECTED?: ', dbConnection.isConnected);
 
   const app = express();
@@ -39,6 +25,7 @@ const main = async () => {
   const redis = new Redis(process.env.REDIS_URL);
 
   app.set('trust proxy', 1);
+
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
@@ -74,7 +61,14 @@ const main = async () => {
   const schema = await getSchema();
   const apolloServer = new ApolloServer({
     schema,
+    introspection: true,
+    playground: true,
     context: ({ req, res }) => ({ req, res, redis }),
+    subscriptions: {
+      // TODO: PASSING EXPRESS SESSION ON CONNECT WS
+      onConnect: () => console.log('connected'),
+      onDisconnect: () => console.log('disconnected'),
+    },
   });
 
   apolloServer.applyMiddleware({
@@ -82,7 +76,10 @@ const main = async () => {
     cors: false,
   });
 
-  app.listen(parseInt(process.env.PORT), () => {
+  const ws = createServer(app);
+  apolloServer.installSubscriptionHandlers(ws);
+
+  ws.listen(parseInt(process.env.PORT), () => {
     console.log(
       `🚀 Server ready at http://localhost:${process.env.PORT}/graphql`
     );

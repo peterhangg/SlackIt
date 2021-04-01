@@ -6,4 +6,4 @@ export const Dashboard: React.FC = () => {
   return <DashboardLayout />;
 };
 
-export default withApollo({ ssr: true })(Dashboard);
+export default withApollo({ ssr: false })(Dashboard);

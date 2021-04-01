@@ -87,15 +87,15 @@ export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
   return (
     <ChannelContainer>
       <ChannelNameWrapper>
-        <TeamNameHeader>{team.name}</TeamNameHeader>
-        <UsernameHeader>{meData?.getMe.username}</UsernameHeader>
+        <TeamNameHeader>{team?.name}</TeamNameHeader>
+        <UsernameHeader>{meData?.getMe?.username}</UsernameHeader>
       </ChannelNameWrapper>
       <ChannalHeaderWrapper>
         <ChannelListHeader>Channels</ChannelListHeader>
         <AddChannelIcon onClick={showAddChannelModal}>+</AddChannelIcon>
       </ChannalHeaderWrapper>
       <ChannelList>
-        {team.channels.map((channel) => (
+        {team?.channels.map((channel) => (
           <NextLink
             key={`channel-${channel.id}`}
             href="/dashboard/[teamId]/[channelId]"

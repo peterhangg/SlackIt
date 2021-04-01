@@ -1,0 +1,11 @@
+subscription NewMessage($channelId: Float!){
+  newMessage(channelId: $channelId){
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
