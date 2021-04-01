@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
 import {
+  NewMessageDocument,
   useGetChannelQuery,
-  useGetMeQuery,
-  useGetTeamQuery,
 } from '../src/generated/graphql';
 import { timeFormatter } from '../src/utils/timeFormatter';
 import MessageInput from './MessageInput';
+
+interface MessagesProps {
+  channelId: number;
+}
 
 const MessageContainer = styled.div`
   height: 100%;
@@ -60,31 +62,43 @@ const MessageMetaDate = styled.span`
   color: #404040;
 `;
 
-export const Messages: React.FC = () => {
-  const router = useRouter();
-  const { data: meData } = useGetMeQuery();
-  const channelIdQuery = parseInt(router.query.channelId as string);
-  const teamIdQuery = parseInt(router.query.teamId as string);
-
-  const { data: teamData } = useGetTeamQuery({
-    variables: { teamId: teamIdQuery },
-    skip: !teamIdQuery,
-  });
-
-  let channelId = channelIdQuery
-    ? channelIdQuery
-    : teamIdQuery
-    ? teamData?.getTeam.channels[0].id
-    : meData?.getMe.teams[0].channels[0].id;
-
-  const { data, error } = useGetChannelQuery({
+export const Messages: React.FC<MessagesProps> = ({ channelId }) => {
+  const { data, error, subscribeToMore } = useGetChannelQuery({
     variables: { channelId },
     skip: !channelId,
+    fetchPolicy: 'network-only',
   });
 
   if (error) return <div>{error.message}</div>;
 
   const messages = data?.getChannel.messages || [];
+
+  useEffect(() => {
+    if (channelId) {
+      subscribeToMore({
+        document: NewMessageDocument,
+        variables: {
+          channelId,
+        },
+        updateQuery: (prev, res: any) => {
+          console.log(res);
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          return {
+            ...prev,
+            getChannel: {
+              ...prev.getChannel,
+              messages: [
+                ...prev.getChannel.messages,
+                res.subscriptionData.data.newMessage,
+              ],
+            },
+          };
+        },
+      });
+    }
+  }, [subscribeToMore, channelId]);
 
   return (
     <MessageContainer>
@@ -111,7 +125,7 @@ export const Messages: React.FC = () => {
           </MessageListItems>
         ))}
       </MessageList>
-      <MessageInput channelId={channelId} channelName={data?.getChannel.name}/>
+      <MessageInput channelId={channelId} channelName={data?.getChannel.name} />
     </MessageContainer>
   );
 };

@@ -11,11 +11,12 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { getSchema } from './utils/schema';
 import { COOKIE_NAME, NODE_ENV } from './utils/constants';
-import { redisPubSub } from './utils/pubsub';
-import { dbOptions } from './utils/dbOptions';
+import { dbOptions } from './config/dbConfig'
+
 
 const main = async () => {
   const dbConnection = await createConnection(dbOptions);
+  console.log('here')
   console.log('IS DB CONNECTED?: ', dbConnection.isConnected);
 
   const app = express();
@@ -62,8 +63,9 @@ const main = async () => {
     schema,
     introspection: true,
     playground: true,
-    context: ({ req, res }) => ({ req, res, redis, pubsub: redisPubSub }),
+    context: ({ req, res }) => ({ req, res, redis }),
     subscriptions: {
+      // TODO: PASSING EXPRESS SESSION ON CONNECT WS
       onConnect: () => console.log('connected'),
       onDisconnect: () => console.log('disconnected'),
     },

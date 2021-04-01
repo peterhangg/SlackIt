@@ -40,5 +40,5 @@
   "include": [
     "./src/**/*.tsx",
     "./src/**/*.ts"
-  ]
+, "src/apollo/apollo.js"  ]
 }

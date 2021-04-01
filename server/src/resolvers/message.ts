@@ -16,7 +16,6 @@ import { Message } from '../entities/Message';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { NEW_MESSAGE } from '../utils/subscriptions';
-
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
@@ -50,7 +49,7 @@ export class MessageResolver {
     @Arg('text') text: string,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
-    @PubSub() pubsub: PubSubEngine
+    @PubSub() pubSub: PubSubEngine,
   ): Promise<Boolean> {
     try {
       const channel = await Channel.findOne({
@@ -66,8 +65,8 @@ export class MessageResolver {
         channel,
         user: sender,
       }).save();
-      await pubsub.publish(NEW_MESSAGE, newMessage);
 
+      await pubSub.publish(NEW_MESSAGE, newMessage);
       return true;
     } catch (err) {
       throw new Error(err);
@@ -76,13 +75,13 @@ export class MessageResolver {
   // SUBSCRIPTION LISTENING TO NEW
   @Subscription(() => Message, {
     topics: NEW_MESSAGE,
-    filter: ({ payload, args }) => args.channelId === payload.channelId,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
   })
-  newMessage(
+  async newMessage(
     @Root()
     payload: Message,
     @Arg('channelId') _: number
-  ): Message {
+  ): Promise<Message> {
     return payload;
   }
 
