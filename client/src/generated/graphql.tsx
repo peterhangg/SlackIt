@@ -73,6 +73,7 @@ export type Channel = {
   __typename?: 'Channel';
   id: Scalars['Float'];
   name: Scalars['String'];
+  description: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   messages?: Maybe<Array<Message>>;
@@ -134,6 +135,7 @@ export type MutationDeleteTeamArgs = {
 
 export type MutationCreateChannelArgs = {
   teamId: Scalars['Float'];
+  description: Scalars['String'];
   name: Scalars['String'];
 };
 
@@ -166,6 +168,7 @@ export type SubscriptionNewMessageArgs = {
 export type CreateChannelMutationVariables = Exact<{
   teamId: Scalars['Float'];
   name: Scalars['String'];
+  description: Scalars['String'];
 }>;
 
 
@@ -173,7 +176,7 @@ export type CreateChannelMutation = (
   { __typename?: 'Mutation' }
   & { createChannel: (
     { __typename?: 'Channel' }
-    & Pick<Channel, 'id' | 'name'>
+    & Pick<Channel, 'id' | 'name' | 'description'>
   ) }
 );
 
@@ -251,7 +254,7 @@ export type GetChannelQuery = (
   { __typename?: 'Query' }
   & { getChannel: (
     { __typename?: 'Channel' }
-    & Pick<Channel, 'id' | 'name'>
+    & Pick<Channel, 'id' | 'name' | 'description'>
     & { messages?: Maybe<Array<(
       { __typename?: 'Message' }
       & Pick<Message, 'id' | 'text' | 'createdAt'>
@@ -377,10 +380,11 @@ export type NewMessageSubscription = (
 
 
 export const CreateChannelDocument = gql`
-    mutation CreateChannel($teamId: Float!, $name: String!) {
-  createChannel(teamId: $teamId, name: $name) {
+    mutation CreateChannel($teamId: Float!, $name: String!, $description: String!) {
+  createChannel(teamId: $teamId, name: $name, description: $description) {
     id
     name
+    description
   }
 }
     `;
@@ -401,6 +405,7 @@ export type CreateChannelMutationFn = Apollo.MutationFunction<CreateChannelMutat
  *   variables: {
  *      teamId: // value for 'teamId'
  *      name: // value for 'name'
+ *      description: // value for 'description'
  *   },
  * });
  */
@@ -590,6 +595,7 @@ export const GetChannelDocument = gql`
   getChannel(channelId: $channelId) {
     id
     name
+    description
     messages {
       id
       text

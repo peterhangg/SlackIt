@@ -62,12 +62,14 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
   const router = useRouter();
   const { inputs, handleChange, resetForm } = useForm({
     name: '',
+    description: '',
   });
 
   const [createChannelMutation, { error }] = useCreateChannelMutation({
     variables: {
       teamId,
       name: inputs.name as any,
+      description: inputs.description as any
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
@@ -85,6 +87,7 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     }
     resetForm();
     const createdChannelData = response.data.createChannel;
+    console.log(createdChannelData)
     setShowModal(!showModal);
     router.push(`/dashboard/${teamId}/${createdChannelData.id}/`);
   };
@@ -105,6 +108,13 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
               name="name"
               placeholder="Channel name..."
               value={inputs.name}
+              onChange={handleChange}
+            />
+            <input
+              type="text"
+              name="description"
+              placeholder="Channel description..."
+              value={inputs.description}
               onChange={handleChange}
             />
             <button type="submit">Submit</button>

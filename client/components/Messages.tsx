@@ -75,7 +75,7 @@ export const Messages: React.FC<MessagesProps> = ({ channelId }) => {
 
   useEffect(() => {
     if (channelId) {
-      subscribeToMore({
+      const subscriptionMessage = subscribeToMore({
         document: NewMessageDocument,
         variables: {
           channelId,
@@ -97,6 +97,8 @@ export const Messages: React.FC<MessagesProps> = ({ channelId }) => {
           };
         },
       });
+
+      return () => subscriptionMessage()
     }
   }, [subscribeToMore, channelId]);
 
