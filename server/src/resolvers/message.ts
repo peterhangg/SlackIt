@@ -28,7 +28,7 @@ export class MessageResolver {
       const channel = await Channel.findOne({ id: channelId });
       if (!channel) throw new Error('Channel could not be found');
 
-      const message = await Message.find({
+      const messages = await Message.find({
         relations: ['channel'],
         where: {
           channel: { id: channelId },
@@ -36,7 +36,7 @@ export class MessageResolver {
         order: { createdAt: 'DESC' },
       });
 
-      return message;
+      return messages;
     } catch (err) {
       throw new Error(err);
     }
