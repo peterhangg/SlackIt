@@ -49,15 +49,14 @@ export class ChannelResolver {
   @UseMiddleware(isAutenticated)
   async createChannel(
     @Arg('name') name: string,
+    @Arg('description') description: string,
     @Arg('teamId') teamId: number
   ): Promise<Channel> {
     try {
       const team = await Team.findOne({ id: teamId });
       if (!team) throw new Error('Team cound not be found');
 
-      const createdChannel = await Channel.create({ name, team }).save();
-
-      // team.channels = [...team.channels, createdChannel];
+      const createdChannel = await Channel.create({ name, team, description }).save();
 
       return createdChannel;
     } catch (err) {

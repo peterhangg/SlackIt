@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import Sidebar from './Sidebar';
+import LeftSidebar from './LeftSidebar';
 import Messages from './Messages';
-import Members from './Members';
 import AddChannelModal from './AddChannelModal';
 import { DashboardContainer } from './styles';
 import { useRouter } from 'next/router';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
+import RightSidebar from './RightSidebar';
 
 const DashboardLayout: React.FC = () => {
   const router = useRouter();
@@ -28,10 +28,10 @@ const DashboardLayout: React.FC = () => {
 
   return (
     <DashboardContainer>
-      <Sidebar teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
+      <LeftSidebar teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
       <Messages channelId={channelId}/>
       <AddChannelModal teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
-      <Members teamId={teamId} />
+      <RightSidebar teamId={teamId} channelId={channelId} />
     </DashboardContainer>
   );
 };

@@ -82,10 +82,19 @@ export class TeamResolver {
 
       const generalChannel = await Channel.create({
         name: 'general',
+        description:
+          'This channel is for team-wide communication and announcements.',
         team: newTeam,
       }).save();
 
-      newTeam.channels = [generalChannel];
+      const randomChannel = await Channel.create({
+        name: 'random',
+        description:
+          "A place for non-work banter, links, articles of interest, humor or anything else which you'd like concentrated in some place other than work-related channels..",
+        team: newTeam,
+      }).save();
+
+      newTeam.channels = [generalChannel, randomChannel];
 
       return newTeam;
     } catch (err) {
@@ -102,9 +111,9 @@ export class TeamResolver {
   ): Promise<Team> {
     try {
       const team = await Team.findOne({ id: teamId });
-      const user = await User.findOne({ id: req.session.userId });
-
       if (!team) throw new Error('Team could not be found');
+
+      const user = await User.findOne({ id: req.session.userId });
       if (!user) throw new Error('User could not be found');
 
       const userIds = team.users.map((user) => user.id);

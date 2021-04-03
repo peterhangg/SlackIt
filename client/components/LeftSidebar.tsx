@@ -10,7 +10,7 @@ interface SideBarProps {
   teamId: number;
 }
 
-const SidebarStyles = styled.div`
+const LeftSidebarContainer = styled.div`
   height: 100%;
   background-color: #763857;
   display: flex;
@@ -23,10 +23,10 @@ export const Sidebar: React.FC<SideBarProps> = ({ setShowModal, teamId }) => {
   if (error) return <div>{error.message}</div>;
   
   return (
-    <SidebarStyles>
+    <LeftSidebarContainer>
       <Teams teams={data?.getUserTeams}/>
       <Channels teamId={teamId} setShowModal={setShowModal} />
-    </SidebarStyles>
+    </LeftSidebarContainer>
   );
 }
 

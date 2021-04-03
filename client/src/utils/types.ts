@@ -5,6 +5,7 @@ export interface IFormInputs {
   username?: string,
   name?: string,
   text?: string,
+  description?: string,
 };
 
 export type Dispatcher<S> = Dispatch<SetStateAction<S>>;

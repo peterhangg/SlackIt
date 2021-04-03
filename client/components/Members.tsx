@@ -7,13 +7,13 @@ interface MembersProps {
 }
 
 const MemberContainer = styled.div`
-  height: 100%;
-  border-left: 1px solid #D3D3D3;
+  height: 50%;
   overflow: hidden;
+  padding: 5px;
 `;
 
 const MemberHeader = styled.h1`
-  font-size: 2rem;
+  font-size: 1.75rem;
   margin-left: 10px;
   margin-top: 1rem;
 `;
