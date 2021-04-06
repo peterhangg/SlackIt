@@ -58,7 +58,7 @@ export const Teams: React.FC<TeamsProps> = ({ teams }) => {
             <TeamListItem>{team.name.charAt(0).toUpperCase()}</TeamListItem>
           </NextLink>
         ))}
-        <NextLink href="/createTeam">
+        <NextLink href="/create-team">
           <TeamListItem>+</TeamListItem>
         </NextLink>
       </TeamList>

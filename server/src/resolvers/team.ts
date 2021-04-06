@@ -98,7 +98,11 @@ export class TeamResolver {
 
       return newTeam;
     } catch (err) {
-      throw new Error(err);
+      if (err.code === '23505') {
+        throw new Error('This team already exist.');
+      } else {
+        throw new Error(err);
+      }
     }
   }
 

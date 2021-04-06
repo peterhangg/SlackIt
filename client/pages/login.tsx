@@ -7,6 +7,18 @@ import {
   useLoginMutation,
 } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
+import {
+  PageContainer,
+  SlackIconStyles,
+  HeaderHero,
+  PageHeader,
+  HeaderHeroWrapper,
+  FormStyles,
+  InputStyles,
+  ErrorMessage,
+  ButtonStyle,
+} from '../components/styles/shared';
+const SlackIcon = require('../asset/slack.svg') as string;
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -38,37 +50,37 @@ const Login: React.FC = () => {
   };
 
   return (
-    <>
-      {error && <h2>{error.message}</h2>}
-      <h2>Login Page</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="email">email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="name@work-email.com..."
-            onChange={handleChange}
-            value={inputs.email}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="password"
-            onChange={handleChange}
-            value={inputs.password}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          Login
-        </button>
-      </form>
-    </>
+    <PageContainer>
+      <HeaderHeroWrapper>
+        <SlackIconStyles src={SlackIcon} alt="slack icon" />
+        <HeaderHero>SlackIt</HeaderHero>
+      </HeaderHeroWrapper>
+      <PageHeader>Sign in to your workspace</PageHeader>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      <FormStyles onSubmit={handleSubmit}>
+        <InputStyles
+          type="email"
+          name="email"
+          placeholder="name@work-email.com"
+          onChange={handleChange}
+          value={inputs.email}
+          required
+        />
+
+        <InputStyles
+          type="password"
+          name="password"
+          placeholder="password"
+          onChange={handleChange}
+          value={inputs.password}
+          required
+        />
+
+        <ButtonStyle type="submit" disabled={loading}>
+          LOGIN
+        </ButtonStyle>
+      </FormStyles>
+    </PageContainer>
   );
 };
 

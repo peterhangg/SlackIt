@@ -4,6 +4,18 @@ import { useRouter } from 'next/router';
 import { useCreateTeamMutation } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
 import { useIsAuthenticated } from '../src/utils/useIsAuthenticated';
+import {
+  PageContainer,
+  SlackIconStyles,
+  HeaderHero,
+  PageHeader,
+  HeaderHeroWrapper,
+  FormStyles,
+  InputStyles,
+  ErrorMessage,
+  ButtonStyle,
+} from '../components/styles/shared';
+const SlackIcon = require('../asset/slack.svg') as string;
 
 const createTeam: React.FC = () => {
   useIsAuthenticated();
@@ -33,26 +45,27 @@ const createTeam: React.FC = () => {
   };
 
   return (
-    <>
-      {error && <h2>{error.message}</h2>}
-      <h1>Create workplace team</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Team Name</label>
-          <input
+    <PageContainer>
+      <HeaderHeroWrapper>
+        <SlackIconStyles src={SlackIcon} alt="slack icon" />
+        <HeaderHero>SlackIt</HeaderHero>
+      </HeaderHeroWrapper>
+      <PageHeader>Create your workplace team</PageHeader>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      <FormStyles onSubmit={handleSubmit}>
+          <InputStyles
             type="text"
             name="name"
-            placeholder="Team name..."
+            placeholder="team name"
             onChange={handleChange}
             value={inputs.name}
             required
           />
-        </div>
-        <button type="submit" disabled={loading}>
-          Create Team
-        </button>
-      </form>
-    </>
+        <ButtonStyle type="submit" disabled={loading}>
+          CREATE TEAM
+        </ButtonStyle>
+      </FormStyles>
+    </PageContainer>
   );
 };
 
