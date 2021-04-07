@@ -1,10 +1,17 @@
 import React from 'react';
 import NextLink from 'next/link';
+import styled from 'styled-components';
 import { useApolloClient } from '@apollo/client';
+import { ButtonStyle } from '../components/styles/shared';
 import { useGetMeQuery, useLogoutMutation } from '../src/generated/graphql';
 import { isServer } from '../src/utils/isServer';
 
-const Navbar: React.FC = () => {
+const ButtonWrapper = styled.div`
+  margin-top: 5%;
+  margin-left: 10%;
+`;
+
+const NavButtons: React.FC = () => {
   const apolloClient = useApolloClient();
   const { data } = useGetMeQuery({
     skip: isServer(),
@@ -17,28 +24,28 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <div>
+    <ButtonWrapper>
       {!data?.getMe ? (
-        <ul>
+        <>
           <NextLink href="/login">
-            <li>Login</li>
+            <ButtonStyle mr="2rem">LOGIN</ButtonStyle>
           </NextLink>
           <NextLink href="/register">
-            <li>Register</li>
+            <ButtonStyle>REGISTER</ButtonStyle>
           </NextLink>
-        </ul>
+          </>
       ) : (
         <>
-          <button onClick={logoutHandler} disabled={loading}>
-            Logout
-          </button>
-          <NextLink href="/createTeam">
-            <button>Create Team</button>
+          <ButtonStyle onClick={logoutHandler} disabled={loading} mr="2rem">
+            LOGOUT
+          </ButtonStyle>
+          <NextLink href="/create-team">
+            <ButtonStyle>CREATE TEAM</ButtonStyle>
           </NextLink>
         </>
       )}
-    </div>
+    </ButtonWrapper>
   );
 };
 
-export default Navbar;
+export default NavButtons;

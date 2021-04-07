@@ -1,0 +1,6 @@
+mutation JoinTeam($teamId: Float!) {
+	joinTeam(teamId: $teamId) {
+		id
+    name
+  }
+}

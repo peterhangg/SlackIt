@@ -1,0 +1,7 @@
+query GetAllTeams {
+  getAllTeams {
+    id
+    name
+    description
+  }
+}

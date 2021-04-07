@@ -83,6 +83,7 @@ export type Team = {
   __typename?: 'Team';
   id: Scalars['Float'];
   name: Scalars['String'];
+  description: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   users: Array<User>;
@@ -119,6 +120,7 @@ export type MutationLoginArgs = {
 
 
 export type MutationCreateTeamArgs = {
+  description: Scalars['String'];
   name: Scalars['String'];
 };
 
@@ -193,6 +195,7 @@ export type CreateMessageMutation = (
 
 export type CreateTeamMutationVariables = Exact<{
   name: Scalars['String'];
+  description: Scalars['String'];
 }>;
 
 
@@ -205,6 +208,19 @@ export type CreateTeamMutation = (
       { __typename?: 'Channel' }
       & Pick<Channel, 'id' | 'name'>
     )> }
+  ) }
+);
+
+export type JoinTeamMutationVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type JoinTeamMutation = (
+  { __typename?: 'Mutation' }
+  & { joinTeam: (
+    { __typename?: 'Team' }
+    & Pick<Team, 'id' | 'name'>
   ) }
 );
 
@@ -296,6 +312,17 @@ export type GetChannelMessagesQuery = (
   )> }
 );
 
+export type GetAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetAllTeamsQuery = (
+  { __typename?: 'Query' }
+  & { getAllTeams: Array<(
+    { __typename?: 'Team' }
+    & Pick<Team, 'id' | 'name' | 'description'>
+  )> }
+);
+
 export type GetTeamQueryVariables = Exact<{
   teamId: Scalars['Float'];
 }>;
@@ -352,7 +379,7 @@ export type GetMeQuery = (
     & Pick<User, 'id' | 'username' | 'email'>
     & { teams?: Maybe<Array<(
       { __typename?: 'Team' }
-      & Pick<Team, 'id' | 'name'>
+      & Pick<Team, 'id' | 'name' | 'description'>
       & { channels: Array<(
         { __typename?: 'Channel' }
         & Pick<Channel, 'id' | 'name'>
@@ -449,8 +476,8 @@ export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessage
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
 export const CreateTeamDocument = gql`
-    mutation CreateTeam($name: String!) {
-  createTeam(name: $name) {
+    mutation CreateTeam($name: String!, $description: String!) {
+  createTeam(name: $name, description: $description) {
     id
     name
     channels {
@@ -476,6 +503,7 @@ export type CreateTeamMutationFn = Apollo.MutationFunction<CreateTeamMutation, C
  * const [createTeamMutation, { data, loading, error }] = useCreateTeamMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      description: // value for 'description'
  *   },
  * });
  */
@@ -486,6 +514,40 @@ export function useCreateTeamMutation(baseOptions?: Apollo.MutationHookOptions<C
 export type CreateTeamMutationHookResult = ReturnType<typeof useCreateTeamMutation>;
 export type CreateTeamMutationResult = Apollo.MutationResult<CreateTeamMutation>;
 export type CreateTeamMutationOptions = Apollo.BaseMutationOptions<CreateTeamMutation, CreateTeamMutationVariables>;
+export const JoinTeamDocument = gql`
+    mutation JoinTeam($teamId: Float!) {
+  joinTeam(teamId: $teamId) {
+    id
+    name
+  }
+}
+    `;
+export type JoinTeamMutationFn = Apollo.MutationFunction<JoinTeamMutation, JoinTeamMutationVariables>;
+
+/**
+ * __useJoinTeamMutation__
+ *
+ * To run a mutation, you first call `useJoinTeamMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useJoinTeamMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [joinTeamMutation, { data, loading, error }] = useJoinTeamMutation({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useJoinTeamMutation(baseOptions?: Apollo.MutationHookOptions<JoinTeamMutation, JoinTeamMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<JoinTeamMutation, JoinTeamMutationVariables>(JoinTeamDocument, options);
+      }
+export type JoinTeamMutationHookResult = ReturnType<typeof useJoinTeamMutation>;
+export type JoinTeamMutationResult = Apollo.MutationResult<JoinTeamMutation>;
+export type JoinTeamMutationOptions = Apollo.BaseMutationOptions<JoinTeamMutation, JoinTeamMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -713,6 +775,42 @@ export function useGetChannelMessagesLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type GetChannelMessagesQueryHookResult = ReturnType<typeof useGetChannelMessagesQuery>;
 export type GetChannelMessagesLazyQueryHookResult = ReturnType<typeof useGetChannelMessagesLazyQuery>;
 export type GetChannelMessagesQueryResult = Apollo.QueryResult<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>;
+export const GetAllTeamsDocument = gql`
+    query GetAllTeams {
+  getAllTeams {
+    id
+    name
+    description
+  }
+}
+    `;
+
+/**
+ * __useGetAllTeamsQuery__
+ *
+ * To run a query within a React component, call `useGetAllTeamsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllTeamsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllTeamsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllTeamsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllTeamsQuery, GetAllTeamsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetAllTeamsQuery, GetAllTeamsQueryVariables>(GetAllTeamsDocument, options);
+      }
+export function useGetAllTeamsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetAllTeamsQuery, GetAllTeamsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetAllTeamsQuery, GetAllTeamsQueryVariables>(GetAllTeamsDocument, options);
+        }
+export type GetAllTeamsQueryHookResult = ReturnType<typeof useGetAllTeamsQuery>;
+export type GetAllTeamsLazyQueryHookResult = ReturnType<typeof useGetAllTeamsLazyQuery>;
+export type GetAllTeamsQueryResult = Apollo.QueryResult<GetAllTeamsQuery, GetAllTeamsQueryVariables>;
 export const GetTeamDocument = gql`
     query GetTeam($teamId: Float!) {
   getTeam(teamId: $teamId) {
@@ -841,6 +939,7 @@ export const GetMeDocument = gql`
     teams {
       id
       name
+      description
       channels {
         id
         name

@@ -18,19 +18,27 @@ const DashboardLayout: React.FC = () => {
     variables: { teamId: teamIdQuery },
     skip: !teamIdQuery,
   });
-  
+
   const channelIdQuery = parseInt(router.query.channelId as string);
   let channelId = channelIdQuery
-  ? channelIdQuery
-  : teamIdQuery
-  ? teamData?.getTeam?.channels[0].id
-  : meData?.getMe?.teams[0].channels[0].id;
+    ? channelIdQuery
+    : teamIdQuery
+    ? teamData?.getTeam?.channels[0].id
+    : meData?.getMe?.teams[0].channels[0].id;
 
   return (
     <DashboardContainer>
-      <LeftSidebar teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
-      <Messages channelId={channelId}/>
-      <AddChannelModal teamId={teamId} showModal={showModal} setShowModal={setShowModal} />
+      <LeftSidebar
+        teamId={teamId}
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
+      <Messages channelId={channelId} />
+      <AddChannelModal
+        teamId={teamId}
+        showModal={showModal}
+        setShowModal={setShowModal}
+      />
       <RightSidebar teamId={teamId} channelId={channelId} />
     </DashboardContainer>
   );

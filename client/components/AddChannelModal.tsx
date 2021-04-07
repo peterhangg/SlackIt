@@ -4,6 +4,17 @@ import styled, { keyframes } from 'styled-components';
 import { useCreateChannelMutation } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
 import useForm from '../src/utils/useForm';
+import {
+  FormStyles,
+  InputStyles,
+  ButtonStyle,
+  ErrorMessage,
+  HeaderHero,
+  HeaderHeroWrapper,
+  PageHeader,
+  SlackIconStyles,
+} from './styles/shared';
+const SlackIcon = require('../asset/slack.svg') as string;
 interface AddChannelModelProps {
   showModal: boolean;
   setShowModal: Dispatcher<boolean>;
@@ -27,7 +38,7 @@ const ModalWrapper = styled.div`
   width: 50%;
   height: 50%;
   max-width: 550px;
-  max-height: 375px;
+  max-height: 450px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -50,7 +61,7 @@ export const ClosedModalButton = styled.button`
   padding: 0;
   cursor: pointer;
   &:hover {
-    color: red;
+    color: #4a154b;
   }
 `;
 
@@ -65,11 +76,11 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     description: '',
   });
 
-  const [createChannelMutation, { error }] = useCreateChannelMutation({
+  const [createChannelMutation, { loading, error }] = useCreateChannelMutation({
     variables: {
       teamId,
       name: inputs.name as any,
-      description: inputs.description as any
+      description: inputs.description as any,
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
@@ -87,7 +98,6 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     }
     resetForm();
     const createdChannelData = response.data.createChannel;
-    console.log(createdChannelData)
     setShowModal(!showModal);
     router.push(`/dashboard/${teamId}/${createdChannelData.id}/`);
   };
@@ -100,25 +110,33 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     <>
       {showModal && (
         <ModalWrapper>
-          <h1>Add Channel</h1>
-          {error && <div>{error.message}</div>}
-          <form onSubmit={handleSubmit}>
-            <input
+          <HeaderHeroWrapper>
+            <SlackIconStyles src={SlackIcon} alt="slack icon" />
+            <HeaderHero>SlackIt</HeaderHero>
+          </HeaderHeroWrapper>
+          <PageHeader>Create a channel</PageHeader>
+          {error && <ErrorMessage>{error.message}</ErrorMessage>}
+          <FormStyles onSubmit={handleSubmit}>
+            <InputStyles
               type="text"
               name="name"
-              placeholder="Channel name..."
+              placeholder="Channel name"
               value={inputs.name}
               onChange={handleChange}
+              required
             />
-            <input
+            <InputStyles
               type="text"
               name="description"
-              placeholder="Channel description..."
+              placeholder="Channel description"
               value={inputs.description}
               onChange={handleChange}
+              required
             />
-            <button type="submit">Submit</button>
-          </form>
+            <ButtonStyle type="submit" disabled={loading}>
+              CREATE TEAM
+            </ButtonStyle>
+          </FormStyles>
           <ClosedModalButton onClick={closeModal}>x</ClosedModalButton>
         </ModalWrapper>
       )}

@@ -7,6 +7,18 @@ import {
   useRegisterMutation,
 } from '../src/generated/graphql';
 import { withApollo } from '../src/apollo/client';
+import {
+  PageContainer,
+  SlackIconStyles,
+  HeaderHero,
+  PageHeader,
+  HeaderHeroWrapper,
+  FormStyles,
+  InputStyles,
+  ErrorMessage,
+  ButtonStyle,
+} from '../components/styles/shared';
+const SlackIcon = require('../asset/slack.svg') as string;
 
 const Register: React.FC = () => {
   const router = useRouter();
@@ -38,52 +50,47 @@ const Register: React.FC = () => {
       return;
     }
     resetForm();
-    router.push('/');
+    router.push('/join-team');
   };
 
   return (
-    <>
-      {error && <h2>{error.message}</h2>}
-      <h2>Register Page</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="username">username</label>
-          <input
-            type="text"
-            name="username"
-            placeholder="username..."
-            onChange={handleChange}
-            value={inputs.username}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="email">email</label>
-          <input
-            type="email"
-            name="email"
-            placeholder="name@work-email.com..."
-            onChange={handleChange}
-            value={inputs.email}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">password</label>
-          <input
-            type="password"
-            name="password"
-            placeholder="password "
-            onChange={handleChange}
-            value={inputs.password}
-            required
-          />
-        </div>
-        <button type="submit" disabled={loading}>
-          Sign Up
-        </button>
-      </form>
-    </>
+    <PageContainer>
+      <HeaderHeroWrapper>
+        <SlackIconStyles src={SlackIcon} alt="slack icon" />
+        <HeaderHero>SlackIt</HeaderHero>
+      </HeaderHeroWrapper>
+      <PageHeader>Register today! We suggest using your work email address.</PageHeader>
+      {error && <ErrorMessage>{error.message}</ErrorMessage>}
+      <FormStyles onSubmit={handleSubmit}>
+        <InputStyles
+          type="text"
+          name="username"
+          placeholder="username"
+          onChange={handleChange}
+          value={inputs.username}
+          required
+        />
+        <InputStyles
+          type="email"
+          name="email"
+          placeholder="name@work-email.com"
+          onChange={handleChange}
+          value={inputs.email}
+          required
+        />
+        <InputStyles
+          type="password"
+          name="password"
+          placeholder="password"
+          onChange={handleChange}
+          value={inputs.password}
+          required
+        />
+        <ButtonStyle type="submit" disabled={loading}>
+          SIGN UP
+        </ButtonStyle>
+      </FormStyles>
+    </PageContainer>
   );
 };
 
