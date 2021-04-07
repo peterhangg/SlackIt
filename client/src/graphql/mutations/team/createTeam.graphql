@@ -1,5 +1,5 @@
-mutation CreateTeam($name: String!) {
-	createTeam(name: $name) {
+mutation CreateTeam($name: String!, $description: String!) {
+	createTeam(name: $name, description: $description) {
     id
     name
     channels {

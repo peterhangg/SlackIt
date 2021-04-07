@@ -26,6 +26,10 @@ export class Team extends BaseEntity {
   name!: string;
 
   @Field(() => String)
+  @Column()
+  description!: string;
+
+  @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;
 

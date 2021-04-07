@@ -10,5 +10,6 @@ export const useIsAuthenticated = () => {
     if (!loading && !data?.getMe) {
       router.push('/login');
     }
+
   }, [loading, data, router]);
 };

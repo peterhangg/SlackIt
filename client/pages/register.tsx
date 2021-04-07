@@ -50,7 +50,7 @@ const Register: React.FC = () => {
       return;
     }
     resetForm();
-    router.push('/');
+    router.push('/join-team');
   };
 
   return (

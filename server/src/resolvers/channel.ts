@@ -60,7 +60,11 @@ export class ChannelResolver {
 
       return createdChannel;
     } catch (err) {
-      throw new Error(err);
+      if (err.code === '23505') {
+        throw new Error('This channel already exist.');
+      } else {
+        throw new Error(err);
+      }
     }
   }
 

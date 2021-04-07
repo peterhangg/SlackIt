@@ -68,6 +68,7 @@ export class TeamResolver {
   @UseMiddleware(isAutenticated)
   async createTeam(
     @Arg('name') name: string,
+    @Arg('description') description: string,
     @Ctx() { req }: MyContext
   ): Promise<Team> {
     try {
@@ -75,8 +76,9 @@ export class TeamResolver {
       if (!owner) throw new Error('User cound not be found');
 
       const newTeam = await Team.create({
-        name,
+        name: name.toLowerCase(),
         owner,
+        description,
         users: [owner],
       }).save();
 
