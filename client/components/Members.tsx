@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useGetTeamQuery } from '../src/generated/graphql';
+import { JoinedTeamDocument, useGetTeamQuery } from '../src/generated/graphql';
 
 interface MembersProps {
   teamId: number;
@@ -31,15 +31,42 @@ const MemberListItems = styled.li`
 `;
 
 export const Members: React.FC<MembersProps> = ({ teamId }) => {
-  const { data: teamData, loading, error } = useGetTeamQuery({
+  const { data: teamData, error, subscribeToMore } = useGetTeamQuery({
     variables: { teamId },
     skip: !teamId,
   });
 
-  if (loading) return null;
   if (error) return <div>{error.message}</div>;
-
   const team = teamData?.getTeam;
+  
+  useEffect(() => {
+    if (teamId) {
+      const subscriptionJoinedUser = subscribeToMore({
+        document: JoinedTeamDocument,
+        variables: {
+          teamId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          const newMember = res.subscriptionData.data.joinedTeam;
+          return {
+            ...prev,
+            getTeam: {
+              ...prev.getTeam,
+              users: [
+                ...prev.getTeam.users,
+                newMember
+              ]
+            }
+          };
+        },
+      });
+
+      return () => subscriptionJoinedUser();
+    }
+  }, [subscribeToMore, teamId]);
   
   return (
     <MemberContainer>

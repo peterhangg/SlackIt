@@ -49,7 +49,7 @@ export class MessageResolver {
     @Arg('text') text: string,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
-    @PubSub() pubSub: PubSubEngine,
+    @PubSub() pubSub: PubSubEngine
   ): Promise<Boolean> {
     try {
       const channel = await Channel.findOne({
@@ -71,18 +71,6 @@ export class MessageResolver {
     } catch (err) {
       throw new Error(err);
     }
-  }
-  // SUBSCRIPTION LISTENING TO NEW
-  @Subscription(() => Message, {
-    topics: NEW_MESSAGE,
-    filter: ({ payload, args }) => args.channelId === payload.channel.id,
-  })
-  async newMessage(
-    @Root()
-    payload: Message,
-    @Arg('channelId') _: number
-  ): Promise<Message> {
-    return payload;
   }
 
   // DELETE MESSAGE
@@ -109,5 +97,18 @@ export class MessageResolver {
     } catch (err) {
       throw new Error(err);
     }
+  }
+  
+  // SUBSCRIPTION LISTENING TO NEW MESSAGE
+  @Subscription(() => Message, {
+    topics: NEW_MESSAGE,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async newMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
   }
 }

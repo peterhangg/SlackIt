@@ -2,8 +2,12 @@ import {
   Arg,
   Ctx,
   Mutation,
+  PubSub,
+  PubSubEngine,
   Query,
   Resolver,
+  Root,
+  Subscription,
   UseMiddleware,
 } from 'type-graphql';
 import { getRepository } from 'typeorm';
@@ -12,6 +16,7 @@ import { User } from '../entities/User';
 import { Team } from '../entities/Team';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { Channel } from '../entities/Channel';
+import { JOIN_TEAM } from '../utils/subscriptions';
 
 @Resolver(Team)
 export class TeamResolver {
@@ -113,7 +118,8 @@ export class TeamResolver {
   @UseMiddleware(isAutenticated)
   async joinTeam(
     @Arg('teamId') teamId: number,
-    @Ctx() { req }: MyContext
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
   ): Promise<Team> {
     try {
       const team = await Team.findOne({ id: teamId });
@@ -132,6 +138,7 @@ export class TeamResolver {
       team.users = [...team.users, user];
       const joinedTeam = await team.save();
 
+      pubSub.publish(JOIN_TEAM, { user, teamId });
       return joinedTeam;
     } catch (err) {
       throw new Error(err);
@@ -159,5 +166,18 @@ export class TeamResolver {
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  // SUBSCRIPTION LISTENING TO NEW USER JOINING TEAM
+  @Subscription(() => User, {
+    topics: JOIN_TEAM,
+    filter: ({ payload, args }) => args.teamId === payload.teamId,
+  })
+  async joinedTeam(
+    @Root()
+    payload: any,
+    @Arg('teamId') _: number
+  ): Promise<User> {
+    return payload.user;
   }
 }
