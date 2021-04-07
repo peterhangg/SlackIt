@@ -28,11 +28,33 @@ const FormStyles = styled.form`
 const InputStyles = styled.input`
   width: 80%;
   overflow: auto;
-	height: auto;
-	border-radius: 3px;
+  height: 2.5rem;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 3px;
+  text-indent: 10px;
+  border: 1px solid grey;
+  border-right: none;
 `;
 
-const MessageInput: React.FC<MessageInputProps> = ({ channelId, channelName }) => {
+const SendbuttonStyles = styled.button`
+  padding: 10px;
+  background-color: #fff;
+  outline: none;
+  border: 1px solid grey;
+  border-bottom-right-radius: 5px;
+  border-top-right-radius: 3px;
+  &:hover {
+    background-color: #4a154b;
+    i {
+      color: white;
+    }
+  }
+`;
+
+const MessageInput: React.FC<MessageInputProps> = ({
+  channelId,
+  channelName,
+}) => {
   const { inputs, handleChange, resetForm } = useForm({
     text: '',
   });
@@ -68,8 +90,11 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, channelName }) =
           placeholder={`Message # ${channelName}`}
           onChange={handleChange}
           value={inputs.text}
+          required
         />
-        <button type="submit">send</button>
+        <SendbuttonStyles type="submit">
+          <i className="fas fa-paper-plane fa-lg" />
+        </SendbuttonStyles>
       </FormStyles>
     </FormContainer>
   );

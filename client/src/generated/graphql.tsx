@@ -379,7 +379,7 @@ export type GetMeQuery = (
     & Pick<User, 'id' | 'username' | 'email'>
     & { teams?: Maybe<Array<(
       { __typename?: 'Team' }
-      & Pick<Team, 'id' | 'name'>
+      & Pick<Team, 'id' | 'name' | 'description'>
       & { channels: Array<(
         { __typename?: 'Channel' }
         & Pick<Channel, 'id' | 'name'>
@@ -939,6 +939,7 @@ export const GetMeDocument = gql`
     teams {
       id
       name
+      description
       channels {
         id
         name

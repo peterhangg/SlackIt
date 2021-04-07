@@ -2,6 +2,7 @@ import React from 'react';
 import { withApollo } from '../src/apollo/client';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
+import { useGetMeQuery } from '../src/generated/graphql';
 import styled from 'styled-components';
 import {
   PageContainer,
@@ -42,7 +43,7 @@ const TeamListItems = styled.li`
 `;
 
 const CreateTeamMessage = styled.p`
-  color: #3A3B3C;
+  color: #3a3b3c;
   margin-top: 12px;
 `;
 
@@ -52,11 +53,11 @@ const CreateTeamLink = styled.span`
     cursor: pointer;
     text-decoration: underline;
   }
-`
+`;
 
 const JoinTeam: React.FC = ({}) => {
   const router = useRouter();
-
+  const { data: userData } = useGetMeQuery();
   const { data } = useGetAllTeamsQuery();
   const [joinTeamMutation, { error: joinTeamError }] = useJoinTeamMutation();
 
@@ -65,6 +66,7 @@ const JoinTeam: React.FC = ({}) => {
       variables: { teamId },
       update: (cache) => {
         cache.evict({ fieldName: 'getUserTeams' });
+        cache.evict({ fieldName: 'getMe' });
       },
     }).catch((err) => console.error(err));
 
@@ -75,6 +77,14 @@ const JoinTeam: React.FC = ({}) => {
     router.push(`/dashboard/${teamId}`);
   };
 
+  const userTeams = userData?.getMe.teams;
+  const allTeams = data?.getAllTeams;
+
+  const uniqueTeams = allTeams?.filter(
+    (allTeam) =>
+      !userTeams?.find((currentTeam) => allTeam.id === currentTeam.id)
+  );
+
   return (
     <PageContainer>
       <HeaderHeroWrapper>
@@ -84,7 +94,7 @@ const JoinTeam: React.FC = ({}) => {
       <PageHeader>Join a team today.</PageHeader>
       {joinTeamError && <ErrorMessage>{joinTeamError.message}</ErrorMessage>}
       <TeamListContainer>
-        {data?.getAllTeams.map((team) => (
+        {uniqueTeams?.map((team) => (
           <TeamListItems
             key={`team-${team.id}`}
             onClick={() => joinTeamHandler(team.id)}
