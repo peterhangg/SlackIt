@@ -99,6 +99,7 @@ export type Mutation = {
   createTeam: Team;
   joinTeam: Team;
   deleteTeam: Scalars['Boolean'];
+  leaveTeam: Scalars['Boolean'];
   createChannel: Channel;
   deleteChannel: Scalars['Boolean'];
   createMessage: Scalars['Boolean'];
@@ -135,6 +136,11 @@ export type MutationDeleteTeamArgs = {
 };
 
 
+export type MutationLeaveTeamArgs = {
+  teamId: Scalars['Float'];
+};
+
+
 export type MutationCreateChannelArgs = {
   teamId: Scalars['Float'];
   description: Scalars['String'];
@@ -160,11 +166,17 @@ export type MutationDeleteMessageArgs = {
 export type Subscription = {
   __typename?: 'Subscription';
   joinedTeam: User;
+  leftTeam: User;
   newMessage: Message;
 };
 
 
 export type SubscriptionJoinedTeamArgs = {
+  teamId: Scalars['Float'];
+};
+
+
+export type SubscriptionLeftTeamArgs = {
   teamId: Scalars['Float'];
 };
 
@@ -394,19 +406,6 @@ export type GetMeQuery = (
   )> }
 );
 
-export type JoinedTeamSubscriptionVariables = Exact<{
-  teamId: Scalars['Float'];
-}>;
-
-
-export type JoinedTeamSubscription = (
-  { __typename?: 'Subscription' }
-  & { joinedTeam: (
-    { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
-  ) }
-);
-
 export type NewMessageSubscriptionVariables = Exact<{
   channelId: Scalars['Float'];
 }>;
@@ -421,6 +420,32 @@ export type NewMessageSubscription = (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
     ) }
+  ) }
+);
+
+export type JoinedTeamSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type JoinedTeamSubscription = (
+  { __typename?: 'Subscription' }
+  & { joinedTeam: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
+);
+
+export type LeftTeamSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type LeftTeamSubscription = (
+  { __typename?: 'Subscription' }
+  & { leftTeam: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
   ) }
 );
 
@@ -994,37 +1019,6 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
-export const JoinedTeamDocument = gql`
-    subscription JoinedTeam($teamId: Float!) {
-  joinedTeam(teamId: $teamId) {
-    id
-    username
-  }
-}
-    `;
-
-/**
- * __useJoinedTeamSubscription__
- *
- * To run a query within a React component, call `useJoinedTeamSubscription` and pass it any options that fit your needs.
- * When your component renders, `useJoinedTeamSubscription` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useJoinedTeamSubscription({
- *   variables: {
- *      teamId: // value for 'teamId'
- *   },
- * });
- */
-export function useJoinedTeamSubscription(baseOptions: Apollo.SubscriptionHookOptions<JoinedTeamSubscription, JoinedTeamSubscriptionVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useSubscription<JoinedTeamSubscription, JoinedTeamSubscriptionVariables>(JoinedTeamDocument, options);
-      }
-export type JoinedTeamSubscriptionHookResult = ReturnType<typeof useJoinedTeamSubscription>;
-export type JoinedTeamSubscriptionResult = Apollo.SubscriptionResult<JoinedTeamSubscription>;
 export const NewMessageDocument = gql`
     subscription NewMessage($channelId: Float!) {
   newMessage(channelId: $channelId) {
@@ -1061,3 +1055,65 @@ export function useNewMessageSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type NewMessageSubscriptionHookResult = ReturnType<typeof useNewMessageSubscription>;
 export type NewMessageSubscriptionResult = Apollo.SubscriptionResult<NewMessageSubscription>;
+export const JoinedTeamDocument = gql`
+    subscription JoinedTeam($teamId: Float!) {
+  joinedTeam(teamId: $teamId) {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useJoinedTeamSubscription__
+ *
+ * To run a query within a React component, call `useJoinedTeamSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useJoinedTeamSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useJoinedTeamSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useJoinedTeamSubscription(baseOptions: Apollo.SubscriptionHookOptions<JoinedTeamSubscription, JoinedTeamSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<JoinedTeamSubscription, JoinedTeamSubscriptionVariables>(JoinedTeamDocument, options);
+      }
+export type JoinedTeamSubscriptionHookResult = ReturnType<typeof useJoinedTeamSubscription>;
+export type JoinedTeamSubscriptionResult = Apollo.SubscriptionResult<JoinedTeamSubscription>;
+export const LeftTeamDocument = gql`
+    subscription LeftTeam($teamId: Float!) {
+  leftTeam(teamId: $teamId) {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useLeftTeamSubscription__
+ *
+ * To run a query within a React component, call `useLeftTeamSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useLeftTeamSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLeftTeamSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useLeftTeamSubscription(baseOptions: Apollo.SubscriptionHookOptions<LeftTeamSubscription, LeftTeamSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<LeftTeamSubscription, LeftTeamSubscriptionVariables>(LeftTeamDocument, options);
+      }
+export type LeftTeamSubscriptionHookResult = ReturnType<typeof useLeftTeamSubscription>;
+export type LeftTeamSubscriptionResult = Apollo.SubscriptionResult<LeftTeamSubscription>;

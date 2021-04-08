@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { JoinedTeamDocument, useGetTeamQuery } from '../src/generated/graphql';
+import {
+  JoinedTeamDocument,
+  LeftTeamDocument,
+  useGetTeamQuery,
+} from '../src/generated/graphql';
 
 interface MembersProps {
   teamId: number;
@@ -38,7 +42,7 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
 
   if (error) return <div>{error.message}</div>;
   const team = teamData?.getTeam;
-  
+
   useEffect(() => {
     if (teamId) {
       const subscriptionJoinedUser = subscribeToMore({
@@ -55,11 +59,8 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
             ...prev,
             getTeam: {
               ...prev.getTeam,
-              users: [
-                ...prev.getTeam.users,
-                newMember
-              ]
-            }
+              users: [...prev.getTeam.users, newMember],
+            },
           };
         },
       });
@@ -67,19 +68,47 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
       return () => subscriptionJoinedUser();
     }
   }, [subscribeToMore, teamId]);
-  
+
+  useEffect(() => {
+    if (teamId) {
+      const subscriptionLeftTeam = subscribeToMore({
+        document: LeftTeamDocument,
+        variables: {
+          teamId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          const oldMember = res.subscriptionData.data.leftTeam;
+          return {
+            ...prev,
+            getTeam: {
+              ...prev.getTeam,
+              users: prev.getTeam.users.filter(
+                (member) => member.id !== oldMember.id
+              ),
+            },
+          };
+        },
+      });
+
+      return () => subscriptionLeftTeam();
+    }
+  }, [subscribeToMore, teamId]);
+
   return (
     <MemberContainer>
       <MemberHeader>Members</MemberHeader>
       <MemberList>
-      {team?.users.map((user) => (
-        <MemberListItems key={`member-${user.id}`}>
-          {user.username}
-        </MemberListItems>
-      ))}
+        {team?.users.map((user) => (
+          <MemberListItems key={`member-${user.id}`}>
+            {user.username}
+          </MemberListItems>
+        ))}
       </MemberList>
     </MemberContainer>
   );
-}
+};
 
 export default Members;

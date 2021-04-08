@@ -16,7 +16,7 @@ import { User } from '../entities/User';
 import { Team } from '../entities/Team';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { Channel } from '../entities/Channel';
-import { JOIN_TEAM } from '../utils/subscriptions';
+import { JOIN_TEAM, LEAVE_TEAM } from '../utils/subscriptions';
 
 @Resolver(Team)
 export class TeamResolver {
@@ -168,12 +168,53 @@ export class TeamResolver {
     }
   }
 
+  // LEAVE TEAM
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAutenticated)
+  async leaveTeam(
+    @Arg('teamId') teamId: number,
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
+  ): Promise<boolean> {
+    try {
+      const user = await User.findOne({ id: req.session.userId });
+      if (!user) throw new Error('User could not be found');
+
+      const team = await Team.findOne({ id: teamId });
+      if (!team) throw new Error('Team could not be found');
+
+      const teamMember = team.users.some((teamUser) => teamUser.id === user.id);
+      if (!teamMember) throw new Error('You are not a member of this team');
+
+      team.users = team.users.filter((teamUser) => teamUser.id !== user.id);
+      await team.save();
+      pubSub.publish(LEAVE_TEAM, { user, teamId });
+
+      return true;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
   // SUBSCRIPTION LISTENING TO NEW USER JOINING TEAM
   @Subscription(() => User, {
     topics: JOIN_TEAM,
     filter: ({ payload, args }) => args.teamId === payload.teamId,
   })
   async joinedTeam(
+    @Root()
+    payload: any,
+    @Arg('teamId') _: number
+  ): Promise<User> {
+    return payload.user;
+  }
+
+  // SUBSCRIPTION LISTENING TO USER LEAVING TEAM
+  @Subscription(() => User, {
+    topics: LEAVE_TEAM,
+    filter: ({ payload, args }) => args.teamId === payload.teamId,
+  })
+  async leftTeam(
     @Root()
     payload: any,
     @Arg('teamId') _: number

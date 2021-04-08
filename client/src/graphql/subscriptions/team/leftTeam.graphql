@@ -1,0 +1,6 @@
+subscription LeftTeam($teamId: Float!) {
+  leftTeam(teamId: $teamId){
+    id
+    username
+  }
+}
