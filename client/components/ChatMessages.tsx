@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
   NewMessageDocument,
+  TeamNotificationDocument,
   useGetChannelMessagesQuery,
 } from '../src/generated/graphql';
 import { timeFormatter } from '../src/utils/timeFormatter';
@@ -75,17 +76,44 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           if (!res.subscriptionData.data) {
             return prev;
           }
+          const newMessage = res.subscriptionData.data.newMessage;
           return {
             ...prev,
             getChannelMessages: [
               ...prev.getChannelMessages,
-              res.subscriptionData.data.newMessage,
+              newMessage,
             ],
           };
         },
       });
 
       return () => subscriptionMessage();
+    }
+  }, [subscribeToMore, channelId]);
+
+  useEffect(() => {
+    if (channelId) {
+      const subscriptionNotification = subscribeToMore({
+        document: TeamNotificationDocument,
+        variables: {
+          channelId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          const newNotification = res.subscriptionData.data.teamNotification;
+          return {
+            ...prev,
+            getChannelMessages: [
+              ...prev.getChannelMessages,
+              newNotification,
+            ],
+          };
+        },
+      });
+
+      return () => subscriptionNotification();
     }
   }, [subscribeToMore, channelId]);
 

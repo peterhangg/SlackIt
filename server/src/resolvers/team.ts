@@ -16,7 +16,8 @@ import { User } from '../entities/User';
 import { Team } from '../entities/Team';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { Channel } from '../entities/Channel';
-import { JOIN_TEAM, LEAVE_TEAM } from '../utils/subscriptions';
+import { JOIN_TEAM, LEAVE_TEAM, TEAM_NOTIFICATION } from '../utils/subscriptions';
+import { Message } from '../entities/Message';
 
 @Resolver(Team)
 export class TeamResolver {
@@ -138,6 +139,13 @@ export class TeamResolver {
       team.users = [...team.users, user];
       const joinedTeam = await team.save();
 
+      const userJoinedNotification = await Message.create({
+        text: `${user.username} has join the team.`,
+        channel: team.channels[0],
+        user: team.owner,
+      }).save();
+
+      pubSub.publish(TEAM_NOTIFICATION, userJoinedNotification)
       pubSub.publish(JOIN_TEAM, { user, teamId });
       return joinedTeam;
     } catch (err) {
@@ -182,6 +190,7 @@ export class TeamResolver {
 
       const team = await Team.findOne({ id: teamId });
       if (!team) throw new Error('Team could not be found');
+      console.log(team.channels[0])
 
       const teamMember = team.users.some((teamUser) => teamUser.id === user.id);
       if (!teamMember) throw new Error('You are not a member of this team');
@@ -189,7 +198,14 @@ export class TeamResolver {
       team.users = team.users.filter((teamUser) => teamUser.id !== user.id);
       await team.save();
       pubSub.publish(LEAVE_TEAM, { user, teamId });
+      
+      const leftMemberNotification = await Message.create({
+        text: `${user.username} has left the team.`,
+        channel: team.channels[0],
+        user: team.owner,
+      }).save();
 
+      pubSub.publish(TEAM_NOTIFICATION, leftMemberNotification)
       return true;
     } catch (err) {
       throw new Error(err);

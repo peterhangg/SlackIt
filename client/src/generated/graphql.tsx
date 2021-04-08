@@ -168,6 +168,7 @@ export type Subscription = {
   joinedTeam: User;
   leftTeam: User;
   newMessage: Message;
+  teamNotification: Message;
 };
 
 
@@ -182,6 +183,11 @@ export type SubscriptionLeftTeamArgs = {
 
 
 export type SubscriptionNewMessageArgs = {
+  channelId: Scalars['Float'];
+};
+
+
+export type SubscriptionTeamNotificationArgs = {
   channelId: Scalars['Float'];
 };
 
@@ -414,6 +420,23 @@ export type NewMessageSubscriptionVariables = Exact<{
 export type NewMessageSubscription = (
   { __typename?: 'Subscription' }
   & { newMessage: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
+);
+
+export type TeamNotificationSubscriptionVariables = Exact<{
+  channelId: Scalars['Float'];
+}>;
+
+
+export type TeamNotificationSubscription = (
+  { __typename?: 'Subscription' }
+  & { teamNotification: (
     { __typename?: 'Message' }
     & Pick<Message, 'id' | 'text' | 'createdAt'>
     & { user: (
@@ -1055,6 +1078,42 @@ export function useNewMessageSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type NewMessageSubscriptionHookResult = ReturnType<typeof useNewMessageSubscription>;
 export type NewMessageSubscriptionResult = Apollo.SubscriptionResult<NewMessageSubscription>;
+export const TeamNotificationDocument = gql`
+    subscription TeamNotification($channelId: Float!) {
+  teamNotification(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useTeamNotificationSubscription__
+ *
+ * To run a query within a React component, call `useTeamNotificationSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTeamNotificationSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTeamNotificationSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useTeamNotificationSubscription(baseOptions: Apollo.SubscriptionHookOptions<TeamNotificationSubscription, TeamNotificationSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TeamNotificationSubscription, TeamNotificationSubscriptionVariables>(TeamNotificationDocument, options);
+      }
+export type TeamNotificationSubscriptionHookResult = ReturnType<typeof useTeamNotificationSubscription>;
+export type TeamNotificationSubscriptionResult = Apollo.SubscriptionResult<TeamNotificationSubscription>;
 export const JoinedTeamDocument = gql`
     subscription JoinedTeam($teamId: Float!) {
   joinedTeam(teamId: $teamId) {

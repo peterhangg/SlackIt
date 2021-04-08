@@ -15,7 +15,7 @@ import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
-import { NEW_MESSAGE } from '../utils/subscriptions';
+import { TEAM_NOTIFICATION, NEW_MESSAGE } from '../utils/subscriptions';
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
@@ -105,6 +105,19 @@ export class MessageResolver {
     filter: ({ payload, args }) => args.channelId === payload.channel.id,
   })
   async newMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
+  }
+
+  // SUBSCRIPTION MEMBER LEFT TEAM NOTIFICATION
+  @Subscription(() => Message, {
+    topics: TEAM_NOTIFICATION,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async teamNotification(
     @Root()
     payload: Message,
     @Arg('channelId') _: number
