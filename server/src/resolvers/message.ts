@@ -112,7 +112,7 @@ export class MessageResolver {
     return payload;
   }
 
-  // SUBSCRIPTION MEMBER LEFT TEAM NOTIFICATION
+  // SUBSCRIPTION MEMBER LEAVE/JOIN TEAM NOTIFICATION
   @Subscription(() => Message, {
     topics: TEAM_NOTIFICATION,
     filter: ({ payload, args }) => args.channelId === payload.channel.id,

@@ -11,12 +11,18 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { getRepository } from 'typeorm';
+import { v4 as uuidv4 } from 'uuid';
+import argon2 from 'argon2';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
 import { Team } from '../entities/Team';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { Channel } from '../entities/Channel';
-import { JOIN_TEAM, LEAVE_TEAM, TEAM_NOTIFICATION } from '../utils/subscriptions';
+import {
+  JOIN_TEAM,
+  LEAVE_TEAM,
+  TEAM_NOTIFICATION,
+} from '../utils/subscriptions';
 import { Message } from '../entities/Message';
 
 @Resolver(Team)
@@ -81,11 +87,17 @@ export class TeamResolver {
       const owner = await User.findOne({ id: req.session.userId });
       if (!owner) throw new Error('User cound not be found');
 
+      const teamBot = await User.create({
+        username: `SlackIt Bot`,
+        email: `${uuidv4()}@slackit.com`,
+        password: await argon2.hash(uuidv4()),
+      }).save();
+
       const newTeam = await Team.create({
         name: name.toLowerCase(),
         owner,
         description,
-        users: [owner],
+        users: [owner, teamBot],
       }).save();
 
       const generalChannel = await Channel.create({
@@ -139,13 +151,19 @@ export class TeamResolver {
       team.users = [...team.users, user];
       const joinedTeam = await team.save();
 
+      const teamBot = await User.findOne({
+        where: {
+          username: 'SlackIt Bot',
+        },
+      });
+
       const userJoinedNotification = await Message.create({
         text: `${user.username} has join the team.`,
         channel: team.channels[0],
-        user: team.owner,
+        user: teamBot,
       }).save();
 
-      pubSub.publish(TEAM_NOTIFICATION, userJoinedNotification)
+      pubSub.publish(TEAM_NOTIFICATION, userJoinedNotification);
       pubSub.publish(JOIN_TEAM, { user, teamId });
       return joinedTeam;
     } catch (err) {
@@ -190,22 +208,28 @@ export class TeamResolver {
 
       const team = await Team.findOne({ id: teamId });
       if (!team) throw new Error('Team could not be found');
-      console.log(team.channels[0])
+      console.log(team.channels[0]);
 
       const teamMember = team.users.some((teamUser) => teamUser.id === user.id);
       if (!teamMember) throw new Error('You are not a member of this team');
 
       team.users = team.users.filter((teamUser) => teamUser.id !== user.id);
       await team.save();
-      pubSub.publish(LEAVE_TEAM, { user, teamId });
-      
+
+      const teamBot = await User.findOne({
+        where: {
+          username: 'SlackIt Bot',
+        },
+      });
+
       const leftMemberNotification = await Message.create({
         text: `${user.username} has left the team.`,
         channel: team.channels[0],
-        user: team.owner,
+        user: teamBot,
       }).save();
 
-      pubSub.publish(TEAM_NOTIFICATION, leftMemberNotification)
+      pubSub.publish(LEAVE_TEAM, { user, teamId });
+      pubSub.publish(TEAM_NOTIFICATION, leftMemberNotification);
       return true;
     } catch (err) {
       throw new Error(err);
@@ -225,7 +249,7 @@ export class TeamResolver {
     return payload.user;
   }
 
-  // SUBSCRIPTION LISTENING TO USER LEAVING TEAM
+  // SUBSCRIPTION LISTENING TO USER LEAVE TEAM
   @Subscription(() => User, {
     topics: LEAVE_TEAM,
     filter: ({ payload, args }) => args.teamId === payload.teamId,
