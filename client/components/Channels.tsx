@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import NextLink from 'next/link';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
+import TeamHeader from './TeamHeader';
 
 interface ChannelsProps {
   setShowModal: Dispatcher<boolean>;
@@ -14,13 +15,6 @@ const ChannelContainer = styled.div`
   flex-grow: 1;
   color: #e5e5e5;
 `;
-
-const ChannelNameWrapper = styled.div`
-  padding: 12px;
-  margin-bottom: 2rem;
-`;
-
-const UsernameHeader = styled.h3``;
 
 const AddChannelIcon = styled.button`
   font-size: 1rem;
@@ -42,11 +36,6 @@ const AddChannelIcon = styled.button`
 const ChannalHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
-`;
-
-const TeamNameHeader = styled.h1`
-  font-size: 2rem;
-  color: #fff;
 `;
 
 const ChannelList = styled.ul`
@@ -79,17 +68,18 @@ export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
   if (error) return <div>{error.message}</div>;
 
   const team = teamData?.getTeam;
-  
+
   const showAddChannelModal = () => {
     setShowModal(true);
   };
 
   return (
     <ChannelContainer>
-      <ChannelNameWrapper>
-        <TeamNameHeader>{team?.name}</TeamNameHeader>
-        <UsernameHeader>{meData?.getMe?.username}</UsernameHeader>
-      </ChannelNameWrapper>
+      <TeamHeader
+        teamName={team?.name}
+        username={meData?.getMe?.username}
+        teamId={team?.id}
+      />
       <ChannalHeaderWrapper>
         <ChannelListHeader>Channels</ChannelListHeader>
         <AddChannelIcon onClick={showAddChannelModal}>+</AddChannelIcon>

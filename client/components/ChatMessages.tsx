@@ -13,7 +13,8 @@ interface ChatMessagesProps {
 
 const ChatMessageContainer = styled.div`
   width: 100%;
-  height: 90%;
+  height: 85%;
+  overflow-y: auto;
 `;
 
 const MessageList = styled.ul`
