@@ -1,0 +1,11 @@
+subscription RemoveMessage($channelId: Float!) {
+  removeMessage(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}

@@ -2,10 +2,13 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import {
   NewMessageDocument,
+  RemoveMessageDocument,
   TeamNotificationDocument,
+  useDeleteMessageMutation,
   useGetChannelMessagesQuery,
+  useGetMeQuery,
 } from '../src/generated/graphql';
-import { timeFormatter } from '../src/utils/timeFormatter';
+import { dateFormatter } from '../src/utils/dateFormatter';
 
 interface ChatMessagesProps {
   channelId: number;
@@ -26,6 +29,7 @@ const MessageList = styled.ul`
 
 const MessageWrapper = styled.div`
   padding-top: 10px;
+  width: 100%;
 `;
 
 const UserIcon = styled.div`
@@ -40,6 +44,10 @@ const MessageListItems = styled.li`
   padding-bottom: 5px;
 `;
 
+const AutherWrapper = styled.div`
+  display: flex;
+`;
+
 const MessageAuther = styled.h3`
   padding-bottom: 4px;
 `;
@@ -50,25 +58,51 @@ const MessageMetaDate = styled.span`
   color: #404040;
 `;
 
-const UserWrapper = styled.div`
+const UserIconWrapper = styled.div`
   height: 100%;
   padding: 10px;
 `;
 
+const DeleteButton = styled.button`
+  margin-left: auto;
+  margin-right: 12px;
+  background-color: #fff;
+  border: none;
+  outline: none;
+  &:hover {
+    i {
+      color: #4a154b;
+    }
+  }
+`;
+
 const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
+  const { data: meData } = useGetMeQuery();
   const { data, error, subscribeToMore } = useGetChannelMessagesQuery({
     variables: { channelId },
     skip: !channelId,
     fetchPolicy: 'network-only',
   });
 
+  // TODO: ERROR MESSAGE
   if (error) return <div>{error.message}</div>;
+
+  const [deleteMessageMutation] = useDeleteMessageMutation();
+
+  const handleDelete = async (messageId: number) => {
+    const response = await deleteMessageMutation({
+      variables: { messageId },
+    }).catch((err) => console.error(err));
+
+    if (!response) return;
+    return response;
+  };
 
   const messages = data?.getChannelMessages || [];
 
   useEffect(() => {
     if (channelId) {
-      const subscriptionMessage = subscribeToMore({
+      const subscriptionNewMessage = subscribeToMore({
         document: NewMessageDocument,
         variables: {
           channelId,
@@ -80,21 +114,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           const newMessage = res.subscriptionData.data.newMessage;
           return {
             ...prev,
-            getChannelMessages: [
-              ...prev.getChannelMessages,
-              newMessage,
-            ],
+            getChannelMessages: [...prev.getChannelMessages, newMessage],
           };
         },
       });
 
-      return () => subscriptionMessage();
-    }
-  }, [subscribeToMore, channelId]);
-
-  useEffect(() => {
-    if (channelId) {
-      const subscriptionNotification = subscribeToMore({
+      const subscriptionTeamNotification = subscribeToMore({
         document: TeamNotificationDocument,
         variables: {
           channelId,
@@ -106,15 +131,35 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           const newNotification = res.subscriptionData.data.teamNotification;
           return {
             ...prev,
-            getChannelMessages: [
-              ...prev.getChannelMessages,
-              newNotification,
-            ],
+            getChannelMessages: [...prev.getChannelMessages, newNotification],
           };
         },
       });
 
-      return () => subscriptionNotification();
+      const subscriptionRemoveMessage = subscribeToMore({
+        document: RemoveMessageDocument,
+        variables: {
+          channelId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          const removeMessage = res.subscriptionData.data.removeMessage;
+          return {
+            ...prev,
+            getChannelMessages: prev.getChannelMessages.filter(
+              (message) => message.id !== removeMessage.id
+            ),
+          };
+        },
+      });
+
+      return () => {
+        subscriptionNewMessage();
+        subscriptionTeamNotification();
+        subscriptionRemoveMessage();
+      };
     }
   }, [subscribeToMore, channelId]);
 
@@ -123,18 +168,25 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
       <MessageList>
         {messages.map((message) => (
           <MessageListItems key={`message-${message.id}`}>
-            <UserWrapper>
+            <UserIconWrapper>
               <UserIcon>
                 {message.user.username.charAt(0).toUpperCase()}
               </UserIcon>
-            </UserWrapper>
+            </UserIconWrapper>
             <MessageWrapper>
-              <MessageAuther>
-                {message.user.username}
-                <MessageMetaDate>
-                  {timeFormatter(message.createdAt)}
-                </MessageMetaDate>
-              </MessageAuther>
+              <AutherWrapper>
+                <MessageAuther>
+                  {message.user.username}
+                  <MessageMetaDate>
+                    {dateFormatter(message.createdAt)}
+                  </MessageMetaDate>
+                </MessageAuther>
+                {meData?.getMe.id === message.user.id && (
+                  <DeleteButton onClick={() => handleDelete(message.id)}>
+                    <i className="fas fa-trash" />
+                  </DeleteButton>
+                )}
+              </AutherWrapper>
               <p>{message.text}</p>
             </MessageWrapper>
           </MessageListItems>

@@ -29,7 +29,6 @@ import { Message } from '../entities/Message';
 export class TeamResolver {
   // GET ALL TEAMS
   @Query(() => [Team])
-  @UseMiddleware(isAutenticated)
   async getAllTeams(): Promise<Team[]> {
     try {
       const allTeams = await Team.find({});
@@ -57,7 +56,6 @@ export class TeamResolver {
 
   // GET USER"S TEAMS
   @Query(() => [Team])
-  @UseMiddleware(isAutenticated)
   async getUserTeams(@Ctx() { req }: MyContext): Promise<Team[]> {
     try {
       const userTeams = await getRepository(Team)

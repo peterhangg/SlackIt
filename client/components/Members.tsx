@@ -14,6 +14,7 @@ const MemberContainer = styled.div`
   height: 50%;
   overflow: hidden;
   padding: 5px;
+  overflow-y: auto;
 `;
 
 const MemberHeader = styled.h1`
@@ -65,12 +66,6 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
         },
       });
 
-      return () => subscriptionJoinedUser();
-    }
-  }, [subscribeToMore, teamId]);
-
-  useEffect(() => {
-    if (teamId) {
       const subscriptionLeftTeam = subscribeToMore({
         document: LeftTeamDocument,
         variables: {
@@ -93,7 +88,10 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
         },
       });
 
-      return () => subscriptionLeftTeam();
+      return () => {
+        subscriptionJoinedUser();
+        subscriptionLeftTeam();
+      }
     }
   }, [subscribeToMore, teamId]);
 
