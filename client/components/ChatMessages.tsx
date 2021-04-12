@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
   NewMessageDocument,
   RemoveMessageDocument,
   TeamNotificationDocument,
   useDeleteMessageMutation,
+  useEditMessageMutation,
   useGetChannelMessagesQuery,
   useGetMeQuery,
 } from '../src/generated/graphql';
 import { dateFormatter } from '../src/utils/dateFormatter';
+import useForm from '../src/utils/useForm';
+import { InputStyles, FormStyles } from '../components/styles/shared';
 
 interface ChatMessagesProps {
   channelId: number;
@@ -63,9 +66,8 @@ const UserIconWrapper = styled.div`
   padding: 10px;
 `;
 
-const DeleteButton = styled.button`
-  margin-left: auto;
-  margin-right: 12px;
+const MessageButton = styled.button`
+  margin-left: 10px;
   background-color: #fff;
   border: none;
   outline: none;
@@ -76,7 +78,17 @@ const DeleteButton = styled.button`
   }
 `;
 
+const MessageButtonWrapper = styled.div`
+  margin-left: auto;
+  margin-right: 12px;
+`;
+
 const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
+  const [currentEditMessage, setCurrentEditMessage] = useState<number>(null);
+  const { inputs, handleChange } = useForm({
+    text: '',
+  });
   const { data: meData } = useGetMeQuery();
   const { data, error, subscribeToMore } = useGetChannelMessagesQuery({
     variables: { channelId },
@@ -88,6 +100,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   if (error) return <div>{error.message}</div>;
 
   const [deleteMessageMutation] = useDeleteMessageMutation();
+  const [editMessageMutation] = useEditMessageMutation();
 
   const handleDelete = async (messageId: number) => {
     const response = await deleteMessageMutation({
@@ -96,6 +109,36 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
 
     if (!response) return;
     return response;
+  };
+
+  const toggleEditMessage = (messageId: number, message: string) => {
+    if (!openEdit) {
+      setCurrentEditMessage(messageId);
+      setOpenEdit(true);
+      inputs.text = message;
+    } else {
+      setCurrentEditMessage(null);
+      setOpenEdit(false);
+    }
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    text: string,
+    messageId: number
+  ) => {
+    e.preventDefault();
+    const response = await editMessageMutation({
+      variables: { text, messageId },
+      update: (cache) => {
+        cache.evict({ fieldName: 'getChannelMessages' });
+      },
+    }).catch((err) => console.error(err));
+    if (!response) {
+      return;
+    }
+    setCurrentEditMessage(null);
+    setOpenEdit(false);
   };
 
   const messages = data?.getChannelMessages || [];
@@ -178,16 +221,41 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                 <MessageAuther>
                   {message.user.username}
                   <MessageMetaDate>
-                    {dateFormatter(message.createdAt)}
+                    {message.updatedAt <= message.createdAt
+                      ? dateFormatter(message.createdAt)
+                      : dateFormatter(message.updatedAt) + ' (edited)'}
                   </MessageMetaDate>
                 </MessageAuther>
                 {meData?.getMe.id === message.user.id && (
-                  <DeleteButton onClick={() => handleDelete(message.id)}>
-                    <i className="fas fa-trash" />
-                  </DeleteButton>
+                  <MessageButtonWrapper>
+                    <MessageButton
+                      onClick={() =>
+                        toggleEditMessage(message.id, message.text)
+                      }
+                    >
+                      <i className="fas fa-edit" />
+                    </MessageButton>
+                    <MessageButton onClick={() => handleDelete(message.id)}>
+                      <i className="fas fa-trash" />
+                    </MessageButton>
+                  </MessageButtonWrapper>
                 )}
               </AutherWrapper>
-              <p>{message.text}</p>
+              {(openEdit && currentEditMessage === message.id) ? (
+                <FormStyles
+                  width="95%"
+                  onSubmit={(e) => handleSubmit(e, inputs.text, message.id)}
+                >
+                  <InputStyles
+                    type="text"
+                    name="text"
+                    value={inputs.text}
+                    onChange={handleChange}
+                  />
+                </FormStyles>
+              ) : (
+                <p>{message.text}</p>
+              )}
             </MessageWrapper>
           </MessageListItems>
         ))}

@@ -104,6 +104,7 @@ export type Mutation = {
   deleteChannel: Scalars['Boolean'];
   createMessage: Scalars['Boolean'];
   deleteMessage: Scalars['Boolean'];
+  editMessage: Message;
 };
 
 
@@ -160,6 +161,12 @@ export type MutationCreateMessageArgs = {
 
 
 export type MutationDeleteMessageArgs = {
+  messageId: Scalars['Float'];
+};
+
+
+export type MutationEditMessageArgs = {
+  text: Scalars['String'];
   messageId: Scalars['Float'];
 };
 
@@ -231,6 +238,24 @@ export type DeleteMessageMutationVariables = Exact<{
 export type DeleteMessageMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteMessage'>
+);
+
+export type EditMessageMutationVariables = Exact<{
+  messageId: Scalars['Float'];
+  text: Scalars['String'];
+}>;
+
+
+export type EditMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { editMessage: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'updatedAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
 );
 
 export type CreateTeamMutationVariables = Exact<{
@@ -354,7 +379,7 @@ export type GetChannelMessagesQuery = (
   { __typename?: 'Query' }
   & { getChannelMessages: Array<(
     { __typename?: 'Message' }
-    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt'>
     & { user: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -616,6 +641,46 @@ export function useDeleteMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type DeleteMessageMutationHookResult = ReturnType<typeof useDeleteMessageMutation>;
 export type DeleteMessageMutationResult = Apollo.MutationResult<DeleteMessageMutation>;
 export type DeleteMessageMutationOptions = Apollo.BaseMutationOptions<DeleteMessageMutation, DeleteMessageMutationVariables>;
+export const EditMessageDocument = gql`
+    mutation EditMessage($messageId: Float!, $text: String!) {
+  editMessage(messageId: $messageId, text: $text) {
+    id
+    text
+    updatedAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+export type EditMessageMutationFn = Apollo.MutationFunction<EditMessageMutation, EditMessageMutationVariables>;
+
+/**
+ * __useEditMessageMutation__
+ *
+ * To run a mutation, you first call `useEditMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editMessageMutation, { data, loading, error }] = useEditMessageMutation({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useEditMessageMutation(baseOptions?: Apollo.MutationHookOptions<EditMessageMutation, EditMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditMessageMutation, EditMessageMutationVariables>(EditMessageDocument, options);
+      }
+export type EditMessageMutationHookResult = ReturnType<typeof useEditMessageMutation>;
+export type EditMessageMutationResult = Apollo.MutationResult<EditMessageMutation>;
+export type EditMessageMutationOptions = Apollo.BaseMutationOptions<EditMessageMutation, EditMessageMutationVariables>;
 export const CreateTeamDocument = gql`
     mutation CreateTeam($name: String!, $description: String!) {
   createTeam(name: $name, description: $description) {
@@ -912,6 +977,7 @@ export const GetChannelMessagesDocument = gql`
     id
     text
     createdAt
+    updatedAt
     user {
       id
       username

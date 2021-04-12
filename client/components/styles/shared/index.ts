@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ButtonProps } from './types';
+import { ButtonProps, FormProps } from './types';
 
 export const PageContainer = styled.div`
   height: 100vh;
@@ -28,11 +28,11 @@ export const HeaderHeroWrapper = styled.div`
   margin-bottom: 1rem;
 `;
 
-export const FormStyles = styled.form`
+export const FormStyles = styled.form<FormProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 400px;
+  width: ${({ width }) => width ? width : '400px'};
 `;
 
 export const InputStyles = styled.input`

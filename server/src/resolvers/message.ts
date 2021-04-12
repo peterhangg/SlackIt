@@ -105,6 +105,35 @@ export class MessageResolver {
     }
   }
 
+  // EDIT MESSAGE 
+  @Mutation(() => Message)
+  @UseMiddleware(isAutenticated)
+  async editMessage(
+    @Arg('messageId') messageId: number,
+    @Arg('text') text: string,
+    @Ctx() { req }: MyContext,
+    // @PubSub() pubSub: PubSubEngine
+  ): Promise<Message> {
+    try {
+      const message = await Message.findOne({
+        relations: ['channel', 'user'],
+        where: { id: messageId },
+      });
+
+      if (!message) throw new Error('Message could not be found');
+
+      const messageOwner = message.user.id;
+      if (messageOwner !== req.session.userId)
+        throw new Error('Not authorized to delete this message');
+
+      message.text = text;
+
+      message.save();
+      return message;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
   // SUBSCRIPTION LISTENING TO NEW MESSAGE
   @Subscription(() => Message, {
     topics: NEW_MESSAGE,
