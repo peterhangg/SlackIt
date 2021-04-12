@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {
+  EditedMessageDocument,
   NewMessageDocument,
   RemoveMessageDocument,
   TeamNotificationDocument,
@@ -198,10 +199,27 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
         },
       });
 
+      const subscriptionEditedMessage = subscribeToMore({
+        document: EditedMessageDocument,
+        variables: {
+          channelId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          return {
+            ...prev,
+            getChannelMessages: [...prev.getChannelMessages]
+          };
+        },
+      });
+
       return () => {
         subscriptionNewMessage();
         subscriptionTeamNotification();
         subscriptionRemoveMessage();
+        subscriptionEditedMessage();
       };
     }
   }, [subscribeToMore, channelId]);

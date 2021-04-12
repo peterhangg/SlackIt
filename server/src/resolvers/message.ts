@@ -19,6 +19,7 @@ import {
   TEAM_NOTIFICATION,
   NEW_MESSAGE,
   DELETE_MESSAGE,
+  EDIT_MESSAGE,
 } from '../utils/subscriptions';
 @Resolver()
 export class MessageResolver {
@@ -112,7 +113,7 @@ export class MessageResolver {
     @Arg('messageId') messageId: number,
     @Arg('text') text: string,
     @Ctx() { req }: MyContext,
-    // @PubSub() pubSub: PubSubEngine
+    @PubSub() pubSub: PubSubEngine
   ): Promise<Message> {
     try {
       const message = await Message.findOne({
@@ -128,7 +129,8 @@ export class MessageResolver {
 
       message.text = text;
 
-      message.save();
+      await message.save();
+      await pubSub.publish(EDIT_MESSAGE, message);
       return message;
     } catch (err) {
       throw new Error(err);
@@ -153,6 +155,20 @@ export class MessageResolver {
     filter: ({ payload, args }) => args.channelId === payload.channel.id,
   })
   async removeMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
+  }
+
+
+  // SUBSCRIPTION LISTENING TO EDITED MESSAGE
+  @Subscription(() => Message, {
+    topics: EDIT_MESSAGE,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async editedMessage(
     @Root()
     payload: Message,
     @Arg('channelId') _: number

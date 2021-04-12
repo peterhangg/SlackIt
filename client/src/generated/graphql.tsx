@@ -176,6 +176,7 @@ export type Subscription = {
   leftTeam: User;
   newMessage: Message;
   removeMessage: Message;
+  editedMessage: Message;
   teamNotification: Message;
 };
 
@@ -196,6 +197,11 @@ export type SubscriptionNewMessageArgs = {
 
 
 export type SubscriptionRemoveMessageArgs = {
+  channelId: Scalars['Float'];
+};
+
+
+export type SubscriptionEditedMessageArgs = {
   channelId: Scalars['Float'];
 };
 
@@ -461,6 +467,23 @@ export type GetMeQuery = (
       )> }
     )>> }
   )> }
+);
+
+export type EditedMessageSubscriptionVariables = Exact<{
+  channelId: Scalars['Float'];
+}>;
+
+
+export type EditedMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { editedMessage: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
 );
 
 export type NewMessageSubscriptionVariables = Exact<{
@@ -1213,6 +1236,42 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
+export const EditedMessageDocument = gql`
+    subscription EditedMessage($channelId: Float!) {
+  editedMessage(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useEditedMessageSubscription__
+ *
+ * To run a query within a React component, call `useEditedMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useEditedMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEditedMessageSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useEditedMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<EditedMessageSubscription, EditedMessageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<EditedMessageSubscription, EditedMessageSubscriptionVariables>(EditedMessageDocument, options);
+      }
+export type EditedMessageSubscriptionHookResult = ReturnType<typeof useEditedMessageSubscription>;
+export type EditedMessageSubscriptionResult = Apollo.SubscriptionResult<EditedMessageSubscription>;
 export const NewMessageDocument = gql`
     subscription NewMessage($channelId: Float!) {
   newMessage(channelId: $channelId) {
