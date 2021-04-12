@@ -10,19 +10,16 @@ interface MessageInputProps {
 
 const FormContainer = styled.div`
   width: 100%;
-  height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  bottom: 0;
-  left: 0;
+  flex-grow: 1;
 `;
 
 const FormStyles = styled.form`
   width: 90%;
+  height: 100%;
   display: flex;
+  align-items: center;
   justify-content: center;
+  margin: auto;
 `;
 
 const InputStyles = styled.input`
@@ -37,7 +34,7 @@ const InputStyles = styled.input`
 `;
 
 const SendbuttonStyles = styled.button`
-  padding: 10px;
+  padding: 11.5px;
   background-color: #fff;
   outline: none;
   border: 1px solid grey;
@@ -46,7 +43,7 @@ const SendbuttonStyles = styled.button`
   &:hover {
     background-color: #4a154b;
     i {
-      color: white;
+      color: #fff;
     }
   }
 `;

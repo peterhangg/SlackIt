@@ -9,7 +9,9 @@ interface MessagesProps {
 }
 
 const MessageContainer = styled.div`
-  height: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const MessageHeaderWrapper = styled.div`

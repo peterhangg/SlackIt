@@ -1,0 +1,7 @@
+subscription AddedChannel($teamId: Float!) {
+  addedChannel(teamId: $teamId){
+    id
+    name
+    description
+  }
+}

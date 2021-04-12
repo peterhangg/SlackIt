@@ -1,0 +1,11 @@
+subscription EditedMessage($channelId: Float!){
+  editedMessage(channelId: $channelId){
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}

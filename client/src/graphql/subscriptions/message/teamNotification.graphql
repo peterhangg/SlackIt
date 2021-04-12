@@ -1,0 +1,11 @@
+subscription TeamNotification($channelId: Float!) {
+  teamNotification(channelId: $channelId){
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}

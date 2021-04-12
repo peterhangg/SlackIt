@@ -15,7 +15,12 @@ import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
-import { NEW_MESSAGE } from '../utils/subscriptions';
+import {
+  TEAM_NOTIFICATION,
+  NEW_MESSAGE,
+  DELETE_MESSAGE,
+  EDIT_MESSAGE,
+} from '../utils/subscriptions';
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
@@ -49,7 +54,7 @@ export class MessageResolver {
     @Arg('text') text: string,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
-    @PubSub() pubSub: PubSubEngine,
+    @PubSub() pubSub: PubSubEngine
   ): Promise<Boolean> {
     try {
       const channel = await Channel.findOne({
@@ -72,25 +77,14 @@ export class MessageResolver {
       throw new Error(err);
     }
   }
-  // SUBSCRIPTION LISTENING TO NEW
-  @Subscription(() => Message, {
-    topics: NEW_MESSAGE,
-    filter: ({ payload, args }) => args.channelId === payload.channel.id,
-  })
-  async newMessage(
-    @Root()
-    payload: Message,
-    @Arg('channelId') _: number
-  ): Promise<Message> {
-    return payload;
-  }
 
   // DELETE MESSAGE
   @Mutation(() => Boolean)
   @UseMiddleware(isAutenticated)
   async deleteMessage(
     @Arg('messageId') messageId: number,
-    @Ctx() { req }: MyContext
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
   ): Promise<boolean> {
     try {
       const message = await Message.findOne({
@@ -104,10 +98,94 @@ export class MessageResolver {
       if (messageOwner !== req.session.userId)
         throw new Error('Not authorized to delete this message');
 
+      await pubSub.publish(DELETE_MESSAGE, message);
       await message.remove();
       return true;
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  // EDIT MESSAGE 
+  @Mutation(() => Message)
+  @UseMiddleware(isAutenticated)
+  async editMessage(
+    @Arg('messageId') messageId: number,
+    @Arg('text') text: string,
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
+  ): Promise<Message> {
+    try {
+      const message = await Message.findOne({
+        relations: ['channel', 'user'],
+        where: { id: messageId },
+      });
+
+      if (!message) throw new Error('Message could not be found');
+
+      const messageOwner = message.user.id;
+      if (messageOwner !== req.session.userId)
+        throw new Error('Not authorized to delete this message');
+
+      message.text = text;
+
+      await message.save();
+      await pubSub.publish(EDIT_MESSAGE, message);
+      return message;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+  // SUBSCRIPTION LISTENING TO NEW MESSAGE
+  @Subscription(() => Message, {
+    topics: NEW_MESSAGE,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async newMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
+  }
+
+  // SUBSCRIPTION LISTENING TO NEW MESSAGE
+  @Subscription(() => Message, {
+    topics: DELETE_MESSAGE,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async removeMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
+  }
+
+
+  // SUBSCRIPTION LISTENING TO EDITED MESSAGE
+  @Subscription(() => Message, {
+    topics: EDIT_MESSAGE,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async editedMessage(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
+  }
+
+  // SUBSCRIPTION MEMBER LEAVE/JOIN TEAM NOTIFICATION
+  @Subscription(() => Message, {
+    topics: TEAM_NOTIFICATION,
+    filter: ({ payload, args }) => args.channelId === payload.channel.id,
+  })
+  async teamNotification(
+    @Root()
+    payload: Message,
+    @Arg('channelId') _: number
+  ): Promise<Message> {
+    return payload;
   }
 }

@@ -3,6 +3,7 @@ query GetChannelMessages($channelId: Float!) {
     id
     text
     createdAt
+    updatedAt
     user {
       id
       username

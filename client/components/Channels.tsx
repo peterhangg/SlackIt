@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import NextLink from 'next/link';
-import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
+import {
+  AddedChannelDocument,
+  useGetMeQuery,
+  useGetTeamQuery,
+} from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
+import TeamHeader from './TeamHeader';
 
 interface ChannelsProps {
   setShowModal: Dispatcher<boolean>;
@@ -14,13 +19,6 @@ const ChannelContainer = styled.div`
   flex-grow: 1;
   color: #e5e5e5;
 `;
-
-const ChannelNameWrapper = styled.div`
-  padding: 12px;
-  margin-bottom: 2rem;
-`;
-
-const UsernameHeader = styled.h3``;
 
 const AddChannelIcon = styled.button`
   font-size: 1rem;
@@ -44,11 +42,6 @@ const ChannalHeaderWrapper = styled.div`
   justify-content: space-between;
 `;
 
-const TeamNameHeader = styled.h1`
-  font-size: 2rem;
-  color: #fff;
-`;
-
 const ChannelList = styled.ul`
   width: 100%;
   list-style: none;
@@ -70,26 +63,55 @@ const ChannelListHeader = styled.h4`
 
 export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
   const { data: meData } = useGetMeQuery();
-  const { data: teamData, loading, error } = useGetTeamQuery({
+  const { data: teamData, error, subscribeToMore } = useGetTeamQuery({
     variables: { teamId },
     skip: !teamId,
   });
 
-  if (loading) return null;
   if (error) return <div>{error.message}</div>;
-
-  const team = teamData?.getTeam;
   
+  const team = teamData?.getTeam;
+
   const showAddChannelModal = () => {
     setShowModal(true);
   };
 
+  useEffect(() => {
+    if (teamId) {
+      const subscriptionChannelAdded = subscribeToMore({
+        document: AddedChannelDocument,
+        variables: {
+          teamId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          const newChannel = res.subscriptionData.data.addedChannel;
+          return {
+            ...prev,
+            getTeam: {
+              ...prev.getTeam,
+              channels: [...prev.getTeam.channels, newChannel],
+            },
+          };
+        },
+      });
+
+      return () => {
+        subscriptionChannelAdded();
+      };
+    }
+  }, [teamId, subscribeToMore]);
+
+
   return (
     <ChannelContainer>
-      <ChannelNameWrapper>
-        <TeamNameHeader>{team?.name}</TeamNameHeader>
-        <UsernameHeader>{meData?.getMe?.username}</UsernameHeader>
-      </ChannelNameWrapper>
+      <TeamHeader
+        teamName={team?.name}
+        username={meData?.getMe?.username}
+        teamId={team?.id}
+      />
       <ChannalHeaderWrapper>
         <ChannelListHeader>Channels</ChannelListHeader>
         <AddChannelIcon onClick={showAddChannelModal}>+</AddChannelIcon>

@@ -99,10 +99,12 @@ export type Mutation = {
   createTeam: Team;
   joinTeam: Team;
   deleteTeam: Scalars['Boolean'];
+  leaveTeam: Scalars['Boolean'];
   createChannel: Channel;
   deleteChannel: Scalars['Boolean'];
   createMessage: Scalars['Boolean'];
   deleteMessage: Scalars['Boolean'];
+  editMessage: Message;
 };
 
 
@@ -135,6 +137,11 @@ export type MutationDeleteTeamArgs = {
 };
 
 
+export type MutationLeaveTeamArgs = {
+  teamId: Scalars['Float'];
+};
+
+
 export type MutationCreateChannelArgs = {
   teamId: Scalars['Float'];
   description: Scalars['String'];
@@ -157,13 +164,55 @@ export type MutationDeleteMessageArgs = {
   messageId: Scalars['Float'];
 };
 
+
+export type MutationEditMessageArgs = {
+  text: Scalars['String'];
+  messageId: Scalars['Float'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
+  joinedTeam: User;
+  leftTeam: User;
+  addedChannel: Channel;
   newMessage: Message;
+  removeMessage: Message;
+  editedMessage: Message;
+  teamNotification: Message;
+};
+
+
+export type SubscriptionJoinedTeamArgs = {
+  teamId: Scalars['Float'];
+};
+
+
+export type SubscriptionLeftTeamArgs = {
+  teamId: Scalars['Float'];
+};
+
+
+export type SubscriptionAddedChannelArgs = {
+  teamId: Scalars['Float'];
 };
 
 
 export type SubscriptionNewMessageArgs = {
+  channelId: Scalars['Float'];
+};
+
+
+export type SubscriptionRemoveMessageArgs = {
+  channelId: Scalars['Float'];
+};
+
+
+export type SubscriptionEditedMessageArgs = {
+  channelId: Scalars['Float'];
+};
+
+
+export type SubscriptionTeamNotificationArgs = {
   channelId: Scalars['Float'];
 };
 
@@ -191,6 +240,34 @@ export type CreateMessageMutationVariables = Exact<{
 export type CreateMessageMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'createMessage'>
+);
+
+export type DeleteMessageMutationVariables = Exact<{
+  messageId: Scalars['Float'];
+}>;
+
+
+export type DeleteMessageMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteMessage'>
+);
+
+export type EditMessageMutationVariables = Exact<{
+  messageId: Scalars['Float'];
+  text: Scalars['String'];
+}>;
+
+
+export type EditMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { editMessage: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'updatedAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
 );
 
 export type CreateTeamMutationVariables = Exact<{
@@ -222,6 +299,16 @@ export type JoinTeamMutation = (
     { __typename?: 'Team' }
     & Pick<Team, 'id' | 'name'>
   ) }
+);
+
+export type LeaveTeamMutationVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type LeaveTeamMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'leaveTeam'>
 );
 
 export type LoginMutationVariables = Exact<{
@@ -304,7 +391,7 @@ export type GetChannelMessagesQuery = (
   { __typename?: 'Query' }
   & { getChannelMessages: Array<(
     { __typename?: 'Message' }
-    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt'>
     & { user: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -388,6 +475,36 @@ export type GetMeQuery = (
   )> }
 );
 
+export type AddedChannelSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type AddedChannelSubscription = (
+  { __typename?: 'Subscription' }
+  & { addedChannel: (
+    { __typename?: 'Channel' }
+    & Pick<Channel, 'id' | 'name' | 'description'>
+  ) }
+);
+
+export type EditedMessageSubscriptionVariables = Exact<{
+  channelId: Scalars['Float'];
+}>;
+
+
+export type EditedMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { editedMessage: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
+);
+
 export type NewMessageSubscriptionVariables = Exact<{
   channelId: Scalars['Float'];
 }>;
@@ -402,6 +519,66 @@ export type NewMessageSubscription = (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
     ) }
+  ) }
+);
+
+export type RemoveMessageSubscriptionVariables = Exact<{
+  channelId: Scalars['Float'];
+}>;
+
+
+export type RemoveMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { removeMessage: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
+);
+
+export type TeamNotificationSubscriptionVariables = Exact<{
+  channelId: Scalars['Float'];
+}>;
+
+
+export type TeamNotificationSubscription = (
+  { __typename?: 'Subscription' }
+  & { teamNotification: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'text' | 'createdAt'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
+);
+
+export type JoinedTeamSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type JoinedTeamSubscription = (
+  { __typename?: 'Subscription' }
+  & { joinedTeam: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
+);
+
+export type LeftTeamSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type LeftTeamSubscription = (
+  { __typename?: 'Subscription' }
+  & { leftTeam: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
   ) }
 );
 
@@ -475,6 +652,77 @@ export function useCreateMessageMutation(baseOptions?: Apollo.MutationHookOption
 export type CreateMessageMutationHookResult = ReturnType<typeof useCreateMessageMutation>;
 export type CreateMessageMutationResult = Apollo.MutationResult<CreateMessageMutation>;
 export type CreateMessageMutationOptions = Apollo.BaseMutationOptions<CreateMessageMutation, CreateMessageMutationVariables>;
+export const DeleteMessageDocument = gql`
+    mutation DeleteMessage($messageId: Float!) {
+  deleteMessage(messageId: $messageId)
+}
+    `;
+export type DeleteMessageMutationFn = Apollo.MutationFunction<DeleteMessageMutation, DeleteMessageMutationVariables>;
+
+/**
+ * __useDeleteMessageMutation__
+ *
+ * To run a mutation, you first call `useDeleteMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteMessageMutation, { data, loading, error }] = useDeleteMessageMutation({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *   },
+ * });
+ */
+export function useDeleteMessageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteMessageMutation, DeleteMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteMessageMutation, DeleteMessageMutationVariables>(DeleteMessageDocument, options);
+      }
+export type DeleteMessageMutationHookResult = ReturnType<typeof useDeleteMessageMutation>;
+export type DeleteMessageMutationResult = Apollo.MutationResult<DeleteMessageMutation>;
+export type DeleteMessageMutationOptions = Apollo.BaseMutationOptions<DeleteMessageMutation, DeleteMessageMutationVariables>;
+export const EditMessageDocument = gql`
+    mutation EditMessage($messageId: Float!, $text: String!) {
+  editMessage(messageId: $messageId, text: $text) {
+    id
+    text
+    updatedAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+export type EditMessageMutationFn = Apollo.MutationFunction<EditMessageMutation, EditMessageMutationVariables>;
+
+/**
+ * __useEditMessageMutation__
+ *
+ * To run a mutation, you first call `useEditMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editMessageMutation, { data, loading, error }] = useEditMessageMutation({
+ *   variables: {
+ *      messageId: // value for 'messageId'
+ *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useEditMessageMutation(baseOptions?: Apollo.MutationHookOptions<EditMessageMutation, EditMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditMessageMutation, EditMessageMutationVariables>(EditMessageDocument, options);
+      }
+export type EditMessageMutationHookResult = ReturnType<typeof useEditMessageMutation>;
+export type EditMessageMutationResult = Apollo.MutationResult<EditMessageMutation>;
+export type EditMessageMutationOptions = Apollo.BaseMutationOptions<EditMessageMutation, EditMessageMutationVariables>;
 export const CreateTeamDocument = gql`
     mutation CreateTeam($name: String!, $description: String!) {
   createTeam(name: $name, description: $description) {
@@ -548,6 +796,37 @@ export function useJoinTeamMutation(baseOptions?: Apollo.MutationHookOptions<Joi
 export type JoinTeamMutationHookResult = ReturnType<typeof useJoinTeamMutation>;
 export type JoinTeamMutationResult = Apollo.MutationResult<JoinTeamMutation>;
 export type JoinTeamMutationOptions = Apollo.BaseMutationOptions<JoinTeamMutation, JoinTeamMutationVariables>;
+export const LeaveTeamDocument = gql`
+    mutation LeaveTeam($teamId: Float!) {
+  leaveTeam(teamId: $teamId)
+}
+    `;
+export type LeaveTeamMutationFn = Apollo.MutationFunction<LeaveTeamMutation, LeaveTeamMutationVariables>;
+
+/**
+ * __useLeaveTeamMutation__
+ *
+ * To run a mutation, you first call `useLeaveTeamMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLeaveTeamMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [leaveTeamMutation, { data, loading, error }] = useLeaveTeamMutation({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useLeaveTeamMutation(baseOptions?: Apollo.MutationHookOptions<LeaveTeamMutation, LeaveTeamMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LeaveTeamMutation, LeaveTeamMutationVariables>(LeaveTeamDocument, options);
+      }
+export type LeaveTeamMutationHookResult = ReturnType<typeof useLeaveTeamMutation>;
+export type LeaveTeamMutationResult = Apollo.MutationResult<LeaveTeamMutation>;
+export type LeaveTeamMutationOptions = Apollo.BaseMutationOptions<LeaveTeamMutation, LeaveTeamMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -740,6 +1019,7 @@ export const GetChannelMessagesDocument = gql`
     id
     text
     createdAt
+    updatedAt
     user {
       id
       username
@@ -975,6 +1255,74 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
+export const AddedChannelDocument = gql`
+    subscription AddedChannel($teamId: Float!) {
+  addedChannel(teamId: $teamId) {
+    id
+    name
+    description
+  }
+}
+    `;
+
+/**
+ * __useAddedChannelSubscription__
+ *
+ * To run a query within a React component, call `useAddedChannelSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useAddedChannelSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAddedChannelSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useAddedChannelSubscription(baseOptions: Apollo.SubscriptionHookOptions<AddedChannelSubscription, AddedChannelSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<AddedChannelSubscription, AddedChannelSubscriptionVariables>(AddedChannelDocument, options);
+      }
+export type AddedChannelSubscriptionHookResult = ReturnType<typeof useAddedChannelSubscription>;
+export type AddedChannelSubscriptionResult = Apollo.SubscriptionResult<AddedChannelSubscription>;
+export const EditedMessageDocument = gql`
+    subscription EditedMessage($channelId: Float!) {
+  editedMessage(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useEditedMessageSubscription__
+ *
+ * To run a query within a React component, call `useEditedMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useEditedMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEditedMessageSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useEditedMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<EditedMessageSubscription, EditedMessageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<EditedMessageSubscription, EditedMessageSubscriptionVariables>(EditedMessageDocument, options);
+      }
+export type EditedMessageSubscriptionHookResult = ReturnType<typeof useEditedMessageSubscription>;
+export type EditedMessageSubscriptionResult = Apollo.SubscriptionResult<EditedMessageSubscription>;
 export const NewMessageDocument = gql`
     subscription NewMessage($channelId: Float!) {
   newMessage(channelId: $channelId) {
@@ -1011,3 +1359,137 @@ export function useNewMessageSubscription(baseOptions: Apollo.SubscriptionHookOp
       }
 export type NewMessageSubscriptionHookResult = ReturnType<typeof useNewMessageSubscription>;
 export type NewMessageSubscriptionResult = Apollo.SubscriptionResult<NewMessageSubscription>;
+export const RemoveMessageDocument = gql`
+    subscription RemoveMessage($channelId: Float!) {
+  removeMessage(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useRemoveMessageSubscription__
+ *
+ * To run a query within a React component, call `useRemoveMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRemoveMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRemoveMessageSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useRemoveMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<RemoveMessageSubscription, RemoveMessageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RemoveMessageSubscription, RemoveMessageSubscriptionVariables>(RemoveMessageDocument, options);
+      }
+export type RemoveMessageSubscriptionHookResult = ReturnType<typeof useRemoveMessageSubscription>;
+export type RemoveMessageSubscriptionResult = Apollo.SubscriptionResult<RemoveMessageSubscription>;
+export const TeamNotificationDocument = gql`
+    subscription TeamNotification($channelId: Float!) {
+  teamNotification(channelId: $channelId) {
+    id
+    text
+    createdAt
+    user {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useTeamNotificationSubscription__
+ *
+ * To run a query within a React component, call `useTeamNotificationSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTeamNotificationSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTeamNotificationSubscription({
+ *   variables: {
+ *      channelId: // value for 'channelId'
+ *   },
+ * });
+ */
+export function useTeamNotificationSubscription(baseOptions: Apollo.SubscriptionHookOptions<TeamNotificationSubscription, TeamNotificationSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TeamNotificationSubscription, TeamNotificationSubscriptionVariables>(TeamNotificationDocument, options);
+      }
+export type TeamNotificationSubscriptionHookResult = ReturnType<typeof useTeamNotificationSubscription>;
+export type TeamNotificationSubscriptionResult = Apollo.SubscriptionResult<TeamNotificationSubscription>;
+export const JoinedTeamDocument = gql`
+    subscription JoinedTeam($teamId: Float!) {
+  joinedTeam(teamId: $teamId) {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useJoinedTeamSubscription__
+ *
+ * To run a query within a React component, call `useJoinedTeamSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useJoinedTeamSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useJoinedTeamSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useJoinedTeamSubscription(baseOptions: Apollo.SubscriptionHookOptions<JoinedTeamSubscription, JoinedTeamSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<JoinedTeamSubscription, JoinedTeamSubscriptionVariables>(JoinedTeamDocument, options);
+      }
+export type JoinedTeamSubscriptionHookResult = ReturnType<typeof useJoinedTeamSubscription>;
+export type JoinedTeamSubscriptionResult = Apollo.SubscriptionResult<JoinedTeamSubscription>;
+export const LeftTeamDocument = gql`
+    subscription LeftTeam($teamId: Float!) {
+  leftTeam(teamId: $teamId) {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useLeftTeamSubscription__
+ *
+ * To run a query within a React component, call `useLeftTeamSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useLeftTeamSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLeftTeamSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useLeftTeamSubscription(baseOptions: Apollo.SubscriptionHookOptions<LeftTeamSubscription, LeftTeamSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<LeftTeamSubscription, LeftTeamSubscriptionVariables>(LeftTeamDocument, options);
+      }
+export type LeftTeamSubscriptionHookResult = ReturnType<typeof useLeftTeamSubscription>;
+export type LeftTeamSubscriptionResult = Apollo.SubscriptionResult<LeftTeamSubscription>;

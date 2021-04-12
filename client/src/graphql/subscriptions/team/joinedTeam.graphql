@@ -1,0 +1,6 @@
+subscription JoinedTeam($teamId: Float!) {
+  joinedTeam(teamId: $teamId){
+    id
+    username
+  }
+}

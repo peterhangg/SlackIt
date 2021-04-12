@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LeftSidebar from './LeftSidebar';
 import Messages from './Messages';
 import AddChannelModal from './AddChannelModal';
@@ -9,12 +9,19 @@ import RightSidebar from './RightSidebar';
 
 const DashboardLayout: React.FC = () => {
   const router = useRouter();
-  const { data: meData } = useGetMeQuery();
+  const { data: meData, loading } = useGetMeQuery();
+
+  useEffect(() => {   
+    if (!loading && !meData?.getMe?.teams[0]?.id) {
+      router.replace('/create-team')
+    }
+  },[loading, meData, router]);
+
   const teamIdQuery = parseInt(router.query.teamId as string);
-  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe?.teams[0].id;
+  const teamId = teamIdQuery ? teamIdQuery : meData?.getMe?.teams[0]?.id;
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const { data: teamData } = useGetTeamQuery({
+  const { data: teamData, error } = useGetTeamQuery({
     variables: { teamId: teamIdQuery },
     skip: !teamIdQuery,
   });
@@ -24,7 +31,12 @@ const DashboardLayout: React.FC = () => {
     ? channelIdQuery
     : teamIdQuery
     ? teamData?.getTeam?.channels[0].id
-    : meData?.getMe?.teams[0].channels[0].id;
+    : meData?.getMe?.teams[0]?.channels[0].id;
+  
+  // TODO: ERROR STYLES
+  if (error) {
+    return <div>{error.message}</div>
+  }
 
   return (
     <DashboardContainer>

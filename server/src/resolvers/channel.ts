@@ -5,11 +5,16 @@ import {
   Query,
   Resolver,
   UseMiddleware,
+  PubSub,
+  PubSubEngine,
+  Subscription,
+  Root,
 } from 'type-graphql';
 import { MyContext } from '../types';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { Team } from '../entities/Team';
 import { Channel } from '../entities/Channel';
+import { CHANNEL_ADDED } from '../utils/subscriptions';
 
 @Resolver()
 export class ChannelResolver {
@@ -50,13 +55,26 @@ export class ChannelResolver {
   async createChannel(
     @Arg('name') name: string,
     @Arg('description') description: string,
-    @Arg('teamId') teamId: number
+    @Arg('teamId') teamId: number,
+    @PubSub() pubSub: PubSubEngine
   ): Promise<Channel> {
     try {
       const team = await Team.findOne({ id: teamId });
       if (!team) throw new Error('Team cound not be found');
 
-      const createdChannel = await Channel.create({ name, team, description }).save();
+      const teamChannels = team?.channels.map((channel) =>
+        channel.name.toLocaleLowerCase()
+      );
+      if (teamChannels?.includes(name.toLocaleLowerCase())) {
+        throw new Error('This channel already exist in this team');
+      }
+
+      const createdChannel = await Channel.create({
+        name,
+        team,
+        description,
+      }).save();
+      await pubSub.publish(CHANNEL_ADDED, createdChannel);
 
       return createdChannel;
     } catch (err) {
@@ -93,4 +111,17 @@ export class ChannelResolver {
       throw new Error(err);
     }
   }
+
+    // SUBSCRIPTION LISTENING TO NEW CHANNEL ADDED
+    @Subscription(() => Channel, {
+      topics: CHANNEL_ADDED,
+      filter: ({ payload, args }) => args.teamId === payload.team.id,
+    })
+    async addedChannel(
+      @Root()
+      payload: Channel,
+      @Arg('teamId') _: number
+    ): Promise<Channel> {
+      return payload;
+    }
 }

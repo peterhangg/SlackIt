@@ -1,0 +1,11 @@
+mutation EditMessage($messageId: Float!, $text: String!) {
+  editMessage(messageId: $messageId, text: $text) {
+    id
+    text
+    updatedAt
+    user {
+      id
+      username
+    }
+  }
+}
