@@ -174,6 +174,7 @@ export type Subscription = {
   __typename?: 'Subscription';
   joinedTeam: User;
   leftTeam: User;
+  addedChannel: Channel;
   newMessage: Message;
   removeMessage: Message;
   editedMessage: Message;
@@ -187,6 +188,11 @@ export type SubscriptionJoinedTeamArgs = {
 
 
 export type SubscriptionLeftTeamArgs = {
+  teamId: Scalars['Float'];
+};
+
+
+export type SubscriptionAddedChannelArgs = {
   teamId: Scalars['Float'];
 };
 
@@ -467,6 +473,19 @@ export type GetMeQuery = (
       )> }
     )>> }
   )> }
+);
+
+export type AddedChannelSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type AddedChannelSubscription = (
+  { __typename?: 'Subscription' }
+  & { addedChannel: (
+    { __typename?: 'Channel' }
+    & Pick<Channel, 'id' | 'name' | 'description'>
+  ) }
 );
 
 export type EditedMessageSubscriptionVariables = Exact<{
@@ -1236,6 +1255,38 @@ export function useGetMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetM
 export type GetMeQueryHookResult = ReturnType<typeof useGetMeQuery>;
 export type GetMeLazyQueryHookResult = ReturnType<typeof useGetMeLazyQuery>;
 export type GetMeQueryResult = Apollo.QueryResult<GetMeQuery, GetMeQueryVariables>;
+export const AddedChannelDocument = gql`
+    subscription AddedChannel($teamId: Float!) {
+  addedChannel(teamId: $teamId) {
+    id
+    name
+    description
+  }
+}
+    `;
+
+/**
+ * __useAddedChannelSubscription__
+ *
+ * To run a query within a React component, call `useAddedChannelSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useAddedChannelSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useAddedChannelSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useAddedChannelSubscription(baseOptions: Apollo.SubscriptionHookOptions<AddedChannelSubscription, AddedChannelSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<AddedChannelSubscription, AddedChannelSubscriptionVariables>(AddedChannelDocument, options);
+      }
+export type AddedChannelSubscriptionHookResult = ReturnType<typeof useAddedChannelSubscription>;
+export type AddedChannelSubscriptionResult = Apollo.SubscriptionResult<AddedChannelSubscription>;
 export const EditedMessageDocument = gql`
     subscription EditedMessage($channelId: Float!) {
   editedMessage(channelId: $channelId) {

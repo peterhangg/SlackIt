@@ -85,6 +85,12 @@ export class TeamResolver {
       const owner = await User.findOne({ id: req.session.userId });
       if (!owner) throw new Error('User cound not be found');
 
+      const teams = await Team.find({});
+      const allTeams = teams?.map((team) => team.name.toLocaleLowerCase());
+      if (allTeams.includes(name.toLocaleLowerCase())) {
+        throw new Error('This team already exist.');
+      }
+
       const teamBot = await User.create({
         username: `SlackIt Bot`,
         email: `${uuidv4()}@slackit.com`,
@@ -92,7 +98,7 @@ export class TeamResolver {
       }).save();
 
       const newTeam = await Team.create({
-        name: name.toLowerCase(),
+        name: name,
         owner,
         description,
         users: [owner, teamBot],

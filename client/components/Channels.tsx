@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import NextLink from 'next/link';
-import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
+import {
+  AddedChannelDocument,
+  useGetMeQuery,
+  useGetTeamQuery,
+} from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
 import TeamHeader from './TeamHeader';
 
@@ -59,19 +63,47 @@ const ChannelListHeader = styled.h4`
 
 export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
   const { data: meData } = useGetMeQuery();
-  const { data: teamData, loading, error } = useGetTeamQuery({
+  const { data: teamData, error, subscribeToMore } = useGetTeamQuery({
     variables: { teamId },
     skip: !teamId,
   });
 
-  if (loading) return null;
   if (error) return <div>{error.message}</div>;
-
+  
   const team = teamData?.getTeam;
 
   const showAddChannelModal = () => {
     setShowModal(true);
   };
+
+  useEffect(() => {
+    if (teamId) {
+      const subscriptionChannelAdded = subscribeToMore({
+        document: AddedChannelDocument,
+        variables: {
+          teamId,
+        },
+        updateQuery: (prev, res: any) => {
+          if (!res.subscriptionData.data) {
+            return prev;
+          }
+          const newChannel = res.subscriptionData.data.addedChannel;
+          return {
+            ...prev,
+            getTeam: {
+              ...prev.getTeam,
+              channels: [...prev.getTeam.channels, newChannel],
+            },
+          };
+        },
+      });
+
+      return () => {
+        subscriptionChannelAdded();
+      };
+    }
+  }, [teamId, subscribeToMore]);
+
 
   return (
     <ChannelContainer>

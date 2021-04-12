@@ -134,7 +134,7 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
               required
             />
             <ButtonStyle type="submit" disabled={loading}>
-              CREATE TEAM
+              CREATE CHANNEL
             </ButtonStyle>
           </FormStyles>
           <ClosedModalButton onClick={closeModal}>x</ClosedModalButton>
