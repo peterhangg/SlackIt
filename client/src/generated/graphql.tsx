@@ -24,7 +24,7 @@ export type Query = {
   getUserTeams: Array<Team>;
   getChannel: Channel;
   getTeamChannels: Array<Channel>;
-  getChannelMessages: Array<Message>;
+  getChannelMessages: PaginatedMessages;
 };
 
 
@@ -45,6 +45,7 @@ export type QueryGetTeamChannelsArgs = {
 
 export type QueryGetChannelMessagesArgs = {
   cursor?: Maybe<Scalars['String']>;
+  limit: Scalars['Float'];
   channelId: Scalars['Float'];
 };
 
@@ -90,6 +91,12 @@ export type Team = {
   users: Array<User>;
   owner: User;
   channels: Array<Channel>;
+};
+
+export type PaginatedMessages = {
+  __typename?: 'PaginatedMessages';
+  messages: Array<Message>;
+  hasMore: Scalars['Boolean'];
 };
 
 export type Mutation = {
@@ -385,20 +392,25 @@ export type GetTeamChannelsQuery = (
 
 export type GetChannelMessagesQueryVariables = Exact<{
   channelId: Scalars['Float'];
+  limit: Scalars['Float'];
   cursor?: Maybe<Scalars['String']>;
 }>;
 
 
 export type GetChannelMessagesQuery = (
   { __typename?: 'Query' }
-  & { getChannelMessages: Array<(
-    { __typename?: 'Message' }
-    & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt'>
-    & { user: (
-      { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
-    ) }
-  )> }
+  & { getChannelMessages: (
+    { __typename?: 'PaginatedMessages' }
+    & Pick<PaginatedMessages, 'hasMore'>
+    & { messages: Array<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt'>
+      & { user: (
+        { __typename?: 'User' }
+        & Pick<User, 'id' | 'username'>
+      ) }
+    )> }
+  ) }
 );
 
 export type GetAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
@@ -1016,16 +1028,19 @@ export type GetTeamChannelsQueryHookResult = ReturnType<typeof useGetTeamChannel
 export type GetTeamChannelsLazyQueryHookResult = ReturnType<typeof useGetTeamChannelsLazyQuery>;
 export type GetTeamChannelsQueryResult = Apollo.QueryResult<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>;
 export const GetChannelMessagesDocument = gql`
-    query GetChannelMessages($channelId: Float!, $cursor: String) {
-  getChannelMessages(channelId: $channelId, cursor: $cursor) {
-    id
-    text
-    createdAt
-    updatedAt
-    user {
+    query GetChannelMessages($channelId: Float!, $limit: Float!, $cursor: String) {
+  getChannelMessages(channelId: $channelId, limit: $limit, cursor: $cursor) {
+    messages {
       id
-      username
+      text
+      createdAt
+      updatedAt
+      user {
+        id
+        username
+      }
     }
+    hasMore
   }
 }
     `;
@@ -1043,6 +1058,7 @@ export const GetChannelMessagesDocument = gql`
  * const { data, loading, error } = useGetChannelMessagesQuery({
  *   variables: {
  *      channelId: // value for 'channelId'
+ *      limit: // value for 'limit'
  *      cursor: // value for 'cursor'
  *   },
  * });

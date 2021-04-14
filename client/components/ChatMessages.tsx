@@ -35,8 +35,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [currentEditMessage, setCurrentEditMessage] = useState<number>(null);
   const [prevHeight, setPrevHeight] = useState<number>(null);
-  const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(true);
+  const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(false);
   const [fetchMoreMessages, setFetchMoreMessages] = useState<boolean>(false);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
   const { inputs, handleChange } = useForm({
     text: '',
   });
@@ -47,7 +48,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     subscribeToMore,
     fetchMore,
   } = useGetChannelMessagesQuery({
-    variables: { channelId },
+    variables: { channelId, limit: 17 },
     skip: !channelId,
     fetchPolicy: 'network-only',
   });
@@ -57,6 +58,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
 
   const [deleteMessageMutation] = useDeleteMessageMutation();
   const [editMessageMutation] = useEditMessageMutation();
+
+  const messages = data?.getChannelMessages.messages;
+  const hasMore = data?.getChannelMessages.hasMore;
 
   const handleDelete = async (messageId: number) => {
     const response = await deleteMessageMutation({
@@ -100,17 +104,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     setOpenEdit(false);
   };
 
-  const messages = data?.getChannelMessages;
-  const messageContainerRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    if (messages?.length < 18) {
-      setHasMoreMessages(false);
-    }
-    if (messages?.length === 18) {
-      setHasMoreMessages(true);
-    }
-  }, [messages]);
+    hasMore ? setHasMoreMessages(true) : setHasMoreMessages(false)
+  }, [data]);
 
   // Scroll to bottom on mount/change channels
   useEffect(() => {
@@ -125,25 +121,29 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     if (
       messageContainerRef &&
       e.currentTarget.scrollTop === 0 &&
-      hasMoreMessages &&
-      messages.length >= 18
+      hasMoreMessages
     ) {
       setFetchMoreMessages(true);
       fetchMore({
         variables: {
           channelId,
+          limit: 20,
           cursor: messages[messages.length - 1].createdAt,
         },
         updateQuery: (prevResult, { fetchMoreResult }) => {
           if (!fetchMoreResult) return prevResult;
-          if (fetchMoreResult.getChannelMessages.length < 18) {
+          if (fetchMoreResult.getChannelMessages.messages.length < 18) {
             setHasMoreMessages(false);
           }
           return {
-            getChannelMessages: [
+            ...prevResult,
+            getChannelMessages: {
               ...prevResult.getChannelMessages,
-              ...fetchMoreResult.getChannelMessages,
-            ],
+              messages: [
+                ...prevResult.getChannelMessages.messages,
+                ...fetchMoreResult.getChannelMessages.messages,
+              ],
+            }
           };
         },
       }).then(({ data }) => {
@@ -165,6 +165,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
         document: NewMessageDocument,
         variables: {
           channelId,
+
         },
         updateQuery: (prev, res: any) => {
           if (!res.subscriptionData.data) {
@@ -173,7 +174,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           const newMessage = res.subscriptionData.data.newMessage;
           return {
             ...prev,
-            getChannelMessages: [...prev.getChannelMessages, newMessage],
+            getChannelMessages: {
+              ...prev.getChannelMessages,
+              messages:[...prev.getChannelMessages.messages, newMessage],
+            }
           };
         },
       });
@@ -190,7 +194,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           const newNotification = res.subscriptionData.data.teamNotification;
           return {
             ...prev,
-            getChannelMessages: [...prev.getChannelMessages, newNotification],
+            getChannelMessages: {
+              ...prev.getChannelMessages,
+              messages: [...prev.getChannelMessages.messages, newNotification],
+            }
           };
         },
       });
@@ -207,9 +214,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           const removeMessage = res.subscriptionData.data.removeMessage;
           return {
             ...prev,
-            getChannelMessages: prev.getChannelMessages.filter(
-              (message) => message.id !== removeMessage.id
-            ),
+            getChannelMessages: {
+              ...prev.getChannelMessages,
+              messages: prev.getChannelMessages.messages.filter(
+                (message) => message.id !== removeMessage.id
+              ),
+            }
           };
         },
       });
@@ -225,7 +235,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           }
           return {
             ...prev,
-            getChannelMessages: [...prev.getChannelMessages],
+            getChannelMessages: {
+              ...prev.getChannelMessages,
+              messages: [...prev.getChannelMessages.messages],
+            }
           };
         },
       });

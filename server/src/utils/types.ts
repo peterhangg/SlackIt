@@ -1,19 +1,9 @@
-import { User } from "../entities/User";
 import { ObjectType, Field } from "type-graphql";
-
+import { Message } from "../entities/Message";
 @ObjectType()
-export class FieldError {
+export class PaginatedMessages {
+  @Field(() => [Message])
+  messages: Message[];
   @Field()
-  field: String;
-  @Field()
-  message: String;
-}
-
-@ObjectType()
-export class UserResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[];
-
-  @Field(() => User, { nullable: true })
-  user?: User;
+  hasMore: boolean;
 }
