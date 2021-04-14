@@ -21,13 +21,15 @@ import {
   DELETE_MESSAGE,
   EDIT_MESSAGE,
 } from '../utils/subscriptions';
+import { LessThan } from 'typeorm';
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
   @Query(() => [Message])
   @UseMiddleware(isAutenticated)
   async getChannelMessages(
-    @Arg('channelId') channelId: number
+    @Arg('channelId') channelId: number,
+    @Arg('cursor', { nullable: true }) cursor: string
   ): Promise<Message[]> {
     try {
       const channel = await Channel.findOne({ id: channelId });
@@ -35,10 +37,16 @@ export class MessageResolver {
 
       const messages = await Message.find({
         relations: ['channel'],
-        where: {
-          channel: { id: channelId },
-        },
+        where: cursor
+          ? {
+              channel: { id: channelId },
+              createdAt: LessThan(new Date(parseInt(cursor))),
+            }
+          : {
+              channel: { id: channelId },
+            },
         order: { createdAt: 'DESC' },
+        take: 18,
       });
 
       return messages;
@@ -106,7 +114,7 @@ export class MessageResolver {
     }
   }
 
-  // EDIT MESSAGE 
+  // EDIT MESSAGE
   @Mutation(() => Message)
   @UseMiddleware(isAutenticated)
   async editMessage(
@@ -161,7 +169,6 @@ export class MessageResolver {
   ): Promise<Message> {
     return payload;
   }
-
 
   // SUBSCRIPTION LISTENING TO EDITED MESSAGE
   @Subscription(() => Message, {

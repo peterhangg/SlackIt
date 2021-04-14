@@ -44,6 +44,7 @@ export type QueryGetTeamChannelsArgs = {
 
 
 export type QueryGetChannelMessagesArgs = {
+  cursor?: Maybe<Scalars['String']>;
   channelId: Scalars['Float'];
 };
 
@@ -384,6 +385,7 @@ export type GetTeamChannelsQuery = (
 
 export type GetChannelMessagesQueryVariables = Exact<{
   channelId: Scalars['Float'];
+  cursor?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -1014,8 +1016,8 @@ export type GetTeamChannelsQueryHookResult = ReturnType<typeof useGetTeamChannel
 export type GetTeamChannelsLazyQueryHookResult = ReturnType<typeof useGetTeamChannelsLazyQuery>;
 export type GetTeamChannelsQueryResult = Apollo.QueryResult<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>;
 export const GetChannelMessagesDocument = gql`
-    query GetChannelMessages($channelId: Float!) {
-  getChannelMessages(channelId: $channelId) {
+    query GetChannelMessages($channelId: Float!, $cursor: String) {
+  getChannelMessages(channelId: $channelId, cursor: $cursor) {
     id
     text
     createdAt
@@ -1041,6 +1043,7 @@ export const GetChannelMessagesDocument = gql`
  * const { data, loading, error } = useGetChannelMessagesQuery({
  *   variables: {
  *      channelId: // value for 'channelId'
+ *      cursor: // value for 'cursor'
  *   },
  * });
  */

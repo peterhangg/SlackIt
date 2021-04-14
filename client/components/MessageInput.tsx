@@ -62,7 +62,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       text: inputs.text as string,
     },
     update: (cache) => {
-      cache.evict({ fieldName: 'getChannel' });
+      cache.evict({ fieldName: 'getChannelMessages' });
     },
   });
 

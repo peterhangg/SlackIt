@@ -1,5 +1,5 @@
-query GetChannelMessages($channelId: Float!) {
-  getChannelMessages(channelId: $channelId) {
+query GetChannelMessages($channelId: Float!, $cursor: String) {
+  getChannelMessages(channelId: $channelId, cursor: $cursor) {
     id
     text
     createdAt

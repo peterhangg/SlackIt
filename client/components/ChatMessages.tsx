@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   EditedMessageDocument,
   NewMessageDocument,
@@ -13,85 +12,41 @@ import {
 import { dateFormatter } from '../src/utils/dateFormatter';
 import useForm from '../src/utils/useForm';
 import { InputStyles, FormStyles } from '../components/styles/shared';
+import {
+  AutherWrapper,
+  ChatMessageContainer,
+  FetchMessageLoader,
+  MessageAuther,
+  MessageButton,
+  MessageButtonWrapper,
+  MessageList,
+  MessageListItems,
+  MessageMetaDate,
+  MessageWrapper,
+  UserIcon,
+  UserIconWrapper,
+} from './styles/Messages';
 
 interface ChatMessagesProps {
   channelId: number;
 }
 
-const ChatMessageContainer = styled.div`
-  width: 100%;
-  height: 85%;
-  overflow-y: auto;
-`;
-
-const MessageList = styled.ul`
-  list-style: none;
-  display: flex;
-  overflow-y: auto;
-  flex-direction: column-reverse;
-`;
-
-const MessageWrapper = styled.div`
-  padding-top: 10px;
-  width: 100%;
-`;
-
-const UserIcon = styled.div`
-  font-size: 1.5rem;
-  border: 1px solid#D3D3D3;
-  border-radius: 10px;
-  padding: 7px 10px;
-`;
-
-const MessageListItems = styled.li`
-  display: flex;
-  padding-bottom: 5px;
-`;
-
-const AutherWrapper = styled.div`
-  display: flex;
-`;
-
-const MessageAuther = styled.h3`
-  padding-bottom: 4px;
-`;
-
-const MessageMetaDate = styled.span`
-  margin-left: 10px;
-  font-size: 12px;
-  color: #404040;
-`;
-
-const UserIconWrapper = styled.div`
-  height: 100%;
-  padding: 10px;
-`;
-
-const MessageButton = styled.button`
-  margin-left: 10px;
-  background-color: #fff;
-  border: none;
-  outline: none;
-  &:hover {
-    i {
-      color: #4a154b;
-    }
-  }
-`;
-
-const MessageButtonWrapper = styled.div`
-  margin-left: auto;
-  margin-right: 12px;
-`;
-
 const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [currentEditMessage, setCurrentEditMessage] = useState<number>(null);
+  const [prevHeight, setPrevHeight] = useState<number>(null);
+  const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(true);
+  const [fetchMoreMessages, setFetchMoreMessages] = useState<boolean>(false);
   const { inputs, handleChange } = useForm({
     text: '',
   });
   const { data: meData } = useGetMeQuery();
-  const { data, error, subscribeToMore } = useGetChannelMessagesQuery({
+  const {
+    data,
+    error,
+    subscribeToMore,
+    fetchMore,
+  } = useGetChannelMessagesQuery({
     variables: { channelId },
     skip: !channelId,
     fetchPolicy: 'network-only',
@@ -106,6 +61,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   const handleDelete = async (messageId: number) => {
     const response = await deleteMessageMutation({
       variables: { messageId },
+      update: (cache) => {
+        cache.evict({ fieldName: 'getChannelMessages' });
+      },
     }).catch((err) => console.error(err));
 
     if (!response) return;
@@ -142,8 +100,65 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     setOpenEdit(false);
   };
 
-  const messages = data?.getChannelMessages || [];
+  const messages = data?.getChannelMessages;
+  const messageContainerRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (messages?.length < 18) {
+      setHasMoreMessages(false);
+    }
+    if (messages?.length === 18) {
+      setHasMoreMessages(true);
+    }
+  }, [messages]);
+
+  // Scroll to bottom on mount/change channels
+  useEffect(() => {
+    if (messages?.length && messageContainerRef) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
+      setPrevHeight(messageContainerRef.current.scrollHeight);
+    }
+  }, [messages]);
+
+  const handleScroll = (e: React.UIEvent<HTMLElement>): void => {
+    if (
+      messageContainerRef &&
+      e.currentTarget.scrollTop === 0 &&
+      hasMoreMessages &&
+      messages.length >= 18
+    ) {
+      setFetchMoreMessages(true);
+      fetchMore({
+        variables: {
+          channelId,
+          cursor: messages[messages.length - 1].createdAt,
+        },
+        updateQuery: (prevResult, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prevResult;
+          if (fetchMoreResult.getChannelMessages.length < 18) {
+            setHasMoreMessages(false);
+          }
+          return {
+            getChannelMessages: [
+              ...prevResult.getChannelMessages,
+              ...fetchMoreResult.getChannelMessages,
+            ],
+          };
+        },
+      }).then(({ data }) => {
+        if (data.getChannelMessages) {
+          setTimeout(() => {
+            messageContainerRef.current.scrollTop =
+              messageContainerRef.current.scrollHeight - prevHeight;
+          }, 100);
+        }
+        setFetchMoreMessages(false);
+      });
+    }
+  };
+
+  // MESSAGE SUBSCRIPTIONS
   useEffect(() => {
     if (channelId) {
       const subscriptionNewMessage = subscribeToMore({
@@ -210,7 +225,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           }
           return {
             ...prev,
-            getChannelMessages: [...prev.getChannelMessages]
+            getChannelMessages: [...prev.getChannelMessages],
           };
         },
       });
@@ -224,10 +239,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     }
   }, [subscribeToMore, channelId]);
 
+
   return (
-    <ChatMessageContainer>
+    <ChatMessageContainer ref={messageContainerRef} onScroll={handleScroll}>
       <MessageList>
-        {messages.map((message) => (
+        {fetchMoreMessages && <FetchMessageLoader>Loading History</FetchMessageLoader>}
+        {messages?.map((message) => (
           <MessageListItems key={`message-${message.id}`}>
             <UserIconWrapper>
               <UserIcon>
@@ -259,7 +276,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                   </MessageButtonWrapper>
                 )}
               </AutherWrapper>
-              {(openEdit && currentEditMessage === message.id) ? (
+              {openEdit && currentEditMessage === message.id ? (
                 <FormStyles
                   width="95%"
                   onSubmit={(e) => handleSubmit(e, inputs.text, message.id)}
@@ -272,7 +289,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                   />
                 </FormStyles>
               ) : (
-                <p>{message.text}</p>
+                <p>
+                  {message.text} - {message.id}
+                </p>
               )}
             </MessageWrapper>
           </MessageListItems>
