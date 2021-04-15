@@ -21,27 +21,43 @@ import {
   DELETE_MESSAGE,
   EDIT_MESSAGE,
 } from '../utils/subscriptions';
+import { LessThan } from 'typeorm';
+import { PaginatedMessages } from '../utils/types';
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
-  @Query(() => [Message])
+  @Query(() => PaginatedMessages)
   @UseMiddleware(isAutenticated)
   async getChannelMessages(
-    @Arg('channelId') channelId: number
-  ): Promise<Message[]> {
+    @Arg('channelId') channelId: number,
+    @Arg('limit') limit: number,
+    @Arg('cursor', { nullable: true }) cursor: string
+  ): Promise<PaginatedMessages> {
     try {
       const channel = await Channel.findOne({ id: channelId });
       if (!channel) throw new Error('Channel could not be found');
 
-      const messages = await Message.find({
+      const pagLimit = Math.min(25, limit);
+      const pagLimitPlusOne = pagLimit + 1;
+
+      const messages: Message[] = await Message.find({
         relations: ['channel'],
-        where: {
-          channel: { id: channelId },
-        },
+        where: cursor
+          ? {
+              channel: { id: channelId },
+              createdAt: LessThan(new Date(parseInt(cursor))),
+            }
+          : {
+              channel: { id: channelId },
+            },
         order: { createdAt: 'DESC' },
+        take: pagLimitPlusOne,
       });
 
-      return messages;
+      return {
+        messages: messages.slice(0, pagLimit),
+        hasMore: messages.length === pagLimitPlusOne,
+      };
     } catch (err) {
       throw new Error(err);
     }
@@ -106,7 +122,7 @@ export class MessageResolver {
     }
   }
 
-  // EDIT MESSAGE 
+  // EDIT MESSAGE
   @Mutation(() => Message)
   @UseMiddleware(isAutenticated)
   async editMessage(
@@ -161,7 +177,6 @@ export class MessageResolver {
   ): Promise<Message> {
     return payload;
   }
-
 
   // SUBSCRIPTION LISTENING TO EDITED MESSAGE
   @Subscription(() => Message, {

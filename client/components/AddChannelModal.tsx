@@ -84,7 +84,8 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
-        cache.evict({ fieldName: 'getTeam' });
+      cache.evict({ fieldName: 'getTeam' });
+      cache.evict({ fieldName: 'getChannelMessages' });
     },
   });
 
