@@ -366,14 +366,6 @@ export type GetChannelQuery = (
   & { getChannel: (
     { __typename?: 'Channel' }
     & Pick<Channel, 'id' | 'name' | 'description'>
-    & { messages?: Maybe<Array<(
-      { __typename?: 'Message' }
-      & Pick<Message, 'id' | 'text' | 'createdAt'>
-      & { user: (
-        { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
-      ) }
-    )>> }
   ) }
 );
 
@@ -951,15 +943,6 @@ export const GetChannelDocument = gql`
     id
     name
     description
-    messages {
-      id
-      text
-      createdAt
-      user {
-        id
-        username
-      }
-    }
   }
 }
     `;

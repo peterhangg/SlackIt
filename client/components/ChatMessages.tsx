@@ -105,7 +105,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   };
 
   useEffect(() => {
-    hasMore ? setHasMoreMessages(true) : setHasMoreMessages(false)
+    hasMore ? setHasMoreMessages(true) : setHasMoreMessages(false);
   }, [data]);
 
   // Scroll to bottom on mount/change channels
@@ -143,7 +143,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                 ...prevResult.getChannelMessages.messages,
                 ...fetchMoreResult.getChannelMessages.messages,
               ],
-            }
+            },
           };
         },
       }).then(({ data }) => {
@@ -165,7 +165,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
         document: NewMessageDocument,
         variables: {
           channelId,
-
         },
         updateQuery: (prev, res: any) => {
           if (!res.subscriptionData.data) {
@@ -176,8 +175,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
             ...prev,
             getChannelMessages: {
               ...prev.getChannelMessages,
-              messages:[...prev.getChannelMessages.messages, newMessage],
-            }
+              messages: [...prev.getChannelMessages.messages, newMessage],
+            },
           };
         },
       });
@@ -197,7 +196,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
             getChannelMessages: {
               ...prev.getChannelMessages,
               messages: [...prev.getChannelMessages.messages, newNotification],
-            }
+            },
           };
         },
       });
@@ -219,7 +218,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
               messages: prev.getChannelMessages.messages.filter(
                 (message) => message.id !== removeMessage.id
               ),
-            }
+            },
           };
         },
       });
@@ -238,7 +237,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
             getChannelMessages: {
               ...prev.getChannelMessages,
               messages: [...prev.getChannelMessages.messages],
-            }
+            },
           };
         },
       });
@@ -252,11 +251,12 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     }
   }, [subscribeToMore, channelId]);
 
-
   return (
     <ChatMessageContainer ref={messageContainerRef} onScroll={handleScroll}>
       <MessageList>
-        {fetchMoreMessages && <FetchMessageLoader>Loading History</FetchMessageLoader>}
+        {fetchMoreMessages && (
+          <FetchMessageLoader>Loading History</FetchMessageLoader>
+        )}
         {messages?.map((message) => (
           <MessageListItems key={`message-${message.id}`}>
             <UserIconWrapper>
@@ -302,9 +302,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                   />
                 </FormStyles>
               ) : (
-                <p>
-                  {message.text} - {message.id}
-                </p>
+                <p>{message.text}</p>
               )}
             </MessageWrapper>
           </MessageListItems>

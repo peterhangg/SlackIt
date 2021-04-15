@@ -3,14 +3,5 @@ query GetChannel($channelId: Float!) {
     id
     name
     description
-    messages {
-      id
-      text
-      createdAt
-      user {
-        id
-        username
-      }
-    }
   }
 }
