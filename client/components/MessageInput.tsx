@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useCreateMessageMutation } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
@@ -52,19 +52,35 @@ const MessageInput: React.FC<MessageInputProps> = ({
   channelId,
   channelName,
 }) => {
-  const { inputs, handleChange, resetForm } = useForm({
+  const [fileUrl, setFileUrl] = useState<string | ArrayBuffer>('');
+  const { inputs, handleChange, clearForm } = useForm({
     text: '',
+    image: null,
   });
 
   const [createMessageMutation, { error }] = useCreateMessageMutation({
     variables: {
       channelId,
       text: inputs.text as string,
+      image: fileUrl || '',
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannelMessages' });
     },
   });
+
+  const handleFileChange = (e: any) => {
+    const file = e.target.files[0];
+    previewFile(file);
+  };
+
+  const previewFile = (file: Blob) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setFileUrl(reader.result);
+    };
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,13 +90,21 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (!response) {
       return;
     }
-    resetForm();
+    clearForm();
   };
 
   return (
     <FormContainer>
       {error && <h2>{error.message}</h2>}
       <FormStyles onSubmit={handleSubmit}>
+        <input
+          type="file"
+          name="image"
+          id="image"
+          placeholder="image"
+          value={inputs.image}
+          onChange={handleFileChange}
+        />
         <InputStyles
           type="textarea"
           name="text"

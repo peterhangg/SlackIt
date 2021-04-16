@@ -302,7 +302,10 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                   />
                 </FormStyles>
               ) : (
-                <p>{message.text}</p>
+                <>
+                  <p>{message.text}</p>
+                  {message.image && <img src={message.image} alt={message.text} />}
+                </>
               )}
             </MessageWrapper>
           </MessageListItems>

@@ -67,6 +67,7 @@ export type Message = {
   text: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  image: Scalars['String'];
   user: User;
   channel: Channel;
 };
@@ -164,6 +165,7 @@ export type MutationDeleteChannelArgs = {
 
 export type MutationCreateMessageArgs = {
   channelId: Scalars['Float'];
+  image?: Maybe<Scalars['String']>;
   text: Scalars['String'];
 };
 
@@ -242,6 +244,7 @@ export type CreateChannelMutation = (
 export type CreateMessageMutationVariables = Exact<{
   channelId: Scalars['Float'];
   text: Scalars['String'];
+  image?: Maybe<Scalars['String']>;
 }>;
 
 
@@ -396,7 +399,7 @@ export type GetChannelMessagesQuery = (
     & Pick<PaginatedMessages, 'hasMore'>
     & { messages: Array<(
       { __typename?: 'Message' }
-      & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt'>
+      & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt' | 'image'>
       & { user: (
         { __typename?: 'User' }
         & Pick<User, 'id' | 'username'>
@@ -627,8 +630,8 @@ export type CreateChannelMutationHookResult = ReturnType<typeof useCreateChannel
 export type CreateChannelMutationResult = Apollo.MutationResult<CreateChannelMutation>;
 export type CreateChannelMutationOptions = Apollo.BaseMutationOptions<CreateChannelMutation, CreateChannelMutationVariables>;
 export const CreateMessageDocument = gql`
-    mutation CreateMessage($channelId: Float!, $text: String!) {
-  createMessage(channelId: $channelId, text: $text)
+    mutation CreateMessage($channelId: Float!, $text: String!, $image: String) {
+  createMessage(channelId: $channelId, text: $text, image: $image)
 }
     `;
 export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutation, CreateMessageMutationVariables>;
@@ -648,6 +651,7 @@ export type CreateMessageMutationFn = Apollo.MutationFunction<CreateMessageMutat
  *   variables: {
  *      channelId: // value for 'channelId'
  *      text: // value for 'text'
+ *      image: // value for 'image'
  *   },
  * });
  */
@@ -1018,6 +1022,7 @@ export const GetChannelMessagesDocument = gql`
       text
       createdAt
       updatedAt
+      image
       user {
         id
         username

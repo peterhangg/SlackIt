@@ -9,5 +9,8 @@ declare namespace NodeJS {
     REDIS_URL: string;
     PORT: string;
     CORS_ORIGIN: string;
+    CLOUDINARY_CLOUD_NAME: string;
+    CLOUDINARY_KEY: string;
+    CLOUDINARY_SECRET: string;
   }
 }

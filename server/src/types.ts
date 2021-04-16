@@ -9,5 +9,4 @@ export type MyContext = {
   };
   redis: Redis;
   res: Response;
-  pubsub: any;
 };

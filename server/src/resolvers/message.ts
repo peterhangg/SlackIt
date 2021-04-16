@@ -23,6 +23,14 @@ import {
 } from '../utils/subscriptions';
 import { LessThan } from 'typeorm';
 import { PaginatedMessages } from '../utils/types';
+import { uploadCloudinary } from '../config/cloudinary';
+import { Stream } from 'stream';
+export interface Upload {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream: () => Stream;
+}
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
@@ -68,11 +76,13 @@ export class MessageResolver {
   @UseMiddleware(isAutenticated)
   async createMessage(
     @Arg('text') text: string,
+    @Arg('image', { nullable: true }) image: string,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
     @PubSub() pubSub: PubSubEngine
   ): Promise<Boolean> {
     try {
+      let uploadedImage;
       const channel = await Channel.findOne({
         where: { id: channelId },
         relations: ['team'],
@@ -80,10 +90,19 @@ export class MessageResolver {
 
       if (!channel) throw new Error('channel cound not be found');
 
+      if (image) {
+        const newImage: any = await uploadCloudinary(image);
+        if (!newImage) {
+          throw new Error('Images not uploaded');
+        }
+        uploadedImage = newImage;
+      }
+
       const sender = await User.findOne({ id: req.session.userId });
       const newMessage = await Message.create({
         text,
         channel,
+        image: uploadedImage || '',
         user: sender,
       }).save();
 

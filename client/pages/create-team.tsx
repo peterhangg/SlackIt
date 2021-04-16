@@ -1,7 +1,7 @@
 import React from 'react';
 import { withApollo } from '../src/apollo/client';
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import { useCreateTeamMutation } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
 import { useIsAuthenticated } from '../src/utils/useIsAuthenticated';
@@ -56,7 +56,7 @@ const createTeam: React.FC = () => {
       return;
     }
 
-    const createdTeamData = response.data.createTeam;
+    const createdTeamData = response?.data.createTeam;
     router.push(`/dashboard/${createdTeamData.id}`);
   };
 

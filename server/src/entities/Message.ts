@@ -30,6 +30,10 @@ export class Message extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Field(() => String)
+  @Column({ nullable: true, default: '' })
+  image: string;
+
   @ManyToOne(() => User, (user) => user.messages, {
     cascade: true,
     eager: true,

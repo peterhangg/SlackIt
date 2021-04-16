@@ -10,6 +10,7 @@ const useForm = (initial: IFormInputs) => {
 
   const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
     let { value, name } = event.currentTarget;
+
     setInputs({
       ...inputs,
       [name]: value,
