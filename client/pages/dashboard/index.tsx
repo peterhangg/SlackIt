@@ -1,5 +1,5 @@
 import React from 'react';
-import { withApollo } from '../../src/apollo/client';
+import { withApollo } from '../../src/apollo/withApollo';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useIsAuthenticated } from '../../src/utils/useIsAuthenticated';
 
@@ -10,4 +10,4 @@ export const Dashboard: React.FC = () => {
     <DashboardLayout />
   );
 }
-export default withApollo({ ssr: false })(Dashboard);
+export default withApollo({ ssr: true })(Dashboard);

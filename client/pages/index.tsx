@@ -1,7 +1,7 @@
 import React from 'react';
 import NavButtons from '../components/NavButtons';
 import styled from 'styled-components';
-import { withApollo } from '../src/apollo/client';
+import { withApollo } from '../src/apollo/withApollo';
 const ChatBot = require('../asset/chat.svg') as string;
 const SlackIcon = require('../asset/slack.svg') as string;
 
