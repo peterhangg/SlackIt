@@ -70,7 +70,7 @@ export class MessageResolver {
   @UseMiddleware(isAutenticated)
   async createMessage(
     @Arg('text') text: string,
-    @Arg('image', () => GraphQLUpload as any,  { nullable: true }) image: Upload,
+    @Arg('image', () => GraphQLUpload as any, { nullable: true }) image: Upload,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
     @PubSub() pubSub: PubSubEngine
@@ -86,9 +86,11 @@ export class MessageResolver {
 
       if (image) {
         const newImage: any = await uploadCloudinary(image);
+
         if (!newImage) {
-          throw new Error('Images not uploaded');
+          throw new Error('Image not uploaded');
         }
+
         uploadedImage = newImage;
       }
 

@@ -26,11 +26,10 @@ const InputStyles = styled.input`
   width: 80%;
   overflow: auto;
   height: 2.5rem;
-  border-bottom-left-radius: 5px;
-  border-top-left-radius: 3px;
   text-indent: 10px;
   border: 1px solid grey;
   border-right: none;
+  border-left: none;
 `;
 
 const SendbuttonStyles = styled.button`
@@ -40,7 +39,23 @@ const SendbuttonStyles = styled.button`
   border: 1px solid grey;
   border-bottom-right-radius: 5px;
   border-top-right-radius: 3px;
-  &:hover {
+  &:hover:not([disabled]) {
+    background-color: #4a154b;
+    i {
+      color: #fff;
+    }
+  }
+`;
+
+const UploadButtonStyles = styled.button`
+  padding: 11.5px;
+  background-color: #fff;
+  outline: none;
+  border: 1px solid grey;
+  border-right: none;
+  border-bottom-left-radius: 5px;
+  border-top-left-radius: 3px;
+  &:hover:not([disabled]) {
     background-color: #4a154b;
     i {
       color: #fff;
@@ -82,27 +97,38 @@ const MessageInput: React.FC<MessageInputProps> = ({
     clearForm();
   };
 
+  const handleUploadClick = () => {
+    uploadRef.current.click();
+  };
+
   return (
     <FormContainer>
       {error && <h2>{error.message}</h2>}
       <FormStyles onSubmit={handleSubmit}>
-        <input
-          type="file"
-          name="image"
-          id="image"
-          placeholder="image"
-          onChange={handleChange}
-          ref={uploadRef}
-        />
+        <>
+          <UploadButtonStyles type="button" onClick={handleUploadClick}>
+            <i className="fas fa-upload fa-lg" />
+          </UploadButtonStyles>
+          <input
+            type="file"
+            name="image"
+            id="image"
+            onChange={handleChange}
+            ref={uploadRef}
+            style={{ display: 'none' }}
+          />
+        </>
         <InputStyles
           type="textarea"
           name="text"
           placeholder={`Message # ${channelName}`}
           onChange={handleChange}
           value={inputs.text}
-          required
         />
-        <SendbuttonStyles type="submit">
+        <SendbuttonStyles
+          type="submit"
+          disabled={!inputs.text && !inputs.image}
+        >
           <i className="fas fa-paper-plane fa-lg" />
         </SendbuttonStyles>
       </FormStyles>

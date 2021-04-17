@@ -18,9 +18,9 @@ export class Message extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field(() => String)
-  @Column()
-  text!: string;
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  text: string;
 
   @Field(() => String)
   @CreateDateColumn()
@@ -30,7 +30,7 @@ export class Message extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   @Column({ nullable: true, default: '' })
   image: string;
 

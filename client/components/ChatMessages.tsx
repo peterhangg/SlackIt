@@ -278,13 +278,15 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                 </MessageAuther>
                 {meData?.getMe.id === message.user.id && (
                   <MessageButtonWrapper>
-                    <MessageButton
-                      onClick={() =>
-                        toggleEditMessage(message.id, message.text)
-                      }
-                    >
-                      <i className="fas fa-edit" />
-                    </MessageButton>
+                    {message.text && (
+                      <MessageButton
+                        onClick={() =>
+                          toggleEditMessage(message.id, message.text)
+                        }
+                      >
+                        <i className="fas fa-edit" />
+                      </MessageButton>
+                    )}
                     <MessageButton onClick={() => handleDelete(message.id)}>
                       <i className="fas fa-trash" />
                     </MessageButton>
