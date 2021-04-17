@@ -4,6 +4,7 @@ import { Channel } from "../entities/Channel";
 import { Message } from "../entities/Message";
 import { Team } from "../entities/Team";
 import { User } from "../entities/User";
+import { DirectMessage } from "../entities/DirectMessage";
 
 export const dbOptions: ConnectionOptions = {
   type: 'postgres',
@@ -14,5 +15,5 @@ export const dbOptions: ConnectionOptions = {
   logging: true,
   synchronize: true,
   migrations: [path.join(__dirname, './migrations/*')],
-  entities: [User, Message, Channel, Team],
+  entities: [User, Message, Channel, Team, DirectMessage],
 };
