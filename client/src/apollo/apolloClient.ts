@@ -1,5 +1,6 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
-import { HttpLink } from 'apollo-link-http';
+// import { HttpLink } from 'apollo-link-http';
+import { createUploadLink } from 'apollo-upload-client';
 import { WebSocketLink } from 'apollo-link-ws';
 import { SubscriptionClient } from 'subscriptions-transport-ws';
 import { getMainDefinition } from 'apollo-utilities';
@@ -7,7 +8,7 @@ import { split } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 
 export default function createApolloClient(initialState: {}, ctx: any) {
-  let link, httpLink, wsLink;
+  let link, uploadLink, wsLink;
 
   const ssrMode = typeof window === 'undefined';
 
@@ -24,7 +25,7 @@ export default function createApolloClient(initialState: {}, ctx: any) {
     }
   });
 
-  httpLink = new HttpLink({
+  uploadLink = createUploadLink({
     uri: process.env.NEXT_PUBLIC_API_URL as string,
     credentials: 'include',
   });
@@ -32,7 +33,7 @@ export default function createApolloClient(initialState: {}, ctx: any) {
   if (ssrMode) {
     return new ApolloClient({
       ssrMode,
-      link: errorLink.concat(httpLink),
+      link: errorLink.concat(uploadLink),
       credentials: 'include',
       headers: {
         cookie:
@@ -64,9 +65,9 @@ export default function createApolloClient(initialState: {}, ctx: any) {
             );
           },
           wsLink,
-          httpLink
+          uploadLink
         )
-      : httpLink;
+      : uploadLink;
 
     return new ApolloClient({
       ssrMode,

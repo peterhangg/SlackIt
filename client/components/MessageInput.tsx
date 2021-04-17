@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import { useCreateMessageMutation } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
@@ -52,7 +52,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
   channelId,
   channelName,
 }) => {
-  const [fileUrl, setFileUrl] = useState<string | ArrayBuffer>('');
   const { inputs, handleChange, clearForm } = useForm({
     text: '',
     image: null,
@@ -62,25 +61,14 @@ const MessageInput: React.FC<MessageInputProps> = ({
     variables: {
       channelId,
       text: inputs.text as string,
-      image: fileUrl || '',
+      image: inputs.image || '',
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannelMessages' });
     },
   });
 
-  const handleFileChange = (e: any) => {
-    const file = e.target.files[0];
-    previewFile(file);
-  };
-
-  const previewFile = (file: Blob) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setFileUrl(reader.result);
-    };
-  };
+  const uploadRef = useRef(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -90,6 +78,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     if (!response) {
       return;
     }
+    uploadRef.current.value = '';
     clearForm();
   };
 
@@ -102,8 +91,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
           name="image"
           id="image"
           placeholder="image"
-          value={inputs.image}
-          onChange={handleFileChange}
+          onChange={handleChange}
+          ref={uploadRef}
         />
         <InputStyles
           type="textarea"

@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type Query = {
@@ -165,7 +167,7 @@ export type MutationDeleteChannelArgs = {
 
 export type MutationCreateMessageArgs = {
   channelId: Scalars['Float'];
-  image?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['Upload']>;
   text: Scalars['String'];
 };
 
@@ -179,6 +181,7 @@ export type MutationEditMessageArgs = {
   text: Scalars['String'];
   messageId: Scalars['Float'];
 };
+
 
 export type Subscription = {
   __typename?: 'Subscription';
@@ -244,7 +247,7 @@ export type CreateChannelMutation = (
 export type CreateMessageMutationVariables = Exact<{
   channelId: Scalars['Float'];
   text: Scalars['String'];
-  image?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['Upload']>;
 }>;
 
 
@@ -630,7 +633,7 @@ export type CreateChannelMutationHookResult = ReturnType<typeof useCreateChannel
 export type CreateChannelMutationResult = Apollo.MutationResult<CreateChannelMutation>;
 export type CreateChannelMutationOptions = Apollo.BaseMutationOptions<CreateChannelMutation, CreateChannelMutationVariables>;
 export const CreateMessageDocument = gql`
-    mutation CreateMessage($channelId: Float!, $text: String!, $image: String) {
+    mutation CreateMessage($channelId: Float!, $text: String!, $image: Upload) {
   createMessage(channelId: $channelId, text: $text, image: $image)
 }
     `;

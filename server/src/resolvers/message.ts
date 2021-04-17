@@ -10,7 +10,7 @@ import {
   Subscription,
   Root,
 } from 'type-graphql';
-import { MyContext } from '../types';
+import { MyContext, Upload } from '../types';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
@@ -24,13 +24,7 @@ import {
 import { LessThan } from 'typeorm';
 import { PaginatedMessages } from '../utils/types';
 import { uploadCloudinary } from '../config/cloudinary';
-import { Stream } from 'stream';
-export interface Upload {
-  filename: string;
-  mimetype: string;
-  encoding: string;
-  createReadStream: () => Stream;
-}
+import { GraphQLUpload } from 'apollo-server-express';
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
@@ -76,7 +70,7 @@ export class MessageResolver {
   @UseMiddleware(isAutenticated)
   async createMessage(
     @Arg('text') text: string,
-    @Arg('image', { nullable: true }) image: string,
+    @Arg('image', () => GraphQLUpload as any,  { nullable: true }) image: Upload,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
     @PubSub() pubSub: PubSubEngine
