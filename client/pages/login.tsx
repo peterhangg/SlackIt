@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { withApollo } from '../src/apollo/client';
+import { withApollo } from '../src/apollo/withApollo';
 import {
   GetMeDocument,
   GetMeQuery,

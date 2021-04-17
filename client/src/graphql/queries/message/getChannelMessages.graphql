@@ -5,6 +5,7 @@ query GetChannelMessages($channelId: Float!, $limit: Float!, $cursor: String) {
       text
       createdAt
       updatedAt
+      image
       user {
         id
         username

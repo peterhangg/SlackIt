@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Session, SessionData } from 'express-session';
 import { Redis } from 'ioredis';
-// import { redisPubSub } from './utils/pubsub';
+import { Stream } from 'stream';
 
 export type MyContext = {
   req: Request & {
@@ -9,5 +9,34 @@ export type MyContext = {
   };
   redis: Redis;
   res: Response;
-  pubsub: any;
 };
+
+export type File = {
+  filename: string;
+  mimetype: string;
+  encoding: string;
+  createReadStream: () => Stream;
+}
+export interface Upload {
+  file: File
+}
+export interface ICloudinary {
+  asset_id: string
+  public_id: string
+  version: number
+  version_id: string
+  signature: string
+  width: number
+  height: number
+  format: string
+  resource_type: string
+  created_at: string
+  tags: any[]
+  bytes: number
+  type: string
+  etag: string
+  placeholder: boolean
+  url: string
+  secure_url: string
+  original_filename: string
+}

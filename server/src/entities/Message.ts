@@ -18,9 +18,9 @@ export class Message extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field(() => String)
-  @Column()
-  text!: string;
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
+  text: string;
 
   @Field(() => String)
   @CreateDateColumn()
@@ -29,6 +29,10 @@ export class Message extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true, default: '' })
+  image: string;
 
   @ManyToOne(() => User, (user) => user.messages, {
     cascade: true,

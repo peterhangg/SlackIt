@@ -1,5 +1,5 @@
 import React from 'react';
-import { withApollo } from '../src/apollo/client';
+import { withApollo } from '../src/apollo/withApollo';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import { useGetMeQuery } from '../src/generated/graphql';

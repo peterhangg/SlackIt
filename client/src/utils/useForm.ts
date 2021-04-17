@@ -9,7 +9,12 @@ const useForm = (initial: IFormInputs) => {
   }, []);
 
   const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
-    let { value, name } = event.currentTarget;
+    let { value, name, type } = event.currentTarget;
+
+    if (type === 'file') {
+      [value] = event.currentTarget.files as any;
+    }
+
     setInputs({
       ...inputs,
       [name]: value,

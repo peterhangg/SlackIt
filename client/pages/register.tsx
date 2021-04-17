@@ -6,7 +6,7 @@ import {
   GetMeQuery,
   useRegisterMutation,
 } from '../src/generated/graphql';
-import { withApollo } from '../src/apollo/client';
+import { withApollo } from '../src/apollo/withApollo';
 import {
   PageContainer,
   SlackIconStyles,

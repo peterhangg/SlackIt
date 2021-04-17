@@ -11,14 +11,11 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { getSchema } from './utils/schema';
 import { COOKIE_NAME, NODE_ENV } from './utils/constants';
-import { dbOptions } from './config/dbConfig'
-
+import { dbOptions } from './config/dbConfig';
+import { graphqlUploadExpress } from 'graphql-upload';
 
 const main = async () => {
-  const dbConnection = await createConnection(dbOptions);
-  console.log('here')
-  console.log('IS DB CONNECTED?: ', dbConnection.isConnected);
-
+  await createConnection(dbOptions);
   const app = express();
 
   const RedisStore = connectRedis(session);
@@ -38,39 +35,40 @@ const main = async () => {
     res.end();
   });
 
-  app.use(
-    session({
-      name: COOKIE_NAME,
-      store: new RedisStore({
-        client: redis,
-        disableTouch: true,
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 6 * 24 * 365,
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: NODE_ENV,
-        domain: undefined,
-      },
-      saveUninitialized: false,
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-    })
-  );
+  const sessionMiddleware = session({
+    name: COOKIE_NAME,
+    store: new RedisStore({
+      client: redis,
+      disableTouch: true,
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 6 * 24 * 365,
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: NODE_ENV,
+      domain: undefined,
+    },
+    saveUninitialized: false,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+  });
+
+  app.use(sessionMiddleware);
 
   const schema = await getSchema();
   const apolloServer = new ApolloServer({
     schema,
+    uploads: false,
     introspection: true,
     playground: true,
     context: ({ req, res }) => ({ req, res, redis }),
     subscriptions: {
-      // TODO: PASSING EXPRESS SESSION ON CONNECT WS
-      onConnect: () => console.log('connected'),
-      onDisconnect: () => console.log('disconnected'),
+      onConnect: () => console.log("ws connected!"),
+      onDisconnect: () => console.log('ws disconnected'),
     },
   });
 
+  app.use(graphqlUploadExpress({ maxFileSize: 5000000, maxFiles: 10 }));
   apolloServer.applyMiddleware({
     app,
     cors: false,

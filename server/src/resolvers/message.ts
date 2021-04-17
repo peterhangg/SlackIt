@@ -10,7 +10,7 @@ import {
   Subscription,
   Root,
 } from 'type-graphql';
-import { MyContext } from '../types';
+import { MyContext, Upload } from '../types';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
@@ -23,6 +23,8 @@ import {
 } from '../utils/subscriptions';
 import { LessThan } from 'typeorm';
 import { PaginatedMessages } from '../utils/types';
+import { uploadCloudinary } from '../config/cloudinary';
+import { GraphQLUpload } from 'apollo-server-express';
 @Resolver()
 export class MessageResolver {
   // GET CHANNEL MESSAGES
@@ -68,11 +70,13 @@ export class MessageResolver {
   @UseMiddleware(isAutenticated)
   async createMessage(
     @Arg('text') text: string,
+    @Arg('image', () => GraphQLUpload as any, { nullable: true }) image: Upload,
     @Arg('channelId') channelId: number,
     @Ctx() { req }: MyContext,
     @PubSub() pubSub: PubSubEngine
   ): Promise<Boolean> {
     try {
+      let uploadedImage;
       const channel = await Channel.findOne({
         where: { id: channelId },
         relations: ['team'],
@@ -80,10 +84,21 @@ export class MessageResolver {
 
       if (!channel) throw new Error('channel cound not be found');
 
+      if (image) {
+        const newImage: any = await uploadCloudinary(image);
+
+        if (!newImage) {
+          throw new Error('Image not uploaded');
+        }
+
+        uploadedImage = newImage;
+      }
+
       const sender = await User.findOne({ id: req.session.userId });
       const newMessage = await Message.create({
         text,
         channel,
+        image: uploadedImage || '',
         user: sender,
       }).save();
 

@@ -108,12 +108,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
     hasMore ? setHasMoreMessages(true) : setHasMoreMessages(false);
   }, [data]);
 
-  // Scroll to bottom on mount/change channels
+  // Scroll to bottom on mount / change channels/ new message
   useEffect(() => {
     if (messages?.length && messageContainerRef) {
-      messageContainerRef.current.scrollTop =
-        messageContainerRef.current.scrollHeight;
-      setPrevHeight(messageContainerRef.current.scrollHeight);
+      setTimeout(() => {
+        messageContainerRef.current.scrollTop =
+          messageContainerRef.current.scrollHeight;
+        setPrevHeight(messageContainerRef.current.scrollHeight);
+      }, 150);
     }
   }, [messages]);
 
@@ -151,7 +153,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
           setTimeout(() => {
             messageContainerRef.current.scrollTop =
               messageContainerRef.current.scrollHeight - prevHeight;
-          }, 100);
+          }, 200);
         }
         setFetchMoreMessages(false);
       });
@@ -276,13 +278,15 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                 </MessageAuther>
                 {meData?.getMe.id === message.user.id && (
                   <MessageButtonWrapper>
-                    <MessageButton
-                      onClick={() =>
-                        toggleEditMessage(message.id, message.text)
-                      }
-                    >
-                      <i className="fas fa-edit" />
-                    </MessageButton>
+                    {message.text && (
+                      <MessageButton
+                        onClick={() =>
+                          toggleEditMessage(message.id, message.text)
+                        }
+                      >
+                        <i className="fas fa-edit" />
+                      </MessageButton>
+                    )}
                     <MessageButton onClick={() => handleDelete(message.id)}>
                       <i className="fas fa-trash" />
                     </MessageButton>
@@ -290,19 +294,29 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                 )}
               </AutherWrapper>
               {openEdit && currentEditMessage === message.id ? (
-                <FormStyles
-                  width="95%"
-                  onSubmit={(e) => handleSubmit(e, inputs.text, message.id)}
-                >
-                  <InputStyles
-                    type="text"
-                    name="text"
-                    value={inputs.text}
-                    onChange={handleChange}
-                  />
-                </FormStyles>
+                <>
+                  <FormStyles
+                    width="95%"
+                    onSubmit={(e) => handleSubmit(e, inputs.text, message.id)}
+                  >
+                    <InputStyles
+                      type="text"
+                      name="text"
+                      value={inputs.text}
+                      onChange={handleChange}
+                    />
+                  </FormStyles>
+                  {message.image && (
+                    <img src={message.image} alt={message.text} />
+                  )}
+                </>
               ) : (
-                <p>{message.text}</p>
+                <>
+                  <p>{message.text}</p>
+                  {message.image && (
+                    <img src={message.image} alt={message.text} />
+                  )}
+                </>
               )}
             </MessageWrapper>
           </MessageListItems>
