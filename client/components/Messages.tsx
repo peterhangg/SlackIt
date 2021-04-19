@@ -1,7 +1,9 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import styled from 'styled-components';
 import { useGetChannelQuery } from '../src/generated/graphql';
 import ChatMessages from './ChatMessages';
+import DirectMessage from './DirectMessage';
 import MessageInput from './MessageInput';
 
 interface MessagesProps {
@@ -24,6 +26,8 @@ const ChannelHeader = styled.h1`
 `;
 
 export const Messages: React.FC<MessagesProps> = ({ channelId }) => {
+  const router = useRouter();
+  const receiverId  = parseInt(router.query.userId as string);
   const { data, error } = useGetChannelQuery({
     variables: { channelId },
     skip: !channelId,
@@ -36,7 +40,12 @@ export const Messages: React.FC<MessagesProps> = ({ channelId }) => {
       <MessageHeaderWrapper>
         <ChannelHeader># {data?.getChannel.name}</ChannelHeader>
       </MessageHeaderWrapper>
-      <ChatMessages channelId={channelId} />
+      {receiverId ? (
+        <DirectMessage />
+      ) : (
+        <ChatMessages channelId={channelId} />
+      )     
+      }
       <MessageInput channelId={channelId} channelName={data?.getChannel.name} />
     </MessageContainer>
   );

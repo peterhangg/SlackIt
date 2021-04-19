@@ -1,0 +1,13 @@
+mutation CreateDirectMessage($teamId: Float!, $receiverId: Float!, $text: String!) {
+  createDirectMessage(teamId: $teamId, receiverId: $receiverId, text: $text) {
+    id
+    text
+    teamId
+    receiverId
+    senderId
+    creator {
+      id
+      username
+    }
+  }
+}

@@ -17,7 +17,7 @@ export class DirectMessageResolver {
   @UseMiddleware(isAutenticated)
   @Mutation(() => DirectMessage)
   async createDirectMessage(
-    @Arg('Text') text: string,
+    @Arg('text') text: string,
     @Arg('teamId') teamId: number,
     @Arg('receiverId') receiverId: number,
     @Ctx() { req }: MyContext
