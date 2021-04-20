@@ -62,7 +62,7 @@ export class DirectMessageResolver {
     @Arg('teamId') teamId: number,
     @Arg('receiverId') receiverId: number,
     @Ctx() { req }: MyContext
-  ): Promise<DirectMessage[] | null> {
+  ): Promise<DirectMessage[]> {
     try {
       const directMessages: DirectMessage[] = await DirectMessage.find({
         relations: ['creator'],
@@ -82,7 +82,7 @@ export class DirectMessageResolver {
   // GET DIRECT MESSAGE USERS
   @Query(() => [User], { nullable: true })
   @UseMiddleware(isAutenticated)
-  async getDirectMessageUsers(
+  async directMessageUsers(
     @Arg('teamId') teamId: number,
     @Ctx() { req }: MyContext
   ): Promise<User[]> {
@@ -92,7 +92,7 @@ export class DirectMessageResolver {
           select distinct on (u.id) u.id, u.username from direct_message dm
           join "user" u on (dm."receiverId" = u.id) or 
           (dm."senderId" = u.id) where (dm."receiverId" = $1 or dm."senderId" = $1)
-          and dm."teamId" = $2
+          and dm."teamId" = $2 
         `,
         [req.session.userId, teamId]
       );

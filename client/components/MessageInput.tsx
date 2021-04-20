@@ -103,6 +103,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getDirectMessages' });
+      cache.evict({ fieldName: 'directMessageUsers' });
     },
   });
 
@@ -121,7 +122,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
         console.error(err)
       );
     }
-    
     if (!response) {
       return;
     }

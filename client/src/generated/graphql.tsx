@@ -29,6 +29,7 @@ export type Query = {
   getTeamChannels: Array<Channel>;
   getChannelMessages: PaginatedMessages;
   getDirectMessages: Array<DirectMessage>;
+  directMessageUsers?: Maybe<Array<User>>;
 };
 
 
@@ -61,6 +62,11 @@ export type QueryGetChannelMessagesArgs = {
 
 export type QueryGetDirectMessagesArgs = {
   receiverId: Scalars['Float'];
+  teamId: Scalars['Float'];
+};
+
+
+export type QueryDirectMessageUsersArgs = {
   teamId: Scalars['Float'];
 };
 
@@ -442,6 +448,19 @@ export type GetTeamChannelsQuery = (
     { __typename?: 'Channel' }
     & Pick<Channel, 'id' | 'name'>
   )> }
+);
+
+export type DirectMessageUsersQueryVariables = Exact<{
+  teamId: Scalars['Float'];
+}>;
+
+
+export type DirectMessageUsersQuery = (
+  { __typename?: 'Query' }
+  & { directMessageUsers?: Maybe<Array<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  )>> }
 );
 
 export type GetDirectMessagesQueryVariables = Exact<{
@@ -1154,6 +1173,42 @@ export function useGetTeamChannelsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type GetTeamChannelsQueryHookResult = ReturnType<typeof useGetTeamChannelsQuery>;
 export type GetTeamChannelsLazyQueryHookResult = ReturnType<typeof useGetTeamChannelsLazyQuery>;
 export type GetTeamChannelsQueryResult = Apollo.QueryResult<GetTeamChannelsQuery, GetTeamChannelsQueryVariables>;
+export const DirectMessageUsersDocument = gql`
+    query DirectMessageUsers($teamId: Float!) {
+  directMessageUsers(teamId: $teamId) {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useDirectMessageUsersQuery__
+ *
+ * To run a query within a React component, call `useDirectMessageUsersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDirectMessageUsersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDirectMessageUsersQuery({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useDirectMessageUsersQuery(baseOptions: Apollo.QueryHookOptions<DirectMessageUsersQuery, DirectMessageUsersQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<DirectMessageUsersQuery, DirectMessageUsersQueryVariables>(DirectMessageUsersDocument, options);
+      }
+export function useDirectMessageUsersLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DirectMessageUsersQuery, DirectMessageUsersQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<DirectMessageUsersQuery, DirectMessageUsersQueryVariables>(DirectMessageUsersDocument, options);
+        }
+export type DirectMessageUsersQueryHookResult = ReturnType<typeof useDirectMessageUsersQuery>;
+export type DirectMessageUsersLazyQueryHookResult = ReturnType<typeof useDirectMessageUsersLazyQuery>;
+export type DirectMessageUsersQueryResult = Apollo.QueryResult<DirectMessageUsersQuery, DirectMessageUsersQueryVariables>;
 export const GetDirectMessagesDocument = gql`
     query GetDirectMessages($receiverId: Float!, $teamId: Float!) {
   getDirectMessages(receiverId: $receiverId, teamId: $teamId) {

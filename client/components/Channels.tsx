@@ -8,6 +8,7 @@ import {
 } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
 import TeamHeader from './TeamHeader';
+import DirectMessageUsers from './DirectMessageUsers';
 
 interface ChannelsProps {
   setShowModal: Dispatcher<boolean>;
@@ -129,6 +130,7 @@ export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
           </NextLink>
         ))}
       </ChannelList>
+      <DirectMessageUsers teamId={teamId} />
     </ChannelContainer>
   );
 };

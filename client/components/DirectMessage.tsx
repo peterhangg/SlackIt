@@ -14,22 +14,21 @@ import {
 import { dateFormatter } from '../src/utils/dateFormatter';
 import { useGetDirectMessagesQuery } from '../src/generated/graphql';
 
-interface DirectMessageProps {}
+interface DirectMessageProps {
+  teamId: number
+}
 
-const DirectMessage: React.FC<DirectMessageProps> = ({}) => {
+const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
   const router = useRouter();
   const receiverId = parseInt(router.query.userId as string);
-  const { data, loading } = useGetDirectMessagesQuery({
+  const { data } = useGetDirectMessagesQuery({
     variables: {
       receiverId,
-      teamId: 1,
+      teamId,
     },
     skip: !receiverId,
   });
 
-  if (loading) return <div>loading...</div>;
-
-  console.log(data);
   return (
     <ChatMessageContainer>
       <MessageList>

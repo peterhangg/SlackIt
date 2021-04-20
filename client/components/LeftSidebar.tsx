@@ -4,6 +4,7 @@ import { useGetUserTeamsQuery } from '../src/generated/graphql';
 import Teams from './Teams';
 import Channels from './Channels';
 import { Dispatcher } from '../src/utils/types';
+import DirectMessageUsers from './DirectMessageUsers';
 interface SideBarProps {
   showModal: boolean;
   setShowModal: Dispatcher<boolean>;
@@ -24,7 +25,7 @@ export const Sidebar: React.FC<SideBarProps> = ({ setShowModal, teamId }) => {
   
   return (
     <LeftSidebarContainer>
-      <Teams teams={data?.getUserTeams}/>
+      <Teams teams={data?.getUserTeams} />
       <Channels teamId={teamId} setShowModal={setShowModal} />
     </LeftSidebarContainer>
   );
