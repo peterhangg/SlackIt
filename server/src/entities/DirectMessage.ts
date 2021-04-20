@@ -21,6 +21,10 @@ export class DirectMessage extends BaseEntity {
   @Column({ nullable: true })
   text: string;
 
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true, default: '' })
+  image: string;
+
   @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;

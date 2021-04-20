@@ -12,46 +12,45 @@ import {
   MessageMetaDate,
 } from './styles/Messages';
 import { dateFormatter } from '../src/utils/dateFormatter';
-import { FormStyles, InputStyles } from './styles/shared';
 import { useGetDirectMessagesQuery } from '../src/generated/graphql';
 
 interface DirectMessageProps {}
 
-
 const DirectMessage: React.FC<DirectMessageProps> = ({}) => {
   const router = useRouter();
-  const receiverId  = parseInt(router.query.userId as string);
+  const receiverId = parseInt(router.query.userId as string);
   const { data, loading } = useGetDirectMessagesQuery({
     variables: {
-      receiverId, 
-      teamId: 1
+      receiverId,
+      teamId: 1,
     },
-    skip: !receiverId
+    skip: !receiverId,
   });
 
-  if (loading) return <div>loading...</div>
+  if (loading) return <div>loading...</div>;
 
   console.log(data);
   return (
     <ChatMessageContainer>
       <MessageList>
-        {data?.getDirectMessages.map((message) => (
-          <MessageListItems key={`message-${message.id}`}>
+        {data?.getDirectMessages.map((directMessage) => (
+          <MessageListItems key={`directMessage-${directMessage.id}`}>
             <UserIconWrapper>
               <UserIcon>
-                {message.creator.username.charAt(0).toUpperCase()}
+                {directMessage.creator.username.charAt(0).toUpperCase()}
               </UserIcon>
             </UserIconWrapper>
             <MessageWrapper>
               <AutherWrapper>
                 <MessageAuther>
-                  {message.creator.username}
+                  {directMessage.creator.username}
                   <MessageMetaDate>
-                    {dateFormatter(message.createdAt)}
+                    {dateFormatter(directMessage.createdAt)}
                   </MessageMetaDate>
                 </MessageAuther>
               </AutherWrapper>
-              <p>{message.text}</p>
+              <p>{directMessage.text}</p>
+              {directMessage.image && <img src={directMessage.image} alt={directMessage.text} />}
             </MessageWrapper>
           </MessageListItems>
         ))}

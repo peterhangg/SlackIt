@@ -1,11 +1,16 @@
 import React, { useRef } from 'react';
 import styled from 'styled-components';
-import { useCreateMessageMutation } from '../src/generated/graphql';
+import { useRouter } from 'next/router';
+import {
+  useCreateDirectMessageMutation,
+  useCreateMessageMutation,
+} from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
 
 interface MessageInputProps {
   channelId: number;
   channelName: string;
+  teamId: number;
 }
 
 const FormContainer = styled.div`
@@ -66,7 +71,10 @@ const UploadButtonStyles = styled.button`
 const MessageInput: React.FC<MessageInputProps> = ({
   channelId,
   channelName,
+  teamId,
 }) => {
+  const router = useRouter();
+  const receiverId = parseInt(router.query.userId as string);
   const { inputs, handleChange, clearForm } = useForm({
     text: '',
     image: null,
@@ -75,7 +83,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const [createMessageMutation, { error }] = useCreateMessageMutation({
     variables: {
       channelId,
-      text: inputs.text as string,
+      text: inputs.text,
       image: inputs.image || '',
     },
     update: (cache) => {
@@ -83,13 +91,37 @@ const MessageInput: React.FC<MessageInputProps> = ({
     },
   });
 
+  const [
+    createDirectMessage,
+    { error: DirectMessageError },
+  ] = useCreateDirectMessageMutation({
+    variables: {
+      teamId,
+      receiverId,
+      text: inputs.text,
+      image: inputs.image  || ''
+    },
+    update: (cache) => {
+      cache.evict({ fieldName: 'getDirectMessages' });
+    },
+  });
+
   const uploadRef = useRef(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const response = await createMessageMutation().catch((err) =>
-      console.error(err)
-    );
+    let response: any;
+    
+    if (receiverId) {
+      response = await createDirectMessage().catch((err) =>
+        console.error(err)
+      )
+    } else {
+      response = await createMessageMutation().catch((err) =>
+        console.error(err)
+      );
+    }
+    
     if (!response) {
       return;
     }
@@ -103,7 +135,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
 
   return (
     <FormContainer>
-      {error && <h2>{error.message}</h2>}
+      {error || DirectMessageError && <h2>{error.message || DirectMessageError.message}</h2>}
       <FormStyles onSubmit={handleSubmit}>
         <>
           <UploadButtonStyles type="button" onClick={handleUploadClick}>

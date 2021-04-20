@@ -52,7 +52,7 @@ export class MessageResolver {
           : {
               channel: { id: channelId },
             },
-        order: { createdAt: 'DESC' },
+        order: { createdAt: 'ASC' },
         take: pagLimitPlusOne,
       });
 

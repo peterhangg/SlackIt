@@ -45,7 +45,7 @@ const DashboardLayout: React.FC = () => {
         showModal={showModal}
         setShowModal={setShowModal}
       />
-      <Messages channelId={channelId} />
+      <Messages channelId={channelId} teamId={teamId}/>
       <AddChannelModal
         teamId={teamId}
         showModal={showModal}
