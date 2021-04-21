@@ -151,6 +151,7 @@ export type Mutation = {
   editMessage: Message;
   createDirectMessage: DirectMessage;
   deleteDirectMessage: Scalars['Boolean'];
+  editDirectMessage: DirectMessage;
 };
 
 
@@ -231,6 +232,12 @@ export type MutationDeleteDirectMessageArgs = {
 };
 
 
+export type MutationEditDirectMessageArgs = {
+  text: Scalars['String'];
+  directMessageId: Scalars['Float'];
+};
+
+
 export type Subscription = {
   __typename?: 'Subscription';
   joinedTeam: User;
@@ -242,6 +249,7 @@ export type Subscription = {
   teamNotification: Message;
   newDirectMessage: DirectMessage;
   removeDirectMessage: DirectMessage;
+  editedDirectMessage: DirectMessage;
 };
 
 
@@ -291,6 +299,12 @@ export type SubscriptionRemoveDirectMessageArgs = {
   userId: Scalars['Float'];
 };
 
+
+export type SubscriptionEditedDirectMessageArgs = {
+  teamId: Scalars['Float'];
+  userId: Scalars['Float'];
+};
+
 export type CreateChannelMutationVariables = Exact<{
   teamId: Scalars['Float'];
   name: Scalars['String'];
@@ -334,6 +348,24 @@ export type DeleteDirectMessageMutationVariables = Exact<{
 export type DeleteDirectMessageMutation = (
   { __typename?: 'Mutation' }
   & Pick<Mutation, 'deleteDirectMessage'>
+);
+
+export type EditDirectMessageMutationVariables = Exact<{
+  directMessageId: Scalars['Float'];
+  text: Scalars['String'];
+}>;
+
+
+export type EditDirectMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { editDirectMessage: (
+    { __typename?: 'DirectMessage' }
+    & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt' | 'updatedAt'>
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
 );
 
 export type CreateMessageMutationVariables = Exact<{
@@ -503,7 +535,7 @@ export type GetDirectMessagesQuery = (
   { __typename?: 'Query' }
   & { getDirectMessages: Array<(
     { __typename?: 'DirectMessage' }
-    & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt'>
+    & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt' | 'updatedAt'>
     & { creator: (
       { __typename?: 'User' }
       & Pick<User, 'id' | 'username'>
@@ -633,6 +665,24 @@ export type AddedChannelSubscription = (
   & { addedChannel: (
     { __typename?: 'Channel' }
     & Pick<Channel, 'id' | 'name' | 'description'>
+  ) }
+);
+
+export type EditedDirectMessageSubscriptionVariables = Exact<{
+  userId: Scalars['Float'];
+  teamId: Scalars['Float'];
+}>;
+
+
+export type EditedDirectMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { editedDirectMessage: (
+    { __typename?: 'DirectMessage' }
+    & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt' | 'updatedAt'>
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
   ) }
 );
 
@@ -885,6 +935,48 @@ export function useDeleteDirectMessageMutation(baseOptions?: Apollo.MutationHook
 export type DeleteDirectMessageMutationHookResult = ReturnType<typeof useDeleteDirectMessageMutation>;
 export type DeleteDirectMessageMutationResult = Apollo.MutationResult<DeleteDirectMessageMutation>;
 export type DeleteDirectMessageMutationOptions = Apollo.BaseMutationOptions<DeleteDirectMessageMutation, DeleteDirectMessageMutationVariables>;
+export const EditDirectMessageDocument = gql`
+    mutation EditDirectMessage($directMessageId: Float!, $text: String!) {
+  editDirectMessage(directMessageId: $directMessageId, text: $text) {
+    id
+    text
+    image
+    createdAt
+    updatedAt
+    creator {
+      id
+      username
+    }
+  }
+}
+    `;
+export type EditDirectMessageMutationFn = Apollo.MutationFunction<EditDirectMessageMutation, EditDirectMessageMutationVariables>;
+
+/**
+ * __useEditDirectMessageMutation__
+ *
+ * To run a mutation, you first call `useEditDirectMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditDirectMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editDirectMessageMutation, { data, loading, error }] = useEditDirectMessageMutation({
+ *   variables: {
+ *      directMessageId: // value for 'directMessageId'
+ *      text: // value for 'text'
+ *   },
+ * });
+ */
+export function useEditDirectMessageMutation(baseOptions?: Apollo.MutationHookOptions<EditDirectMessageMutation, EditDirectMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditDirectMessageMutation, EditDirectMessageMutationVariables>(EditDirectMessageDocument, options);
+      }
+export type EditDirectMessageMutationHookResult = ReturnType<typeof useEditDirectMessageMutation>;
+export type EditDirectMessageMutationResult = Apollo.MutationResult<EditDirectMessageMutation>;
+export type EditDirectMessageMutationOptions = Apollo.BaseMutationOptions<EditDirectMessageMutation, EditDirectMessageMutationVariables>;
 export const CreateMessageDocument = gql`
     mutation CreateMessage($channelId: Float!, $text: String!, $image: Upload) {
   createMessage(channelId: $channelId, text: $text, image: $image)
@@ -1313,6 +1405,7 @@ export const GetDirectMessagesDocument = gql`
     text
     image
     createdAt
+    updatedAt
     creator {
       id
       username
@@ -1666,6 +1759,45 @@ export function useAddedChannelSubscription(baseOptions: Apollo.SubscriptionHook
       }
 export type AddedChannelSubscriptionHookResult = ReturnType<typeof useAddedChannelSubscription>;
 export type AddedChannelSubscriptionResult = Apollo.SubscriptionResult<AddedChannelSubscription>;
+export const EditedDirectMessageDocument = gql`
+    subscription EditedDirectMessage($userId: Float!, $teamId: Float!) {
+  editedDirectMessage(userId: $userId, teamId: $teamId) {
+    id
+    text
+    image
+    createdAt
+    updatedAt
+    creator {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useEditedDirectMessageSubscription__
+ *
+ * To run a query within a React component, call `useEditedDirectMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useEditedDirectMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useEditedDirectMessageSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useEditedDirectMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<EditedDirectMessageSubscription, EditedDirectMessageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<EditedDirectMessageSubscription, EditedDirectMessageSubscriptionVariables>(EditedDirectMessageDocument, options);
+      }
+export type EditedDirectMessageSubscriptionHookResult = ReturnType<typeof useEditedDirectMessageSubscription>;
+export type EditedDirectMessageSubscriptionResult = Apollo.SubscriptionResult<EditedDirectMessageSubscription>;
 export const NewDirectMessageDocument = gql`
     subscription NewDirectMessage($userId: Float!, $teamId: Float!) {
   newDirectMessage(userId: $userId, teamId: $teamId) {

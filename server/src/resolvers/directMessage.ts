@@ -19,6 +19,7 @@ import { GraphQLUpload } from 'apollo-server-express';
 import { uploadCloudinary } from '../config/cloudinary';
 import {
   DELETE_DIRECT_MESSAGE,
+  EDIT_DIRECT_MESSAGE,
   NEW_DIRECT_MESSAGE,
 } from '../utils/subscriptions';
 
@@ -142,6 +143,38 @@ export class DirectMessageResolver {
     }
   }
 
+  // EDIT DIRECT MESSAGE
+  @Mutation(() => DirectMessage)
+  @UseMiddleware(isAutenticated)
+  async editDirectMessage(
+    @Arg('directMessageId') directMessageId: number,
+    @Arg('text') text: string,
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
+  ): Promise<DirectMessage> {
+    try {
+      const directMessage = await DirectMessage.findOne({
+        relations: ['creator'],
+        where: { id: directMessageId },
+      });
+
+      if (!directMessage) throw new Error('Message could not be found');
+
+      const messageOwner = directMessage.creator.id;
+      if (messageOwner !== req.session.userId)
+        throw new Error('Not authorized to edit this message');
+
+      directMessage.text = text;
+
+      await directMessage.save();
+      console.log(directMessage);
+      await pubSub.publish(EDIT_DIRECT_MESSAGE, directMessage);
+      return directMessage;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
   // SUBSCRIPTION LISTENING TO NEW MESSAGE
   @Subscription(() => DirectMessage, {
     topics: NEW_DIRECT_MESSAGE,
@@ -166,6 +199,22 @@ export class DirectMessageResolver {
       (args.userId == payload.receiverId || args.userId == payload.senderId),
   })
   async removeDirectMessage(
+    @Root()
+    payload: DirectMessage,
+    @Arg('userId') _userId: number,
+    @Arg('teamId') _teamId: number
+  ): Promise<DirectMessage> {
+    return payload;
+  }
+
+  // SUBSCRIPTION DELETE DIRECT MESSAGE
+  @Subscription(() => DirectMessage, {
+    topics: EDIT_DIRECT_MESSAGE,
+    filter: ({ payload, args }) =>
+      args.teamId === payload.teamId &&
+      (args.userId == payload.receiverId || args.userId == payload.senderId),
+  })
+  async editedDirectMessage(
     @Root()
     payload: DirectMessage,
     @Arg('userId') _userId: number,

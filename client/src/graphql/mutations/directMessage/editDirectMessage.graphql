@@ -1,0 +1,13 @@
+mutation EditDirectMessage($directMessageId: Float!, $text: String!) {
+  editDirectMessage(directMessageId: $directMessageId, text: $text) {
+    id
+    text
+    image
+    createdAt
+    updatedAt
+    creator {
+      id
+      username
+    }
+  }
+}

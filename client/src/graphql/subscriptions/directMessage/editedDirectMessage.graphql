@@ -1,0 +1,13 @@
+subscription EditedDirectMessage($userId: Float!, $teamId: Float!) {
+  editedDirectMessage(userId: $userId, teamId: $teamId) {
+    id
+    text
+    image
+    createdAt
+    updatedAt
+    creator {
+      id
+      username
+    }
+  }
+}

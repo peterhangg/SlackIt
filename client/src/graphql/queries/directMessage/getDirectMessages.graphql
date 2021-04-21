@@ -4,6 +4,7 @@ query GetDirectMessages($receiverId: Float!, $teamId: Float!) {
     text
     image
     createdAt
+    updatedAt
     creator {
       id
       username

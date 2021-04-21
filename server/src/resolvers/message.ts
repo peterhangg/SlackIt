@@ -101,7 +101,7 @@ export class MessageResolver {
         image: uploadedImage || '',
         user: sender,
       }).save();
-
+      
       await pubSub.publish(NEW_MESSAGE, newMessage);
       return true;
     } catch (err) {
@@ -156,7 +156,7 @@ export class MessageResolver {
 
       const messageOwner = message.user.id;
       if (messageOwner !== req.session.userId)
-        throw new Error('Not authorized to delete this message');
+        throw new Error('Not authorized to edit this message');
 
       message.text = text;
 
@@ -167,6 +167,7 @@ export class MessageResolver {
       throw new Error(err);
     }
   }
+
   // SUBSCRIPTION LISTENING TO NEW MESSAGE
   @Subscription(() => Message, {
     topics: NEW_MESSAGE,
@@ -175,7 +176,7 @@ export class MessageResolver {
   async newMessage(
     @Root()
     payload: Message,
-    @Arg('channelId') _: number
+    @Arg('channelId') _channelId: number
   ): Promise<Message> {
     return payload;
   }
@@ -188,7 +189,7 @@ export class MessageResolver {
   async removeMessage(
     @Root()
     payload: Message,
-    @Arg('channelId') _: number
+    @Arg('channelId') _channelId: number
   ): Promise<Message> {
     return payload;
   }
@@ -201,7 +202,7 @@ export class MessageResolver {
   async editedMessage(
     @Root()
     payload: Message,
-    @Arg('channelId') _: number
+    @Arg('channelId') _channelId: number
   ): Promise<Message> {
     return payload;
   }
@@ -214,7 +215,7 @@ export class MessageResolver {
   async teamNotification(
     @Root()
     payload: Message,
-    @Arg('channelId') _: number
+    @Arg('channelId') _channelId: number
   ): Promise<Message> {
     return payload;
   }
