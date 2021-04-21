@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import NextLink from 'next/link';
 import {
   AddedChannelDocument,
+  useGetTeamChannelsQuery,
   useGetTeamQuery,
 } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
@@ -60,14 +61,12 @@ const ChannelListHeader = styled.h4`
 `;
 
 const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
-  const { data: teamData, error, subscribeToMore } = useGetTeamQuery({
+  const { data, subscribeToMore } = useGetTeamChannelsQuery({
     variables: { teamId },
     skip: !teamId,
   });
 
-  if (error) return <div>{error.message}</div>;
-
-  const team = teamData?.getTeam;
+  const team = data?.getTeamChannels;
 
   const showAddChannelModal = () => {
     setShowModal(true);
@@ -87,10 +86,7 @@ const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
           const newChannel = res.subscriptionData.data.addedChannel;
           return {
             ...prev,
-            getTeam: {
-              ...prev.getTeam,
-              channels: [...prev.getTeam.channels, newChannel],
-            },
+            getTeamChannels: [...prev.getTeamChannels, newChannel],
           };
         },
       });
@@ -108,11 +104,11 @@ const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
         <AddChannelIcon onClick={showAddChannelModal}>+</AddChannelIcon>
       </ChannalHeaderWrapper>
       <ChannelList>
-        {team?.channels.map((channel) => (
+        {team?.map((channel) => (
           <NextLink
             key={`channel-${channel.id}`}
             href="/dashboard/[teamId]/[channelId]"
-            as={`/dashboard/${team.id}/${channel.id}`}
+            as={`/dashboard/${teamId}/${channel.id}`}
           >
             <ChannelListItem key={`channel-${channel.id}`}>
               # {channel.name}
