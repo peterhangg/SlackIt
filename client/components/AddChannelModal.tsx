@@ -35,6 +35,7 @@ const ModalWrapper = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  background-color: #fff;
   width: 50%;
   height: 50%;
   max-width: 550px;
@@ -84,7 +85,7 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
-      cache.evict({ fieldName: 'getTeam' });
+        cache.evict({ fieldName: 'getTeam' });
       cache.evict({ fieldName: 'getChannelMessages' });
     },
   });

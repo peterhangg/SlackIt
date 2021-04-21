@@ -1,0 +1,13 @@
+query GetDirectMessages($receiverId: Float!, $teamId: Float!) {
+	getDirectMessages(receiverId: $receiverId, teamId: $teamId) {
+    id
+    text
+    image
+    createdAt
+    updatedAt
+    creator {
+      id
+      username
+    }
+  }
+}

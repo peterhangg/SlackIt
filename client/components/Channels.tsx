@@ -3,21 +3,19 @@ import styled from 'styled-components';
 import NextLink from 'next/link';
 import {
   AddedChannelDocument,
-  useGetMeQuery,
+  useGetTeamChannelsQuery,
   useGetTeamQuery,
 } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
-import TeamHeader from './TeamHeader';
-
 interface ChannelsProps {
   setShowModal: Dispatcher<boolean>;
   teamId: number;
 }
 
 const ChannelContainer = styled.div`
-  height: 100%;
-  flex-grow: 1;
+  max-height: 33%;
   color: #e5e5e5;
+  overflow-y: auto;
 `;
 
 const AddChannelIcon = styled.button`
@@ -50,6 +48,7 @@ const ChannelList = styled.ul`
 const ChannelListItem = styled.li`
   padding: 2px;
   padding-left: 12px;
+  color: #e5e5e5;
   &:hover {
     cursor: pointer;
   }
@@ -61,16 +60,13 @@ const ChannelListHeader = styled.h4`
   color: #fff;
 `;
 
-export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
-  const { data: meData } = useGetMeQuery();
-  const { data: teamData, error, subscribeToMore } = useGetTeamQuery({
+const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
+  const { data, subscribeToMore } = useGetTeamChannelsQuery({
     variables: { teamId },
     skip: !teamId,
   });
 
-  if (error) return <div>{error.message}</div>;
-  
-  const team = teamData?.getTeam;
+  const team = data?.getTeamChannels;
 
   const showAddChannelModal = () => {
     setShowModal(true);
@@ -90,10 +86,7 @@ export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
           const newChannel = res.subscriptionData.data.addedChannel;
           return {
             ...prev,
-            getTeam: {
-              ...prev.getTeam,
-              channels: [...prev.getTeam.channels, newChannel],
-            },
+            getTeamChannels: [...prev.getTeamChannels, newChannel],
           };
         },
       });
@@ -104,24 +97,18 @@ export const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
     }
   }, [teamId, subscribeToMore]);
 
-
   return (
     <ChannelContainer>
-      <TeamHeader
-        teamName={team?.name}
-        username={meData?.getMe?.username}
-        teamId={team?.id}
-      />
       <ChannalHeaderWrapper>
         <ChannelListHeader>Channels</ChannelListHeader>
         <AddChannelIcon onClick={showAddChannelModal}>+</AddChannelIcon>
       </ChannalHeaderWrapper>
       <ChannelList>
-        {team?.channels.map((channel) => (
+        {team?.map((channel) => (
           <NextLink
             key={`channel-${channel.id}`}
             href="/dashboard/[teamId]/[channelId]"
-            as={`/dashboard/${team.id}/${channel.id}`}
+            as={`/dashboard/${teamId}/${channel.id}`}
           >
             <ChannelListItem key={`channel-${channel.id}`}>
               # {channel.name}

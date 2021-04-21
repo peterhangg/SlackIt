@@ -1,0 +1,3 @@
+mutation DeleteDirectMessage($directMessageId: Float!) {
+  deleteDirectMessage(directMessageId: $directMessageId)
+}

@@ -1,17 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import NextLink from 'next/link';
-import { Team, Channel } from '../src/generated/graphql';
-
-interface TeamsProps {
-  teams: Array<
-    { __typename?: 'Team' } & Pick<Team, 'id' | 'name'> & {
-        channels: Array<
-          { __typename?: 'Channel' } & Pick<Channel, 'id' | 'name'>
-        >;
-      }
-  >;
-}
+import { useGetUserTeamsQuery } from '../src/generated/graphql';
 
 const TeamContainer = styled.div`
   width: 33%;
@@ -45,11 +35,13 @@ const TeamListItem = styled.li`
   }
 `;
 
-export const Teams: React.FC<TeamsProps> = ({ teams }) => {
+export const Teams: React.FC = ({}) => {
+  const { data } = useGetUserTeamsQuery();
+  
   return (
     <TeamContainer>
       <TeamList>
-        {teams.map((team) => (
+        {data?.getUserTeams.map((team) => (
           <NextLink
             key={`team-${team.id}`}
             href="/dashboard/[teamId]"

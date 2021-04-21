@@ -21,6 +21,7 @@ const NavButtons: React.FC = () => {
   const logoutHandler = async () => {
     await logoutMutation();
     await apolloClient.clearStore();
+    await apolloClient.resetStore();
   };
 
   return (

@@ -7,7 +7,23 @@ import { COOKIE_NAME } from '../utils/constants';
 
 @Resolver()
 export class UserResolver {
-  // FETCH ALL USERS
+  // GET USER
+  @Query(() => User)
+  async getUser(
+    @Arg('userId') userId: number,
+  ): Promise<User> {
+    try {
+      const user = await User.findOne(userId);
+      if (!user) throw new Error('This user does not exist');
+      
+      return user;
+
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
+  // GET ALL USERS
   @Query(() => [User])
   async getAllUsers() {
     const allUsers = await User.find();

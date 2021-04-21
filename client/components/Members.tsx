@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import NextLink from 'next/link';
 import {
   JoinedTeamDocument,
   LeftTeamDocument,
@@ -12,8 +13,8 @@ interface MembersProps {
 
 const MemberContainer = styled.div`
   height: 50%;
-  overflow: hidden;
   padding: 5px;
+  overflow: hidden;
   overflow-y: auto;
 `;
 
@@ -91,7 +92,7 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
       return () => {
         subscriptionJoinedUser();
         subscriptionLeftTeam();
-      }
+      };
     }
   }, [subscribeToMore, teamId]);
 
@@ -100,9 +101,13 @@ export const Members: React.FC<MembersProps> = ({ teamId }) => {
       <MemberHeader>Members</MemberHeader>
       <MemberList>
         {team?.users.map((user) => (
-          <MemberListItems key={`member-${user.id}`}>
-            {user.username}
-          </MemberListItems>
+          <NextLink
+            key={`member-${user.id}`}
+            href="/dashboard/[teamId]/user/[userId]"
+            as={`/dashboard/${team.id}/user/${user.id}`}
+          >
+            <MemberListItems>{user.username}</MemberListItems>
+          </NextLink>
         ))}
       </MemberList>
     </MemberContainer>

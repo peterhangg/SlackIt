@@ -10,7 +10,7 @@ export const MessageList = styled.ul`
   list-style: none;
   display: flex;
   overflow-y: auto;
-  flex-direction: column-reverse;
+  flex-direction: column;
   position: relative;
 `;
 
@@ -31,7 +31,7 @@ export const MessageListItems = styled.li`
   padding-bottom: 10px;
 `;
 
-export const AutherWrapper = styled.div`
+export const AuthorWrapper = styled.div`
   display: flex;
 `;
 

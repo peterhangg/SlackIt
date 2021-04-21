@@ -9,6 +9,7 @@ import {
   OneToMany,
   ManyToMany,
 } from 'typeorm';
+import { DirectMessage } from './DirectMessage';
 import { Message } from './Message';
 import { Team } from './Team';
 
@@ -49,4 +50,8 @@ export class User extends BaseEntity {
   @OneToMany(() => Team, (team) => team.owner, { nullable: true })
   @Field(() => [Team], { nullable: true })
   teamsOwned: Team[] | null;
+
+  @OneToMany(() => DirectMessage, (directMessage) => directMessage.creator)
+  @Field(() => [DirectMessage])
+  directMessages: DirectMessage[];
 }

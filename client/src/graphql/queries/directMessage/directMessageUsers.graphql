@@ -1,0 +1,6 @@
+query DirectMessageUsers($teamId: Float!){
+	directMessageUsers(teamId: $teamId) {
+    id
+    username
+  }
+}
