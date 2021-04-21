@@ -17,7 +17,10 @@ import { isAutenticated } from '../middleware/isAuthenticated';
 import { DirectMessage } from '../entities/DirectMessage';
 import { GraphQLUpload } from 'apollo-server-express';
 import { uploadCloudinary } from '../config/cloudinary';
-import { NEW_DIRECT_MESSAGE } from '../utils/subscriptions';
+import {
+  DELETE_DIRECT_MESSAGE,
+  NEW_DIRECT_MESSAGE,
+} from '../utils/subscriptions';
 
 @Resolver()
 export class DirectMessageResolver {
@@ -110,6 +113,35 @@ export class DirectMessageResolver {
     }
   }
 
+  // DELETE DIRECT MESSAGE
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAutenticated)
+  async deleteDirectMessage(
+    @Arg('directMessageId') messageId: number,
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
+  ): Promise<boolean> {
+    try {
+      const directMessage = await DirectMessage.findOne({
+        relations: ['creator'],
+        where: { id: messageId },
+      });
+
+      if (!directMessage) throw new Error('Direct message could not be found');
+
+      const directMessageOwner = directMessage.creator.id;
+
+      if (directMessageOwner !== req.session.userId)
+        throw new Error('Not authorized to delete this direct message');
+
+      await pubSub.publish(DELETE_DIRECT_MESSAGE, directMessage);
+      await directMessage.remove();
+      return true;
+    } catch (err) {
+      throw new Error(err);
+    }
+  }
+
   // SUBSCRIPTION LISTENING TO NEW MESSAGE
   @Subscription(() => DirectMessage, {
     topics: NEW_DIRECT_MESSAGE,
@@ -120,8 +152,24 @@ export class DirectMessageResolver {
   async newDirectMessage(
     @Root()
     payload: DirectMessage,
-    @Arg('userId') userId: number,
-    @Arg('teamId') teamId: number
+    @Arg('userId') _userId: number,
+    @Arg('teamId') _teamId: number
+  ): Promise<DirectMessage> {
+    return payload;
+  }
+
+  // SUBSCRIPTION DELETE DIRECT MESSAGE
+  @Subscription(() => DirectMessage, {
+    topics: DELETE_DIRECT_MESSAGE,
+    filter: ({ payload, args }) =>
+      args.teamId === payload.teamId &&
+      (args.userId == payload.receiverId || args.userId == payload.senderId),
+  })
+  async removeDirectMessage(
+    @Root()
+    payload: DirectMessage,
+    @Arg('userId') _userId: number,
+    @Arg('teamId') _teamId: number
   ): Promise<DirectMessage> {
     return payload;
   }

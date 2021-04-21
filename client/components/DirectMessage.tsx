@@ -7,13 +7,17 @@ import {
   UserIconWrapper,
   UserIcon,
   MessageWrapper,
-  AutherWrapper,
+  AuthorWrapper,
   MessageAuther,
   MessageMetaDate,
+  MessageButton,
+  MessageButtonWrapper,
 } from './styles/Messages';
 import { dateFormatter } from '../src/utils/dateFormatter';
 import {
   NewDirectMessageDocument,
+  RemoveDirectMessageDocument,
+  useDeleteDirectMessageMutation,
   useGetDirectMessagesQuery,
   useGetMeQuery,
 } from '../src/generated/graphql';
@@ -24,6 +28,8 @@ interface DirectMessageProps {
 
 const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
   const router = useRouter();
+  const directMessageContainerRef = useRef<HTMLDivElement>(null);
+
   const { data: meData } = useGetMeQuery();
   const receiverId = parseInt(router.query.userId as string);
   const { data, subscribeToMore } = useGetDirectMessagesQuery({
@@ -33,10 +39,22 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
     },
     skip: !receiverId,
   });
-  const directMessageContainerRef = useRef<HTMLDivElement>(null);
+  const [deleteDirectMessageMutation] = useDeleteDirectMessageMutation();
 
   const directMessages = data?.getDirectMessages;
   const userId = meData?.getMe.id;
+
+  const handleDelete = async (directMessageId: number) => {
+    const response = await deleteDirectMessageMutation({
+      variables: { directMessageId },
+      update: (cache) => {
+        cache.evict({ fieldName: 'getDirectMessages' });
+      },
+    }).catch((err) => console.error(err));
+
+    if (!response) return;
+    return response;
+  };
 
   // Scroll to bottom on mount / new direct message
   useEffect(() => {
@@ -67,8 +85,30 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
       },
     });
 
+    const subscriptionRemoveDirectMessage = subscribeToMore({
+      document: RemoveDirectMessageDocument,
+      variables: {
+        teamId,
+        userId,
+      },
+      updateQuery: (prev, res: any) => {
+        if (!res.subscriptionData.data) {
+          return prev;
+        }
+        const removeDirectMessage =
+          res.subscriptionData.data.removeDirectMessage;
+        return {
+          ...prev,
+          getDirectMessages: prev.getDirectMessages.filter(
+            (directMessage) => directMessage.id !== removeDirectMessage.id
+          ),
+        };
+      },
+    });
+
     return () => {
       subscriptionNewDirectMessage();
+      subscriptionRemoveDirectMessage();
     };
   }, [subscribeToMore, teamId]);
 
@@ -83,14 +123,32 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
               </UserIcon>
             </UserIconWrapper>
             <MessageWrapper>
-              <AutherWrapper>
+              <AuthorWrapper>
                 <MessageAuther>
                   {directMessage.creator.username}
                   <MessageMetaDate>
                     {dateFormatter(directMessage.createdAt)}
                   </MessageMetaDate>
                 </MessageAuther>
-              </AutherWrapper>
+                {userId === directMessage.creator.id && (
+                  <MessageButtonWrapper>
+                    {/* {directMessage.text && (
+                      <MessageButton
+                        onClick={() =>
+                          toggleEditMessage(message.id, message.text)
+                        }
+                      >
+                        <i className="fas fa-edit" />
+                      </MessageButton>
+                    )} */}
+                    <MessageButton
+                      onClick={() => handleDelete(directMessage.id)}
+                    >
+                      <i className="fas fa-trash" />
+                    </MessageButton>
+                  </MessageButtonWrapper>
+                )}
+              </AuthorWrapper>
               <p>{directMessage.text}</p>
               {directMessage.image && (
                 <img src={directMessage.image} alt={directMessage.text} />

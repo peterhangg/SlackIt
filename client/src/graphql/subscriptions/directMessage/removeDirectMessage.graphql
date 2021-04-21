@@ -1,0 +1,12 @@
+subscription RemoveDirectMessage($teamId: Float!, $userId: Float!) {
+	removeDirectMessage(teamId: $teamId, userId: $userId) {
+    id
+    text
+    image
+    createdAt
+    creator {
+      id
+      username
+    }
+  }
+}

@@ -31,7 +31,7 @@ export const MessageListItems = styled.li`
   padding-bottom: 10px;
 `;
 
-export const AutherWrapper = styled.div`
+export const AuthorWrapper = styled.div`
   display: flex;
 `;
 

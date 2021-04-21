@@ -13,7 +13,7 @@ import { dateFormatter } from '../src/utils/dateFormatter';
 import useForm from '../src/utils/useForm';
 import { InputStyles, FormStyles } from '../components/styles/shared';
 import {
-  AutherWrapper,
+  AuthorWrapper,
   ChatMessageContainer,
   FetchMessageLoader,
   MessageAuther,
@@ -267,7 +267,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
               </UserIcon>
             </UserIconWrapper>
             <MessageWrapper>
-              <AutherWrapper>
+              <AuthorWrapper>
                 <MessageAuther>
                   {message.user.username}
                   <MessageMetaDate>
@@ -292,7 +292,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                     </MessageButton>
                   </MessageButtonWrapper>
                 )}
-              </AutherWrapper>
+              </AuthorWrapper>
               {openEdit && currentEditMessage === message.id ? (
                 <>
                   <FormStyles

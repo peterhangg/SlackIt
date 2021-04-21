@@ -150,6 +150,7 @@ export type Mutation = {
   deleteMessage: Scalars['Boolean'];
   editMessage: Message;
   createDirectMessage: DirectMessage;
+  deleteDirectMessage: Scalars['Boolean'];
 };
 
 
@@ -225,6 +226,11 @@ export type MutationCreateDirectMessageArgs = {
 };
 
 
+export type MutationDeleteDirectMessageArgs = {
+  directMessageId: Scalars['Float'];
+};
+
+
 export type Subscription = {
   __typename?: 'Subscription';
   joinedTeam: User;
@@ -235,6 +241,7 @@ export type Subscription = {
   editedMessage: Message;
   teamNotification: Message;
   newDirectMessage: DirectMessage;
+  removeDirectMessage: DirectMessage;
 };
 
 
@@ -278,6 +285,12 @@ export type SubscriptionNewDirectMessageArgs = {
   userId: Scalars['Float'];
 };
 
+
+export type SubscriptionRemoveDirectMessageArgs = {
+  teamId: Scalars['Float'];
+  userId: Scalars['Float'];
+};
+
 export type CreateChannelMutationVariables = Exact<{
   teamId: Scalars['Float'];
   name: Scalars['String'];
@@ -311,6 +324,16 @@ export type CreateDirectMessageMutation = (
       & Pick<User, 'id' | 'username'>
     ) }
   ) }
+);
+
+export type DeleteDirectMessageMutationVariables = Exact<{
+  directMessageId: Scalars['Float'];
+}>;
+
+
+export type DeleteDirectMessageMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteDirectMessage'>
 );
 
 export type CreateMessageMutationVariables = Exact<{
@@ -631,6 +654,24 @@ export type NewDirectMessageSubscription = (
   ) }
 );
 
+export type RemoveDirectMessageSubscriptionVariables = Exact<{
+  teamId: Scalars['Float'];
+  userId: Scalars['Float'];
+}>;
+
+
+export type RemoveDirectMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { removeDirectMessage: (
+    { __typename?: 'DirectMessage' }
+    & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt'>
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
+);
+
 export type EditedMessageSubscriptionVariables = Exact<{
   channelId: Scalars['Float'];
 }>;
@@ -813,6 +854,37 @@ export function useCreateDirectMessageMutation(baseOptions?: Apollo.MutationHook
 export type CreateDirectMessageMutationHookResult = ReturnType<typeof useCreateDirectMessageMutation>;
 export type CreateDirectMessageMutationResult = Apollo.MutationResult<CreateDirectMessageMutation>;
 export type CreateDirectMessageMutationOptions = Apollo.BaseMutationOptions<CreateDirectMessageMutation, CreateDirectMessageMutationVariables>;
+export const DeleteDirectMessageDocument = gql`
+    mutation DeleteDirectMessage($directMessageId: Float!) {
+  deleteDirectMessage(directMessageId: $directMessageId)
+}
+    `;
+export type DeleteDirectMessageMutationFn = Apollo.MutationFunction<DeleteDirectMessageMutation, DeleteDirectMessageMutationVariables>;
+
+/**
+ * __useDeleteDirectMessageMutation__
+ *
+ * To run a mutation, you first call `useDeleteDirectMessageMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteDirectMessageMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteDirectMessageMutation, { data, loading, error }] = useDeleteDirectMessageMutation({
+ *   variables: {
+ *      directMessageId: // value for 'directMessageId'
+ *   },
+ * });
+ */
+export function useDeleteDirectMessageMutation(baseOptions?: Apollo.MutationHookOptions<DeleteDirectMessageMutation, DeleteDirectMessageMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteDirectMessageMutation, DeleteDirectMessageMutationVariables>(DeleteDirectMessageDocument, options);
+      }
+export type DeleteDirectMessageMutationHookResult = ReturnType<typeof useDeleteDirectMessageMutation>;
+export type DeleteDirectMessageMutationResult = Apollo.MutationResult<DeleteDirectMessageMutation>;
+export type DeleteDirectMessageMutationOptions = Apollo.BaseMutationOptions<DeleteDirectMessageMutation, DeleteDirectMessageMutationVariables>;
 export const CreateMessageDocument = gql`
     mutation CreateMessage($channelId: Float!, $text: String!, $image: Upload) {
   createMessage(channelId: $channelId, text: $text, image: $image)
@@ -1632,6 +1704,44 @@ export function useNewDirectMessageSubscription(baseOptions: Apollo.Subscription
       }
 export type NewDirectMessageSubscriptionHookResult = ReturnType<typeof useNewDirectMessageSubscription>;
 export type NewDirectMessageSubscriptionResult = Apollo.SubscriptionResult<NewDirectMessageSubscription>;
+export const RemoveDirectMessageDocument = gql`
+    subscription RemoveDirectMessage($teamId: Float!, $userId: Float!) {
+  removeDirectMessage(teamId: $teamId, userId: $userId) {
+    id
+    text
+    image
+    createdAt
+    creator {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useRemoveDirectMessageSubscription__
+ *
+ * To run a query within a React component, call `useRemoveDirectMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useRemoveDirectMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useRemoveDirectMessageSubscription({
+ *   variables: {
+ *      teamId: // value for 'teamId'
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useRemoveDirectMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<RemoveDirectMessageSubscription, RemoveDirectMessageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<RemoveDirectMessageSubscription, RemoveDirectMessageSubscriptionVariables>(RemoveDirectMessageDocument, options);
+      }
+export type RemoveDirectMessageSubscriptionHookResult = ReturnType<typeof useRemoveDirectMessageSubscription>;
+export type RemoveDirectMessageSubscriptionResult = Apollo.SubscriptionResult<RemoveDirectMessageSubscription>;
 export const EditedMessageDocument = gql`
     subscription EditedMessage($channelId: Float!) {
   editedMessage(channelId: $channelId) {
