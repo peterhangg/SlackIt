@@ -52,7 +52,7 @@ export const Messages: React.FC<MessagesProps> = ({ channelId, teamId }) => {
         )}
       </MessageHeaderWrapper>
       {receiverId ? <DirectMessage teamId={teamId} /> : <ChatMessages channelId={channelId} />}
-      <MessageInput channelId={channelId} channelName={data?.getChannel.name} teamId={teamId} />
+      <MessageInput channelId={channelId} channelName={data?.getChannel.name} teamId={teamId} username={userData?.getUser.username}/>
     </MessageContainer>
   );
 };

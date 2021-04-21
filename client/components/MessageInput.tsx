@@ -11,6 +11,7 @@ interface MessageInputProps {
   channelId: number;
   channelName: string;
   teamId: number;
+  username: string;
 }
 
 const FormContainer = styled.div`
@@ -72,6 +73,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   channelId,
   channelName,
   teamId,
+  username
 }) => {
   const router = useRouter();
   const receiverId = parseInt(router.query.userId as string);
@@ -153,7 +155,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
         <InputStyles
           type="textarea"
           name="text"
-          placeholder={`Message # ${channelName}`}
+          placeholder={!receiverId ? `Message # ${channelName}` : `Message # ${username}`}
           onChange={handleChange}
           value={inputs.text}
         />
