@@ -64,7 +64,9 @@ const ButtonStyles = styled.button`
   }
 `;
 
-const UsernameHeader = styled.h3``;
+const UsernameHeader = styled.h3`
+  color: #e5e5e5;
+`;
 
 const TeamHeader: React.FC<TeamHeaderProps> = ({
   teamName,

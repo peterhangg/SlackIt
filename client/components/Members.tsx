@@ -13,8 +13,8 @@ interface MembersProps {
 
 const MemberContainer = styled.div`
   height: 50%;
-  overflow: hidden;
   padding: 5px;
+  overflow: hidden;
   overflow-y: auto;
 `;
 

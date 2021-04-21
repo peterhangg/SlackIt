@@ -8,10 +8,9 @@ interface DirectMessageUsersProps {
 }
 
 const DirectMessageContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
   margin-top: 2rem;
+  max-height: 33%;
+  overflow-y: auto;
 `;
 
 const DirectMessageList = styled.ul`
@@ -22,6 +21,7 @@ const DirectMessageList = styled.ul`
 const DirectMessageListItem = styled.li`
   padding: 2px;
   padding-left: 12px;
+  color: #e5e5e5;
   &:hover {
     cursor: pointer;
   }
