@@ -234,6 +234,7 @@ export type Subscription = {
   removeMessage: Message;
   editedMessage: Message;
   teamNotification: Message;
+  newDirectMessage: DirectMessage;
 };
 
 
@@ -269,6 +270,12 @@ export type SubscriptionEditedMessageArgs = {
 
 export type SubscriptionTeamNotificationArgs = {
   channelId: Scalars['Float'];
+};
+
+
+export type SubscriptionNewDirectMessageArgs = {
+  teamId: Scalars['Float'];
+  userId: Scalars['Float'];
 };
 
 export type CreateChannelMutationVariables = Exact<{
@@ -603,6 +610,24 @@ export type AddedChannelSubscription = (
   & { addedChannel: (
     { __typename?: 'Channel' }
     & Pick<Channel, 'id' | 'name' | 'description'>
+  ) }
+);
+
+export type NewDirectMessageSubscriptionVariables = Exact<{
+  userId: Scalars['Float'];
+  teamId: Scalars['Float'];
+}>;
+
+
+export type NewDirectMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { newDirectMessage: (
+    { __typename?: 'DirectMessage' }
+    & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt'>
+    & { creator: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
   ) }
 );
 
@@ -1569,6 +1594,44 @@ export function useAddedChannelSubscription(baseOptions: Apollo.SubscriptionHook
       }
 export type AddedChannelSubscriptionHookResult = ReturnType<typeof useAddedChannelSubscription>;
 export type AddedChannelSubscriptionResult = Apollo.SubscriptionResult<AddedChannelSubscription>;
+export const NewDirectMessageDocument = gql`
+    subscription NewDirectMessage($userId: Float!, $teamId: Float!) {
+  newDirectMessage(userId: $userId, teamId: $teamId) {
+    id
+    text
+    image
+    createdAt
+    creator {
+      id
+      username
+    }
+  }
+}
+    `;
+
+/**
+ * __useNewDirectMessageSubscription__
+ *
+ * To run a query within a React component, call `useNewDirectMessageSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useNewDirectMessageSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useNewDirectMessageSubscription({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *      teamId: // value for 'teamId'
+ *   },
+ * });
+ */
+export function useNewDirectMessageSubscription(baseOptions: Apollo.SubscriptionHookOptions<NewDirectMessageSubscription, NewDirectMessageSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<NewDirectMessageSubscription, NewDirectMessageSubscriptionVariables>(NewDirectMessageDocument, options);
+      }
+export type NewDirectMessageSubscriptionHookResult = ReturnType<typeof useNewDirectMessageSubscription>;
+export type NewDirectMessageSubscriptionResult = Apollo.SubscriptionResult<NewDirectMessageSubscription>;
 export const EditedMessageDocument = gql`
     subscription EditedMessage($channelId: Float!) {
   editedMessage(channelId: $channelId) {

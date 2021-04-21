@@ -5,14 +5,19 @@ import {
   Query,
   Resolver,
   UseMiddleware,
+  Subscription,
+  PubSub,
+  PubSubEngine,
+  Root,
 } from 'type-graphql';
+import { getConnection } from 'typeorm';
 import { MyContext, Upload } from '../types';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { DirectMessage } from '../entities/DirectMessage';
 import { GraphQLUpload } from 'apollo-server-express';
 import { uploadCloudinary } from '../config/cloudinary';
-import { getConnection } from 'typeorm';
+import { NEW_DIRECT_MESSAGE } from '../utils/subscriptions';
 
 @Resolver()
 export class DirectMessageResolver {
@@ -24,11 +29,12 @@ export class DirectMessageResolver {
     @Arg('teamId') teamId: number,
     @Arg('receiverId') receiverId: number,
     @Arg('image', () => GraphQLUpload as any, { nullable: true }) image: Upload,
-    @Ctx() { req }: MyContext
+    @Ctx() { req }: MyContext,
+    @PubSub() pubSub: PubSubEngine
   ): Promise<DirectMessage> {
     try {
-      const creator = await User.findOne({ id: req.session.userId });
       let uploadedImage;
+      const creator = await User.findOne({ id: req.session.userId });
 
       if (image) {
         const newImage: any = await uploadCloudinary(image);
@@ -49,6 +55,7 @@ export class DirectMessageResolver {
         creator,
       }).save();
 
+      await pubSub.publish(NEW_DIRECT_MESSAGE, directMessage);
       return directMessage;
     } catch (err) {
       throw new Error(err);
@@ -101,5 +108,21 @@ export class DirectMessageResolver {
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  // SUBSCRIPTION LISTENING TO NEW MESSAGE
+  @Subscription(() => DirectMessage, {
+    topics: NEW_DIRECT_MESSAGE,
+    filter: ({ payload, args }) =>
+      args.teamId === payload.teamId &&
+      (args.userId == payload.receiverId || args.userId == payload.senderId),
+  })
+  async newDirectMessage(
+    @Root()
+    payload: DirectMessage,
+    @Arg('userId') userId: number,
+    @Arg('teamId') teamId: number
+  ): Promise<DirectMessage> {
+    return payload;
   }
 }

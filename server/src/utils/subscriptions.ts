@@ -5,3 +5,4 @@ export const JOIN_TEAM = 'JOIN_TEAM';
 export const LEAVE_TEAM = 'LEAVE_TEAM';
 export const TEAM_NOTIFICATION = 'TEAM_NOTIFICATION';
 export const CHANNEL_ADDED = 'CHANNEL_ADDED';
+export const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
