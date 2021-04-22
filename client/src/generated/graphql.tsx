@@ -38,6 +38,11 @@ export type QueryGetUserArgs = {
 };
 
 
+export type QueryGetAllTeamsArgs = {
+  searchTeam: Scalars['String'];
+};
+
+
 export type QueryGetTeamArgs = {
   teamId: Scalars['Float'];
 };
@@ -566,7 +571,9 @@ export type GetChannelMessagesQuery = (
   ) }
 );
 
-export type GetAllTeamsQueryVariables = Exact<{ [key: string]: never; }>;
+export type GetAllTeamsQueryVariables = Exact<{
+  searchTeam: Scalars['String'];
+}>;
 
 
 export type GetAllTeamsQuery = (
@@ -1491,8 +1498,8 @@ export type GetChannelMessagesQueryHookResult = ReturnType<typeof useGetChannelM
 export type GetChannelMessagesLazyQueryHookResult = ReturnType<typeof useGetChannelMessagesLazyQuery>;
 export type GetChannelMessagesQueryResult = Apollo.QueryResult<GetChannelMessagesQuery, GetChannelMessagesQueryVariables>;
 export const GetAllTeamsDocument = gql`
-    query GetAllTeams {
-  getAllTeams {
+    query GetAllTeams($searchTeam: String!) {
+  getAllTeams(searchTeam: $searchTeam) {
     id
     name
     description
@@ -1512,10 +1519,11 @@ export const GetAllTeamsDocument = gql`
  * @example
  * const { data, loading, error } = useGetAllTeamsQuery({
  *   variables: {
+ *      searchTeam: // value for 'searchTeam'
  *   },
  * });
  */
-export function useGetAllTeamsQuery(baseOptions?: Apollo.QueryHookOptions<GetAllTeamsQuery, GetAllTeamsQueryVariables>) {
+export function useGetAllTeamsQuery(baseOptions: Apollo.QueryHookOptions<GetAllTeamsQuery, GetAllTeamsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetAllTeamsQuery, GetAllTeamsQueryVariables>(GetAllTeamsDocument, options);
       }

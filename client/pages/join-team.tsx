@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { withApollo } from '../src/apollo/withApollo';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
-import { useGetMeQuery } from '../src/generated/graphql';
+import {
+  useGetAllTeamsLazyQuery,
+  useGetMeQuery,
+  useJoinTeamMutation,
+} from '../src/generated/graphql';
 import styled from 'styled-components';
 import {
   PageContainer,
@@ -11,11 +15,9 @@ import {
   PageHeader,
   HeaderHeroWrapper,
   ErrorMessage,
+  InputStyles,
 } from '../components/styles/shared';
-import {
-  useGetAllTeamsQuery,
-  useJoinTeamMutation,
-} from '../src/generated/graphql';
+import useForm from '../src/utils/useForm';
 const SlackIcon = require('../asset/slack.svg') as string;
 
 const TeamListContainer = styled.ul`
@@ -28,6 +30,7 @@ const TeamListContainer = styled.ul`
   min-width: 400px;
   max-height: 600px;
   height: 100%;
+  overflow-y: auto;
 `;
 
 const TeamListItems = styled.li`
@@ -58,7 +61,30 @@ const CreateTeamLink = styled.span`
 const JoinTeam: React.FC = ({}) => {
   const router = useRouter();
   const { data: userData } = useGetMeQuery();
-  const { data } = useGetAllTeamsQuery();
+  const { inputs, handleChange } = useForm({
+    name: '',
+  });
+
+  const [searchQuery, { data }] = useGetAllTeamsLazyQuery({
+    fetchPolicy: 'no-cache',
+  });
+
+  // FETCH ALL TEAMS ON MOUNT
+  useEffect(() => {
+    searchQuery({ variables: { searchTeam: '' } });
+  }, []);
+
+  // TEAM SEARCH ON INPUT CHANGE
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      searchQuery({ variables: { searchTeam: inputs.name } });
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [inputs.name, searchQuery]);
+
   const [joinTeamMutation, { error: joinTeamError }] = useJoinTeamMutation();
 
   const joinTeamHandler = async (teamId: number) => {
@@ -93,6 +119,7 @@ const JoinTeam: React.FC = ({}) => {
       </HeaderHeroWrapper>
       <PageHeader>Join a team today.</PageHeader>
       {joinTeamError && <ErrorMessage>{joinTeamError.message}</ErrorMessage>}
+      <InputStyles type="search" name="name" onChange={handleChange} />
       <TeamListContainer>
         {uniqueTeams?.map((team) => (
           <TeamListItems

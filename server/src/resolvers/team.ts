@@ -10,7 +10,7 @@ import {
   Subscription,
   UseMiddleware,
 } from 'type-graphql';
-import { getRepository } from 'typeorm';
+import { getRepository, ILike } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import argon2 from 'argon2';
 import { MyContext } from '../types';
@@ -29,11 +29,11 @@ import { Message } from '../entities/Message';
 export class TeamResolver {
   // GET ALL TEAMS
   @Query(() => [Team])
-  async getAllTeams(): Promise<Team[]> {
+  async getAllTeams(@Arg('searchTeam') searchTeam: string): Promise<Team[]> {
     try {
-      const allTeams = await Team.find({});
-      if (!allTeams) throw new Error('No teams currently exist');
-
+      const searchData = searchTeam ? { name: ILike(`${searchTeam}%`) } : {};
+      const allTeams = await Team.find(searchData);
+      
       return allTeams;
     } catch (err) {
       throw new Error(err);

@@ -44,6 +44,7 @@ export const InputStyles = styled.input`
   border-radius: 5px;
   border: 1px solid grey;
   transition: ease-in box-shadow 0.5s;
+  width: ${({ width }) => width ? width : '400px'};
   &:focus {
     outline: none;
     box-shadow: #611f69 0px 1px 4px, #611f69 0px 0px 0px 3px;
