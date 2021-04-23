@@ -6,6 +6,7 @@ import { DashboardContainer } from './styles';
 import { useRouter } from 'next/router';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
 import RightSidebar from './RightSidebar';
+import MembersModal from './MembersModal';
 
 const DashboardLayout: React.FC = () => {
   const router = useRouter();
@@ -51,6 +52,7 @@ const DashboardLayout: React.FC = () => {
         showModal={showModal}
         setShowModal={setShowModal}
       />
+      <MembersModal teamId={teamId} />
       <RightSidebar teamId={teamId} channelId={channelId} />
     </DashboardContainer>
   );

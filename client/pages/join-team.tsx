@@ -68,6 +68,7 @@ const JoinTeam: React.FC = ({}) => {
   const [searchQuery, { data }] = useGetAllTeamsLazyQuery({
     fetchPolicy: 'no-cache',
   });
+  const [joinTeamMutation, { error: joinTeamError }] = useJoinTeamMutation();
 
   // FETCH ALL TEAMS ON MOUNT
   useEffect(() => {
@@ -84,8 +85,6 @@ const JoinTeam: React.FC = ({}) => {
       clearTimeout(handler);
     };
   }, [inputs.name, searchQuery]);
-
-  const [joinTeamMutation, { error: joinTeamError }] = useJoinTeamMutation();
 
   const joinTeamHandler = async (teamId: number) => {
     const response = await joinTeamMutation({
@@ -119,7 +118,12 @@ const JoinTeam: React.FC = ({}) => {
       </HeaderHeroWrapper>
       <PageHeader>Join a team today.</PageHeader>
       {joinTeamError && <ErrorMessage>{joinTeamError.message}</ErrorMessage>}
-      <InputStyles type="search" name="name" onChange={handleChange} />
+      <InputStyles
+        type="search"
+        name="name"
+        onChange={handleChange}
+        placeholder="Search team"
+      />
       <TeamListContainer>
         {uniqueTeams?.map((team) => (
           <TeamListItems
@@ -141,4 +145,4 @@ const JoinTeam: React.FC = ({}) => {
   );
 };
 
-export default withApollo({ ssr: false })(JoinTeam);
+export default withApollo({ ssr: true })(JoinTeam);

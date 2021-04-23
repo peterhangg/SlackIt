@@ -1,5 +1,5 @@
-import { useRouter } from 'next/router';
 import React from 'react';
+import { useRouter } from 'next/router';
 import styled, { keyframes } from 'styled-components';
 import { useCreateChannelMutation } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';

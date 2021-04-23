@@ -44,6 +44,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   const { data: meData } = useGetMeQuery();
   const {
     data,
+    loading,
     error,
     subscribeToMore,
     fetchMore,
@@ -110,7 +111,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
 
   // Scroll to bottom on mount / change channels/ new message
   useEffect(() => {
-    if (messages?.length && messageContainerRef) {
+    if (!loading && messages?.length && messageContainerRef) {
       setTimeout(() => {
         messageContainerRef.current.scrollTop =
           messageContainerRef.current.scrollHeight;

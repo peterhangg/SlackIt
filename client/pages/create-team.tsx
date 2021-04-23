@@ -57,7 +57,7 @@ const createTeam: React.FC = () => {
     }
 
     const createdTeamData = response?.data.createTeam;
-    router.push(`/dashboard/${createdTeamData.id}`);
+    router.push(`/dashboard/${createdTeamData?.id}`);
   };
 
   return (
@@ -99,4 +99,4 @@ const createTeam: React.FC = () => {
   );
 };
 
-export default withApollo({ ssr: false })(createTeam);
+export default withApollo({ ssr: true })(createTeam);
