@@ -16,9 +16,9 @@ import {
 } from './styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 interface AddChannelModelProps {
+  teamId: number;
   showModal: boolean;
   setShowModal: Dispatcher<boolean>;
-  teamId: number;
 }
 
 export const FadeIn = keyframes`

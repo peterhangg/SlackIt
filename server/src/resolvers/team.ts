@@ -29,11 +29,13 @@ import { Message } from '../entities/Message';
 export class TeamResolver {
   // GET ALL TEAMS
   @Query(() => [Team])
-  async getAllTeams(@Arg('searchTeam') searchTeam: string): Promise<Team[]> {
+  async getAllTeams(
+    @Arg('searchTeam', { nullable: true }) searchTeam: string
+  ): Promise<Team[]> {
     try {
       const searchData = searchTeam ? { name: ILike(`${searchTeam}%`) } : {};
       const allTeams = await Team.find(searchData);
-      
+
       return allTeams;
     } catch (err) {
       throw new Error(err);
@@ -70,6 +72,32 @@ export class TeamResolver {
       return userTeams;
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  // GET TEAM USERS
+  @Query(() => [User])
+  @UseMiddleware(isAutenticated)
+  async getTeamUsers(
+    @Arg('teamId') teamId: number,
+    @Arg('searchMember', { nullable: true }) searchMember: string
+  ): Promise<User[]> {
+    try {
+      const team = await Team.findOne({
+        relations: ['users'],
+        where: { id: teamId },
+      });
+      if (!team) throw new Error('This team could not be found');
+
+      const regex = new RegExp(`^${searchMember}.*`, 'i');
+
+      const filterUsers = team.users.filter((user) =>
+        regex.test(user.username)
+      );
+
+      return searchMember ? filterUsers : team.users;
+    } catch (err) {
+      throw new Error(err);
     }
   }
 

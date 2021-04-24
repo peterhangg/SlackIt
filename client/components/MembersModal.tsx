@@ -1,12 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { PageHeader } from './styles/shared';
-import { useGetTeamQuery } from '../src/generated/graphql';
-import NextLink from 'next/link';
+import { InputStyles, PageHeader } from './styles/shared';
+import {
+  useGetTeamQuery,
+  useGetTeamUsersLazyQuery,
+} from '../src/generated/graphql';
+import Link from 'next/link';
 import { UserIconWrapper, UserIcon } from './styles/Messages';
+import useForm from '../src/utils/useForm';
+import { Dispatcher } from '../src/utils/types';
 
 interface MembersModalProps {
   teamId: number;
+  showMembersModal: boolean;
+  setShowMembersModal: Dispatcher<boolean>;
 }
 
 export const FadeIn = keyframes`
@@ -79,34 +86,77 @@ const TeamListItems = styled.li`
   }
 `;
 
-const MembersModal: React.FC<MembersModalProps> = ({ teamId }) => {
+const MembersModal: React.FC<MembersModalProps> = ({
+  teamId,
+  showMembersModal,
+  setShowMembersModal,
+}) => {
   const { data } = useGetTeamQuery({
     variables: { teamId },
     skip: !teamId,
   });
-  const team = data?.getTeam;
+
+  const [searchQuery, { data: membersData }] = useGetTeamUsersLazyQuery({
+    variables: { teamId },
+  });
+  const { inputs, handleChange } = useForm({
+    name: '',
+  });
+
+  const teamMembers = membersData?.getTeamUsers;
+  const teamData = data?.getTeam;
+
+  // FETCH ALL TEAMS ON MOUNT
+  useEffect(() => {
+    searchQuery({ variables: { teamId, searchMember: '' } });
+  }, []);
+
+  // TEAM SEARCH ON INPUT CHANGE
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      searchQuery({ variables: { teamId, searchMember: inputs.name } });
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [inputs.name, searchQuery]);
+
+  const closeModal = () => {
+    setShowMembersModal(false);
+  };
 
   return (
-    <ModalWrapper>
-      <PageHeader>{`${team?.users.length} members in ${team?.name}`}</PageHeader>
-      <TeamListContainer>
-        {team?.users.map((user) => (
-          <NextLink
-            key={`member-${user.id}`}
-            href="/dashboard/[teamId]/user/[userId]"
-            as={`/dashboard/${teamId}/user/${user.id}`}
-          >
-            <TeamListItems>
-              <UserIconWrapper>
-                <UserIcon>{user.username.charAt(0).toUpperCase()}</UserIcon>
-              </UserIconWrapper>
-              <h3>{user.username}</h3>
-            </TeamListItems>
-          </NextLink>
-        ))}
-      </TeamListContainer>
-      <ClosedModalButton>x</ClosedModalButton>
-    </ModalWrapper>
+    <>
+      {showMembersModal && (
+        <ModalWrapper>
+          <PageHeader>{`${teamData?.users.length} members in ${teamData?.name}`}</PageHeader>
+          <InputStyles
+            type="search"
+            name="name"
+            onChange={handleChange}
+            placeholder="Search team"
+          />
+          <TeamListContainer>
+            {teamMembers?.map((user) => (
+              <Link
+                key={`member-${user.id}`}
+                href="/dashboard/[teamId]/user/[userId]"
+                as={`/dashboard/${teamId}/user/${user.id}`}
+              >
+                <TeamListItems onClick={closeModal}>
+                  <UserIconWrapper>
+                    <UserIcon>{user.username.charAt(0).toUpperCase()}</UserIcon>
+                  </UserIconWrapper>
+                  <h3>{user.username}</h3>
+                </TeamListItems>
+              </Link>
+            ))}
+          </TeamListContainer>
+          <ClosedModalButton onClick={closeModal}>x</ClosedModalButton>
+        </ModalWrapper>
+      )}
+    </>
   );
 };
 
