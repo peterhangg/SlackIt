@@ -10,7 +10,7 @@ export const MessageList = styled.ul`
   list-style: none;
   display: flex;
   overflow-y: auto;
-  flex-direction: column;
+  flex-direction: column-reverse;
   position: relative;
 `;
 

@@ -1,5 +1,5 @@
-import { useRouter } from 'next/router';
 import React from 'react';
+import { useRouter } from 'next/router';
 import styled, { keyframes } from 'styled-components';
 import { useCreateChannelMutation } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
@@ -16,9 +16,9 @@ import {
 } from './styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 interface AddChannelModelProps {
+  teamId: number;
   showModal: boolean;
   setShowModal: Dispatcher<boolean>;
-  teamId: number;
 }
 
 export const FadeIn = keyframes`

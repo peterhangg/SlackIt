@@ -10,7 +10,7 @@ import {
   Subscription,
   UseMiddleware,
 } from 'type-graphql';
-import { getRepository } from 'typeorm';
+import { getRepository, ILike } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import argon2 from 'argon2';
 import { MyContext } from '../types';
@@ -29,10 +29,12 @@ import { Message } from '../entities/Message';
 export class TeamResolver {
   // GET ALL TEAMS
   @Query(() => [Team])
-  async getAllTeams(): Promise<Team[]> {
+  async getAllTeams(
+    @Arg('searchTeam', { nullable: true }) searchTeam: string
+  ): Promise<Team[]> {
     try {
-      const allTeams = await Team.find({});
-      if (!allTeams) throw new Error('No teams currently exist');
+      const searchData = searchTeam ? { name: ILike(`${searchTeam}%`) } : {};
+      const allTeams = await Team.find(searchData);
 
       return allTeams;
     } catch (err) {
@@ -70,6 +72,32 @@ export class TeamResolver {
       return userTeams;
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  // GET TEAM USERS
+  @Query(() => [User])
+  @UseMiddleware(isAutenticated)
+  async getTeamUsers(
+    @Arg('teamId') teamId: number,
+    @Arg('searchMember', { nullable: true }) searchMember: string
+  ): Promise<User[]> {
+    try {
+      const team = await Team.findOne({
+        relations: ['users'],
+        where: { id: teamId },
+      });
+      if (!team) throw new Error('This team could not be found');
+
+      const regex = new RegExp(`^${searchMember}.*`, 'i');
+
+      const filterUsers = team.users.filter((user) =>
+        regex.test(user.username)
+      );
+
+      return searchMember ? filterUsers : team.users;
+    } catch (err) {
+      throw new Error(err);
     }
   }
 

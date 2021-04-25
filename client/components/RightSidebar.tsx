@@ -1,11 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Dispatcher } from '../src/utils/types';
 import ChannelDescription from './ChannelDescription';
 import Members from './Members';
 
 interface LeftSidebarProps {
   teamId: number;
   channelId: number;
+  setShowMembersModal: Dispatcher<boolean>;
 }
 
 const RightSidebarContainer = styled.div`
@@ -16,11 +18,11 @@ const RightSidebarContainer = styled.div`
   overflow: hidden;
 `;
 
-const RightSidebar: React.FC<LeftSidebarProps> = ({ teamId, channelId }) => {
+const RightSidebar: React.FC<LeftSidebarProps> = ({ teamId, channelId, setShowMembersModal }) => {
   return (
     <RightSidebarContainer>
       <ChannelDescription channelId={channelId} />
-      <Members teamId={teamId} />
+      <Members teamId={teamId} setShowMembersModal={setShowMembersModal} />
     </RightSidebarContainer>
   );
 };

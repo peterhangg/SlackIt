@@ -1,5 +1,5 @@
-query GetAllTeams {
-  getAllTeams {
+query GetAllTeams($searchTeam: String!) {
+  getAllTeams(searchTeam: $searchTeam) {
     id
     name
     description

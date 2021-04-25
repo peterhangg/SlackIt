@@ -6,20 +6,22 @@ import { DashboardContainer } from './styles';
 import { useRouter } from 'next/router';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
 import RightSidebar from './RightSidebar';
+import MembersModal from './MembersModal';
 
 const DashboardLayout: React.FC = () => {
   const router = useRouter();
   const { data: meData, loading } = useGetMeQuery();
 
-  useEffect(() => {   
+  useEffect(() => {
     if (!loading && !meData?.getMe?.teams[0]?.id) {
-      router.replace('/create-team')
+      router.replace('/create-team');
     }
-  },[loading, meData, router]);
+  }, [loading, meData, router]);
 
   const teamIdQuery = parseInt(router.query.teamId as string);
   const teamId = teamIdQuery ? teamIdQuery : meData?.getMe?.teams[0]?.id;
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showMembersModal, setShowMembersModal] = useState<boolean>(false);
 
   const { data: teamData, error } = useGetTeamQuery({
     variables: { teamId: teamIdQuery },
@@ -32,10 +34,10 @@ const DashboardLayout: React.FC = () => {
     : teamIdQuery
     ? teamData?.getTeam?.channels[0].id
     : meData?.getMe?.teams[0]?.channels[0].id;
-  
+
   // TODO: ERROR STYLES
   if (error) {
-    return <div>{error.message}</div>
+    return <div>{error.message}</div>;
   }
 
   return (
@@ -45,13 +47,18 @@ const DashboardLayout: React.FC = () => {
         showModal={showModal}
         setShowModal={setShowModal}
       />
-      <Messages channelId={channelId} teamId={teamId}/>
+      <Messages channelId={channelId} teamId={teamId} />
       <AddChannelModal
         teamId={teamId}
         showModal={showModal}
         setShowModal={setShowModal}
       />
-      <RightSidebar teamId={teamId} channelId={channelId} />
+      <MembersModal
+        teamId={teamId}
+        showMembersModal={showMembersModal}
+        setShowMembersModal={setShowMembersModal}
+      />
+      <RightSidebar teamId={teamId} channelId={channelId} setShowMembersModal={setShowMembersModal} />
     </DashboardContainer>
   );
 };
