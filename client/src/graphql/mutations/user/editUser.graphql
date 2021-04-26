@@ -1,0 +1,7 @@
+mutation EditUser($username: String!, $currentPassword: String!, $newPassword: String, $image: Upload) {
+  editUser(username: $username, currentPassword: $currentPassword, newPassword: $newPassword, image: $image) {
+    id
+    username
+    avatar
+  }
+}

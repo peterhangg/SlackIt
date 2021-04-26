@@ -3,6 +3,7 @@ query GetMe {
     id
     username
     email
+    avatar
     teams {
       id
       name

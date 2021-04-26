@@ -3,5 +3,6 @@ query AllUsers {
     id
     username
     email
+    avatar
   }
 }

@@ -99,4 +99,4 @@ const createTeam: React.FC = () => {
   );
 };
 
-export default withApollo({ ssr: true })(createTeam);
+export default withApollo({ ssr: false })(createTeam);

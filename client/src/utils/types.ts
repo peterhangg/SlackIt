@@ -7,6 +7,7 @@ export interface IFormInputs {
   text?: string,
   description?: string,
   image?: any,
+  newPassword?: string
 };
 
 export type Dispatcher<S> = Dispatch<SetStateAction<S>>;
