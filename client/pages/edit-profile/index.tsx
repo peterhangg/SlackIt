@@ -39,11 +39,10 @@ const ButtonStyles = styled.button`
 `;
 
 export const UserIcon = styled.div`
-  font-size: 1.5rem;
   font-size: 5rem;
 `;
 
-const AvatarContainer = styled.div`
+const UserIconWrapper = styled.div`
   display: flex;
   width: 200px;
   height: 200px;
@@ -52,6 +51,12 @@ const AvatarContainer = styled.div`
   border: 1px grey solid;
   margin-bottom: 1rem;
   border-radius: 5px;
+`;
+
+const AvatarWrapper = styled.div`
+  width: 200px;
+  height: 200px;
+  margin-bottom: 1rem;
 `;
 
 const AvatarStyles = styled.img`
@@ -125,13 +130,15 @@ const EditProfile: React.FC = ({}) => {
         <HeaderHero>SlackIt</HeaderHero>
       </HeaderHeroWrapper>
       <PageHeader>Edit Your Profile</PageHeader>
-      <AvatarContainer>
-        {avatar ? (
-          <AvatarStyles src={avatar as string}></AvatarStyles>
-        ) : (
+      {avatar ? (
+        <AvatarWrapper>
+          <AvatarStyles src={avatar as string} alt="profile avatar" />
+        </AvatarWrapper>
+      ) : (
+        <UserIconWrapper>
           <UserIcon>{data?.getMe.username.charAt(0).toUpperCase()}</UserIcon>
-        )}
-      </AvatarContainer>
+        </UserIconWrapper>
+      )}
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
         <InputStyles

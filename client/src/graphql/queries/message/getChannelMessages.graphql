@@ -9,6 +9,7 @@ query GetChannelMessages($channelId: Float!, $limit: Float!, $cursor: String) {
       user {
         id
         username
+        avatar
       }
     }
     hasMore

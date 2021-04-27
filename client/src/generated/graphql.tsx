@@ -576,7 +576,7 @@ export type GetDirectMessagesQuery = (
     & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt' | 'updatedAt'>
     & { creator: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & Pick<User, 'id' | 'username' | 'avatar'>
     ) }
   )> }
 );
@@ -598,7 +598,7 @@ export type GetChannelMessagesQuery = (
       & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt' | 'image'>
       & { user: (
         { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
+        & Pick<User, 'id' | 'username' | 'avatar'>
       ) }
     )> }
   ) }
@@ -1506,6 +1506,7 @@ export const GetDirectMessagesDocument = gql`
     creator {
       id
       username
+      avatar
     }
   }
 }
@@ -1551,6 +1552,7 @@ export const GetChannelMessagesDocument = gql`
       user {
         id
         username
+        avatar
       }
     }
     hasMore

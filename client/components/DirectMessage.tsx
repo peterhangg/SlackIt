@@ -12,6 +12,8 @@ import {
   MessageMetaDate,
   MessageButton,
   MessageButtonWrapper,
+  MessageAvatarWrapper,
+  MessageAvatarStyles,
 } from './styles/Messages';
 import { dateFormatter } from '../src/utils/dateFormatter';
 import {
@@ -25,7 +27,6 @@ import {
 } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
 import { FormStyles, InputStyles } from './styles/shared';
-
 interface DirectMessageProps {
   teamId: number;
 }
@@ -175,11 +176,20 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
       <MessageList>
         {directMessages?.map((directMessage) => (
           <MessageListItems key={`directMessage-${directMessage.id}`}>
-            <UserIconWrapper>
-              <UserIcon>
-                {directMessage.creator.username.charAt(0).toUpperCase()}
-              </UserIcon>
-            </UserIconWrapper>
+            {directMessage.creator.avatar ? (
+              <MessageAvatarWrapper>
+                <MessageAvatarStyles
+                  src={directMessage.creator.avatar}
+                  alt="profile avatar"
+                />
+              </MessageAvatarWrapper>
+            ) : (
+              <UserIconWrapper>
+                <UserIcon>
+                  {directMessage.creator.username.charAt(0).toUpperCase()}
+                </UserIcon>
+              </UserIconWrapper>
+            )}
             <MessageWrapper>
               <AuthorWrapper>
                 <MessageAuther>
@@ -221,6 +231,7 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
                     }
                   >
                     <InputStyles
+                      width="100%"
                       type="text"
                       name="text"
                       value={inputs.text}

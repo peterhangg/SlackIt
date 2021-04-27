@@ -17,6 +17,8 @@ import {
   ChatMessageContainer,
   FetchMessageLoader,
   MessageAuther,
+  MessageAvatarStyles,
+  MessageAvatarWrapper,
   MessageButton,
   MessageButtonWrapper,
   MessageList,
@@ -262,11 +264,20 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
         )}
         {messages?.map((message) => (
           <MessageListItems key={`message-${message.id}`}>
-            <UserIconWrapper>
-              <UserIcon>
-                {message.user.username.charAt(0).toUpperCase()}
-              </UserIcon>
-            </UserIconWrapper>
+            {message.user.avatar ? (
+              <MessageAvatarWrapper>
+                <MessageAvatarStyles
+                  src={message.user.avatar}
+                  alt="profile avatar"
+                />
+              </MessageAvatarWrapper>
+            ) : (
+              <UserIconWrapper>
+                <UserIcon>
+                  {message.user.username.charAt(0).toUpperCase()}
+                </UserIcon>
+              </UserIconWrapper>
+            )}
             <MessageWrapper>
               <AuthorWrapper>
                 <MessageAuther>
@@ -305,6 +316,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
                       name="text"
                       value={inputs.text}
                       onChange={handleChange}
+                      width="100%"
                     />
                   </FormStyles>
                   {message.image && (
