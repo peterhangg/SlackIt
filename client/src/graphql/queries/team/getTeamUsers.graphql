@@ -2,5 +2,6 @@ query GetTeamUsers($teamId: Float!, $searchMember: String) {
   getTeamUsers(teamId: $teamId, searchMember: $searchMember) {
     id
     username
+    avatar
   }
 }

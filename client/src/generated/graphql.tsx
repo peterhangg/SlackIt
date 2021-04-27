@@ -647,7 +647,7 @@ export type GetTeamUsersQuery = (
   { __typename?: 'Query' }
   & { getTeamUsers: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+    & Pick<User, 'id' | 'username' | 'avatar'>
   )> }
 );
 
@@ -1675,6 +1675,7 @@ export const GetTeamUsersDocument = gql`
   getTeamUsers(teamId: $teamId, searchMember: $searchMember) {
     id
     username
+    avatar
   }
 }
     `;

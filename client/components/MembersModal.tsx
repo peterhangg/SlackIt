@@ -6,7 +6,12 @@ import {
   useGetTeamUsersLazyQuery,
 } from '../src/generated/graphql';
 import Link from 'next/link';
-import { UserIconWrapper, UserIcon } from './styles/Messages';
+import {
+  UserIconWrapper,
+  UserIcon,
+  MessageAvatarStyles,
+  MessageAvatarWrapper,
+} from './styles/Messages';
 import useForm from '../src/utils/useForm';
 import { Dispatcher } from '../src/utils/types';
 
@@ -33,8 +38,6 @@ const ModalWrapper = styled.div`
   background-color: #fff;
   width: 40%;
   height: 55%;
-  /* max-width: 550px; */
-  /* max-height: 450px; */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -145,9 +148,20 @@ const MembersModal: React.FC<MembersModalProps> = ({
                 as={`/dashboard/${teamId}/user/${user.id}`}
               >
                 <TeamListItems onClick={closeModal}>
-                  <UserIconWrapper>
-                    <UserIcon>{user.username.charAt(0).toUpperCase()}</UserIcon>
-                  </UserIconWrapper>
+                  {user.avatar ? (
+                    <MessageAvatarWrapper>
+                      <MessageAvatarStyles
+                        src={user.avatar}
+                        alt="profile avatar"
+                      />
+                    </MessageAvatarWrapper>
+                  ) : (
+                    <UserIconWrapper>
+                      <UserIcon>
+                        {user.username.charAt(0).toUpperCase()}
+                      </UserIcon>
+                    </UserIconWrapper>
+                  )}
                   <h3>{user.username}</h3>
                 </TeamListItems>
               </Link>
