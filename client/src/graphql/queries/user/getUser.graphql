@@ -3,5 +3,6 @@ query GetUser($userId: Float!) {
     id
     username
     email
+    avatar
   }
 }

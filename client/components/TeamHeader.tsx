@@ -18,7 +18,7 @@ const TeamContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 12px;
-  height: 170px;
+  margin-bottom: 1rem;
 `;
 
 const TeamNameHeader = styled.h1`
@@ -126,11 +126,16 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
         </DisplayButtonIcon>
       </TeamHeaderWrapper>
       {showLogout && (
-        <NextLink href="/">
-          <ButtonStyles onClick={logoutHandler} disabled={loading}>
-            LOGOUT
-          </ButtonStyles>
-        </NextLink>
+        <>
+          <NextLink href="/edit-profile">
+            <ButtonStyles>EDIT PROFILE</ButtonStyles>
+          </NextLink>
+          <NextLink href="/">
+            <ButtonStyles onClick={logoutHandler} disabled={loading}>
+              LOGOUT
+            </ButtonStyles>
+          </NextLink>
+        </>
       )}
     </TeamContainer>
   );

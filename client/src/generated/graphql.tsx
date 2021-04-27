@@ -87,6 +87,7 @@ export type User = {
   id: Scalars['Float'];
   username: Scalars['String'];
   email: Scalars['String'];
+  avatar: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
   messages: Array<Message>;
@@ -152,6 +153,7 @@ export type Mutation = {
   register: User;
   login: User;
   logout: Scalars['Boolean'];
+  editUser: User;
   createTeam: Team;
   joinTeam: Team;
   deleteTeam: Scalars['Boolean'];
@@ -177,6 +179,14 @@ export type MutationRegisterArgs = {
 export type MutationLoginArgs = {
   password: Scalars['String'];
   email: Scalars['String'];
+};
+
+
+export type MutationEditUserArgs = {
+  image?: Maybe<Scalars['Upload']>;
+  newPassword?: Maybe<Scalars['String']>;
+  currentPassword: Scalars['String'];
+  username: Scalars['String'];
 };
 
 
@@ -461,6 +471,22 @@ export type LeaveTeamMutation = (
   & Pick<Mutation, 'leaveTeam'>
 );
 
+export type EditUserMutationVariables = Exact<{
+  username: Scalars['String'];
+  currentPassword: Scalars['String'];
+  newPassword?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['Upload']>;
+}>;
+
+
+export type EditUserMutation = (
+  { __typename?: 'Mutation' }
+  & { editUser: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username' | 'avatar'>
+  ) }
+);
+
 export type LoginMutationVariables = Exact<{
   email: Scalars['String'];
   password: Scalars['String'];
@@ -550,7 +576,7 @@ export type GetDirectMessagesQuery = (
     & Pick<DirectMessage, 'id' | 'text' | 'image' | 'createdAt' | 'updatedAt'>
     & { creator: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & Pick<User, 'id' | 'username' | 'avatar'>
     ) }
   )> }
 );
@@ -572,7 +598,7 @@ export type GetChannelMessagesQuery = (
       & Pick<Message, 'id' | 'text' | 'createdAt' | 'updatedAt' | 'image'>
       & { user: (
         { __typename?: 'User' }
-        & Pick<User, 'id' | 'username'>
+        & Pick<User, 'id' | 'username' | 'avatar'>
       ) }
     )> }
   ) }
@@ -621,7 +647,7 @@ export type GetTeamUsersQuery = (
   { __typename?: 'Query' }
   & { getTeamUsers: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+    & Pick<User, 'id' | 'username' | 'avatar'>
   )> }
 );
 
@@ -647,7 +673,7 @@ export type AllUsersQuery = (
   { __typename?: 'Query' }
   & { getAllUsers: Array<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email'>
+    & Pick<User, 'id' | 'username' | 'email' | 'avatar'>
   )> }
 );
 
@@ -658,7 +684,7 @@ export type GetMeQuery = (
   { __typename?: 'Query' }
   & { getMe?: Maybe<(
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email'>
+    & Pick<User, 'id' | 'username' | 'email' | 'avatar'>
     & { teams?: Maybe<Array<(
       { __typename?: 'Team' }
       & Pick<Team, 'id' | 'name' | 'description'>
@@ -679,7 +705,7 @@ export type GetUserQuery = (
   { __typename?: 'Query' }
   & { getUser: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username' | 'email'>
+    & Pick<User, 'id' | 'username' | 'email' | 'avatar'>
   ) }
 );
 
@@ -1213,6 +1239,49 @@ export function useLeaveTeamMutation(baseOptions?: Apollo.MutationHookOptions<Le
 export type LeaveTeamMutationHookResult = ReturnType<typeof useLeaveTeamMutation>;
 export type LeaveTeamMutationResult = Apollo.MutationResult<LeaveTeamMutation>;
 export type LeaveTeamMutationOptions = Apollo.BaseMutationOptions<LeaveTeamMutation, LeaveTeamMutationVariables>;
+export const EditUserDocument = gql`
+    mutation EditUser($username: String!, $currentPassword: String!, $newPassword: String, $image: Upload) {
+  editUser(
+    username: $username
+    currentPassword: $currentPassword
+    newPassword: $newPassword
+    image: $image
+  ) {
+    id
+    username
+    avatar
+  }
+}
+    `;
+export type EditUserMutationFn = Apollo.MutationFunction<EditUserMutation, EditUserMutationVariables>;
+
+/**
+ * __useEditUserMutation__
+ *
+ * To run a mutation, you first call `useEditUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editUserMutation, { data, loading, error }] = useEditUserMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *      currentPassword: // value for 'currentPassword'
+ *      newPassword: // value for 'newPassword'
+ *      image: // value for 'image'
+ *   },
+ * });
+ */
+export function useEditUserMutation(baseOptions?: Apollo.MutationHookOptions<EditUserMutation, EditUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditUserMutation, EditUserMutationVariables>(EditUserDocument, options);
+      }
+export type EditUserMutationHookResult = ReturnType<typeof useEditUserMutation>;
+export type EditUserMutationResult = Apollo.MutationResult<EditUserMutation>;
+export type EditUserMutationOptions = Apollo.BaseMutationOptions<EditUserMutation, EditUserMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($email: String!, $password: String!) {
   login(email: $email, password: $password) {
@@ -1437,6 +1506,7 @@ export const GetDirectMessagesDocument = gql`
     creator {
       id
       username
+      avatar
     }
   }
 }
@@ -1482,6 +1552,7 @@ export const GetChannelMessagesDocument = gql`
       user {
         id
         username
+        avatar
       }
     }
     hasMore
@@ -1604,6 +1675,7 @@ export const GetTeamUsersDocument = gql`
   getTeamUsers(teamId: $teamId, searchMember: $searchMember) {
     id
     username
+    avatar
   }
 }
     `;
@@ -1681,6 +1753,7 @@ export const AllUsersDocument = gql`
     id
     username
     email
+    avatar
   }
 }
     `;
@@ -1717,6 +1790,7 @@ export const GetMeDocument = gql`
     id
     username
     email
+    avatar
     teams {
       id
       name
@@ -1762,6 +1836,7 @@ export const GetUserDocument = gql`
     id
     username
     email
+    avatar
   }
 }
     `;

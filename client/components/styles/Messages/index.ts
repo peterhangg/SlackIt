@@ -12,23 +12,27 @@ export const MessageList = styled.ul`
   overflow-y: auto;
   flex-direction: column-reverse;
   position: relative;
+  padding: 5px 10px;
 `;
 
-export const MessageWrapper = styled.div`
-  padding: 10px 0;
-  width: 100%;
+export const UserIconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  width: 50px;
+  border: 1px solid #D3D3D3;
+  border-radius: 10px;
+  margin: 0 10px;
 `;
 
 export const UserIcon = styled.div`
   font-size: 1.5rem;
-  border: 1px solid#D3D3D3;
-  border-radius: 10px;
-  padding: 7px 10px;
 `;
 
 export const MessageListItems = styled.li`
   display: flex;
-  padding-bottom: 10px;
+  padding: 10px 0;
 `;
 
 export const AuthorWrapper = styled.div`
@@ -45,11 +49,6 @@ export const MessageMetaDate = styled.span`
   color: #404040;
 `;
 
-export const UserIconWrapper = styled.div`
-  height: 100%;
-  padding: 10px;
-`;
-
 export const MessageButton = styled.button`
   margin-left: 10px;
   background-color: #fff;
@@ -60,6 +59,10 @@ export const MessageButton = styled.button`
       color: #4a154b;
     }
   }
+`;
+
+export const MessageWrapper = styled.div`
+  width: 100%;
 `;
 
 export const MessageButtonWrapper = styled.div`
@@ -74,3 +77,15 @@ export const FetchMessageLoader = styled.p`
   top: 0;
   padding: 10px;
 `
+
+export const MessageAvatarWrapper = styled.div`
+  width: 50px;
+  height: 50px;
+  margin: 0 10px;
+`;
+
+export const MessageAvatarStyles = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+`;

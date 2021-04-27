@@ -145,4 +145,4 @@ const JoinTeam: React.FC = ({}) => {
   );
 };
 
-export default withApollo({ ssr: true })(JoinTeam);
+export default withApollo({ ssr: false })(JoinTeam);

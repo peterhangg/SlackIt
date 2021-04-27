@@ -8,6 +8,7 @@ query GetDirectMessages($receiverId: Float!, $teamId: Float!) {
     creator {
       id
       username
+      avatar
     }
   }
 }

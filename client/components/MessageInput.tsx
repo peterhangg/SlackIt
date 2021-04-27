@@ -76,6 +76,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   username
 }) => {
   const router = useRouter();
+  const uploadRef = useRef(null);
   const receiverId = parseInt(router.query.userId as string);
   const { inputs, handleChange, clearForm } = useForm({
     text: '',
@@ -109,7 +110,6 @@ const MessageInput: React.FC<MessageInputProps> = ({
     },
   });
 
-  const uploadRef = useRef(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
