@@ -43,6 +43,7 @@ const createTeam: React.FC = () => {
     variables: inputs as any,
     update: (cache) => {
       cache.evict({ fieldName: 'getUserTeams' });
+      cache.evict({ fieldName: 'getMe' });
     },
   });
 
@@ -57,7 +58,7 @@ const createTeam: React.FC = () => {
     }
 
     const createdTeamData = response?.data.createTeam;
-    router.push(`/dashboard/${createdTeamData?.id}`);
+    router.push(`/dashboard/${createdTeamData.id}`);
   };
 
   return (
