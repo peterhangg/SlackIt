@@ -11,7 +11,7 @@ import {
 } from '../src/generated/graphql';
 import { dateFormatter } from '../src/utils/dateFormatter';
 import useForm from '../src/utils/useForm';
-import { InputStyles, FormStyles } from '../components/styles/shared';
+import { InputStyles, FormStyles } from './styles/shared';
 import {
   AuthorWrapper,
   ChatMessageContainer,
@@ -33,7 +33,7 @@ interface ChatMessagesProps {
   channelId: number;
 }
 
-const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
+const ChannelMessage: React.FC<ChatMessagesProps> = ({ channelId }) => {
   const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [currentEditMessage, setCurrentEditMessage] = useState<number>(null);
   const [prevHeight, setPrevHeight] = useState<number>(null);
@@ -339,4 +339,4 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({ channelId }) => {
   );
 };
 
-export default ChatMessages;
+export default ChannelMessage;

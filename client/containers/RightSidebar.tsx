@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Dispatcher } from '../src/utils/types';
-import ChannelDescription from './ChannelDescription';
-import Members from './Members';
+import ChannelDescription from '../components/ChannelDescription';
+import Members from '../components/Members';
 
 interface LeftSidebarProps {
   teamId: number;

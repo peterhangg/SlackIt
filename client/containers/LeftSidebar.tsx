@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import Teams from './Teams';
-import LeftSidebarSections from './LeftSidebarSections';
+import Teams from '../components/Teams';
+import LeftSidebarSections from '../components/LeftSidebarSections';
 import { Dispatcher } from '../src/utils/types';
 interface SideBarProps {
   showModal: boolean;
