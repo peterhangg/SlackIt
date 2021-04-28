@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useGetMeQuery, useGetTeamQuery } from '../src/generated/graphql';
-import { DashboardContainer } from '../components/styles';
+import { DashboardContainer } from '../components/styles/Dashboard';
 import LeftSidebar from './LeftSidebar';
 import Message from './Message';
 import AddChannelModal from '../components/AddChannelModal';

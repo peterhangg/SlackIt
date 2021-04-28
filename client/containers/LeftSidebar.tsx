@@ -1,7 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 import Teams from '../components/Teams';
 import LeftSidebarSections from '../components/LeftSidebarSections';
+import { LeftSidebarContainer } from '../components/styles/LeftSidebar';
 import { Dispatcher } from '../src/utils/types';
 interface SideBarProps {
   showModal: boolean;
@@ -10,17 +10,19 @@ interface SideBarProps {
   channelId: number;
 }
 
-const LeftSidebarContainer = styled.div`
-  height: 100%;
-  background-color: #763857;
-  display: flex;
-`;
-
-export const Sidebar: React.FC<SideBarProps> = ({ setShowModal, teamId, channelId }) => {
+export const Sidebar: React.FC<SideBarProps> = ({
+  setShowModal,
+  teamId,
+  channelId,
+}) => {
   return (
     <LeftSidebarContainer>
       <Teams teamId={teamId} />
-      <LeftSidebarSections teamId={teamId} channelId={channelId} setShowModal={setShowModal} />
+      <LeftSidebarSections
+        teamId={teamId}
+        channelId={channelId}
+        setShowModal={setShowModal}
+      />
     </LeftSidebarContainer>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import NextLink from 'next/link';
 import {
   JoinedTeamDocument,
@@ -7,57 +6,12 @@ import {
   useGetTeamQuery,
 } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
+import { MemberContainer, MemberHeader, MemberList, MemberListItems, MemberButton } from './styles/member';
 
 interface MembersProps {
   teamId: number;
   setShowMembersModal: Dispatcher<boolean>;
 }
-
-const MemberContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 50%;
-  width: 100%;
-  align-items: center;
-  padding: 5px;
-  overflow: hidden;
-  overflow-y: auto;
-`;
-
-const MemberHeader = styled.h1`
-  font-size: 1.75rem;
-  margin-left: 10px;
-  margin-top: 1rem;
-  margin-right: auto;
-`;
-
-const MemberList = styled.ul`
-  width: 100%;
-  list-style: none;
-  margin-top: 5px;
-  margin-left: 5px;
-`;
-
-const MemberListItems = styled.li`
-  padding: 4px;
-  padding-left: 12px;
-  cursor: pointer;
-`;
-
-const MemberButton = styled.button`
-  width: 90%;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #d3d3d3;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-top: 2rem;
-  transition: background-color 0.3s linear, color 0.3s linear;
-  &:hover {
-    background-color: #4a154b;
-    color: #fff;
-  }
-`;
 
 export const Members: React.FC<MembersProps> = ({ teamId, setShowMembersModal }) => {
   const { data: teamData, error, subscribeToMore } = useGetTeamQuery({

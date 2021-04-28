@@ -1,30 +1,19 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import styled from 'styled-components';
 import { useGetChannelQuery, useGetUserQuery } from '../src/generated/graphql';
 import ChannelMessage from '../components/ChannelMessage';
 import DirectMessage from '../components/DirectMessage';
 import MessageInput from '../components/MessageInput';
+import {
+  MessageContainer,
+  MessageHeaderWrapper,
+  MessageHeader,
+} from '../components/styles/Messages';
 
 interface MessagesProps {
   channelId: number;
   teamId: number;
 }
-
-const MessageContainer = styled.div`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const MessageHeaderWrapper = styled.div`
-  border-bottom: solid 1px #d3d3d3;
-  padding: 1rem;
-`;
-
-const MessageHeader = styled.h1`
-  font-size: 2rem;
-`;
 
 const Message: React.FC<MessagesProps> = ({ channelId, teamId }) => {
   const router = useRouter();

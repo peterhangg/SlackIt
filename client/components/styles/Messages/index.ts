@@ -89,3 +89,18 @@ export const MessageAvatarStyles = styled.img`
   height: 100%;
   object-fit: contain;
 `;
+
+export const MessageContainer = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+export const MessageHeaderWrapper = styled.div`
+  border-bottom: solid 1px #d3d3d3;
+  padding: 1rem;
+`;
+
+export const MessageHeader = styled.h1`
+  font-size: 2rem;
+`;
