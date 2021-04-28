@@ -3,6 +3,10 @@ import styled from 'styled-components';
 import NextLink from 'next/link';
 import { useGetUserTeamsQuery } from '../src/generated/graphql';
 
+interface TeamsProps {
+  teamId: number;
+}
+
 const TeamContainer = styled.div`
   width: 33%;
   height: 100%;
@@ -17,13 +21,14 @@ const TeamList = styled.ul`
   width: 100%;
 `;
 
-const TeamListItem = styled.li`
+const TeamListItem = styled.li<TeamListItemProps>`
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
   color: #fff;
-  border: 1px solid#D3D3D3;
+  border: ${({ teamId }) =>
+    teamId ? '3px solid #D3D3D3' : '1px solid #D3D3D3'};
   border-radius: 10px;
   padding: 10px;
   margin-bottom: 1rem;
@@ -35,9 +40,13 @@ const TeamListItem = styled.li`
   }
 `;
 
-export const Teams: React.FC = ({}) => {
+export interface TeamListItemProps {
+  readonly teamId?: boolean;
+}
+
+export const Teams: React.FC<TeamsProps> = ({ teamId }) => {
   const { data } = useGetUserTeamsQuery();
-  
+
   return (
     <TeamContainer>
       <TeamList>
@@ -47,7 +56,9 @@ export const Teams: React.FC = ({}) => {
             href="/dashboard/[teamId]"
             as={`/dashboard/${team.id}`}
           >
-            <TeamListItem>{team.name.charAt(0).toUpperCase()}</TeamListItem>
+            <TeamListItem teamId={teamId === team.id}>
+              {team.name.charAt(0).toUpperCase()}
+            </TeamListItem>
           </NextLink>
         ))}
         <NextLink href="/create-team">

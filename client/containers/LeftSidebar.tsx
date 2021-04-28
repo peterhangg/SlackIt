@@ -7,6 +7,7 @@ interface SideBarProps {
   showModal: boolean;
   setShowModal: Dispatcher<boolean>;
   teamId: number;
+  channelId: number;
 }
 
 const LeftSidebarContainer = styled.div`
@@ -15,11 +16,11 @@ const LeftSidebarContainer = styled.div`
   display: flex;
 `;
 
-export const Sidebar: React.FC<SideBarProps> = ({ setShowModal, teamId }) => {
+export const Sidebar: React.FC<SideBarProps> = ({ setShowModal, teamId, channelId }) => {
   return (
     <LeftSidebarContainer>
-      <Teams />
-      <LeftSidebarSections teamId={teamId} setShowModal={setShowModal} />
+      <Teams teamId={teamId} />
+      <LeftSidebarSections teamId={teamId} channelId={channelId} setShowModal={setShowModal} />
     </LeftSidebarContainer>
   );
 };

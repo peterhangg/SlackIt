@@ -4,12 +4,12 @@ import NextLink from 'next/link';
 import {
   AddedChannelDocument,
   useGetTeamChannelsQuery,
-  useGetTeamQuery,
 } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
 interface ChannelsProps {
-  setShowModal: Dispatcher<boolean>;
   teamId: number;
+  channelId: number;
+  setShowModal: Dispatcher<boolean>;
 }
 
 const ChannelContainer = styled.div`
@@ -45,22 +45,31 @@ const ChannelList = styled.ul`
   list-style: none;
 `;
 
-const ChannelListItem = styled.li`
+const ChannelListItem = styled.li<ChannelListItemProps>`
   padding: 2px;
   padding-left: 12px;
   color: #e5e5e5;
+  font-weight: ${({ channelId }) => (channelId ? 'bold' : 'normal')};
   &:hover {
     cursor: pointer;
   }
 `;
 
-const ChannelListHeader = styled.h4`
+const ChannelListHeader = styled.h3`
   padding-left: 12px;
   font-weight: bold;
   color: #fff;
 `;
 
-const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
+export interface ChannelListItemProps {
+  readonly channelId?: boolean;
+}
+
+const Channels: React.FC<ChannelsProps> = ({
+  teamId,
+  channelId,
+  setShowModal,
+}) => {
   const { data, subscribeToMore } = useGetTeamChannelsQuery({
     variables: { teamId },
     skip: !teamId,
@@ -110,7 +119,10 @@ const Channels: React.FC<ChannelsProps> = ({ setShowModal, teamId }) => {
             href="/dashboard/[teamId]/[channelId]"
             as={`/dashboard/${teamId}/${channel.id}`}
           >
-            <ChannelListItem key={`channel-${channel.id}`}>
+            <ChannelListItem
+              channelId={channelId === channel.id}
+              key={`channel-${channel.id}`}
+            >
               # {channel.name}
             </ChannelListItem>
           </NextLink>

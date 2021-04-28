@@ -10,8 +10,9 @@ import DirectMessageUsers from './DirectMessageUsers';
 import Channels from './Channels';
 
 interface LeftSidebarSectionsProps {
-  setShowModal: Dispatcher<boolean>;
   teamId: number;
+  channelId: number;
+  setShowModal: Dispatcher<boolean>;
 }
 
 const LeftSidebarSectionContainer = styled.div`
@@ -21,7 +22,7 @@ const LeftSidebarSectionContainer = styled.div`
   flex-grow: 1;
 `;
 
-export const LeftSidebarSections: React.FC<LeftSidebarSectionsProps> = ({ setShowModal, teamId }) => {
+export const LeftSidebarSections: React.FC<LeftSidebarSectionsProps> = ({ teamId, channelId, setShowModal }) => {
   const { data: meData } = useGetMeQuery();
   const { data: teamData } = useGetTeamQuery({
     variables: { teamId },
@@ -36,7 +37,7 @@ export const LeftSidebarSections: React.FC<LeftSidebarSectionsProps> = ({ setSho
         username={meData?.getMe?.username}
         teamId={team?.id}
       />
-      <Channels teamId={teamId} setShowModal={setShowModal} />
+      <Channels teamId={teamId} channelId={channelId} setShowModal={setShowModal} />
       <DirectMessageUsers teamId={teamId} />
     </LeftSidebarSectionContainer>
   );
