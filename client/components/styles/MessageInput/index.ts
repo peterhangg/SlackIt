@@ -22,35 +22,38 @@ export const MessageInputStyles = styled.input`
   border: 1px solid grey;
   border-right: none;
   border-left: none;
+  &:focus {
+    outline: none;
+  }
 `;
 
 export const SendbuttonStyles = styled.button`
   padding: 11.5px;
-  background-color: #fff;
+  background-color: var(--white);
   outline: none;
   border: 1px solid grey;
   border-bottom-right-radius: 5px;
   border-top-right-radius: 3px;
   &:hover:not([disabled]) {
-    background-color: #4a154b;
+    background-color: var(--darkPurple);
     i {
-      color: #fff;
+      color: var(--white);
     }
   }
 `;
 
 export const UploadButtonStyles = styled.button`
   padding: 11.5px;
-  background-color: #fff;
+  background-color: var(--white);
   outline: none;
   border: 1px solid grey;
   border-right: none;
   border-bottom-left-radius: 5px;
   border-top-left-radius: 3px;
   &:hover:not([disabled]) {
-    background-color: #4a154b;
+    background-color: var(--darkPurple);
     i {
-      color: #fff;
+      color: var(--white);
     }
   }
 `;

@@ -15,7 +15,7 @@ list-style: none;
 export const DirectMessageListItem = styled.li<DirectMessageListItemProps>`
 padding: 2px;
 padding-left: 12px;
-color: #e5e5e5;
+color: var(--offWhite);
 font-weight: ${({ userId }) => (userId ? 'bold' : 'normal')};
 &:hover {
   cursor: pointer;
@@ -26,5 +26,5 @@ export const DirectMessageHeader = styled.h3`
 padding-left: 12px;
 padding-bottom: 5px;
 font-weight: bold;
-color: #fff;
+color: var(--white);
 `;

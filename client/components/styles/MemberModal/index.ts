@@ -14,7 +14,7 @@ padding: 25px 0;
 display: flex;
 flex-direction: column;
 align-items: center;
-background-color: #fff;
+background-color: var(--white);
 width: 40%;
 height: 55%;
 position: absolute;
@@ -40,7 +40,7 @@ width: 24px;
 padding: 0;
 cursor: pointer;
 &:hover {
-  color: #4a154b;
+  color: var(--darkPurple);
 }
 `;
 

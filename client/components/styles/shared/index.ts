@@ -47,7 +47,7 @@ export const InputStyles = styled.input`
   width: ${({ width }) => width ? width : '400px'};
   &:focus {
     outline: none;
-    box-shadow: #611f69 0px 1px 4px, #611f69 0px 0px 0px 3px;
+    box-shadow: var(--purple) 0px 1px 4px, var(--purple) 0px 0px 0px 3px;
   }
 `;
 
@@ -59,9 +59,9 @@ export const ErrorMessage = styled.p`
 `;
 
 export const ButtonStyle = styled.button<ButtonProps>`
-  background-color: #611f69;
+  background-color: var(--purple);
   padding: 19px 40px 20px;
-  color: #fff;
+  color: var(--white);
   border: none;
   cursor: pointer;
   width: 180px;
@@ -70,12 +70,12 @@ export const ButtonStyle = styled.button<ButtonProps>`
   margin-right: ${({ mr }) => mr};
   transition: background-color 0.3s linear, color 0.3s linear;
   &:hover {
-    background-color: #4a154b;
+    background-color: var(--darkPurple);
   }
 `;
 
 export const FormMessage = styled.p`
-  color: #3a3b3c;
+  color: var(--darkGray);
   margin-top: 12px;
 `;
 

@@ -9,22 +9,22 @@ export const TeadHeaderContainer = styled.div`
 
 export const TeamNameHeader = styled.h1`
   font-size: 2rem;
-  color: #fff;
+  color: var(--white);
 `;
 
 export const DisplayButtonIcon = styled.button`
   font-size: 1rem;
   padding: 2px 5px;
-  color: #e5e5e5;
-  background-color: #763857;
+  color: var(--offWhite);
+  background-color: var(--purple);
   border: none;
   border-radius: 3px;
   transition: background-color 0.3s linear, color 0.3s linear;
   outline: none;
   &:hover {
     cursor: pointer;
-    background-color: #fff;
-    color: #763857;
+    background-color: var(--white);
+    color: var(--purple);
   }
 `;
 
@@ -37,19 +37,19 @@ export const TeamHeaderWrapper = styled.div`
 export const ButtonStyles = styled.button`
   margin-bottom: 5px;
   padding: 5px;
-  background-color: #763857;
-  border: 1px solid #fff;
-  color: #fff;
+  background-color: var(--purple);
+  border: 1px solid var(--white);
+  color: var(--white);
   border-radius: 5px;
   outline: none;
   transition: background-color 0.3s linear, color 0.3s linear;
   &:hover {
     cursor: pointer;
-    background-color: #fff;
-    color: #763857;
+    background-color: var(--white);
+    color: var(--purple);
   }
 `;
 
 export const UsernameHeader = styled.h3`
-  color: #e5e5e5;
+  color: var(--offWhite);
 `;

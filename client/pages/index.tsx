@@ -43,7 +43,7 @@ const SlackIconStyles = styled.img`
 
 const HeaderHero = styled.h1`
   font-size: 4rem;
-  color: #fff;
+  color: var(--white);
 `;
 
 const HeaderHeroWrapper = styled.div`
@@ -52,7 +52,7 @@ const HeaderHeroWrapper = styled.div`
 `;
 
 const HeaderContent = styled.p`
-  color: #fff;
+  color: var(--white);
   font-size: 1.25rem;
   margin-top: 0.75rem;
 `;

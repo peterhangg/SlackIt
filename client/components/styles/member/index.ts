@@ -35,14 +35,14 @@ export const MemberListItems = styled.li`
 export const MemberButton = styled.button`
   width: 90%;
   padding: 10px;
-  background-color: #fff;
-  border: 1px solid #d3d3d3;
+  background-color: var(--white);
+  border: 1px solid var(--lightGray);
   cursor: pointer;
   border-radius: 5px;
   margin-top: 2rem;
   transition: background-color 0.3s linear, color 0.3s linear;
   &:hover {
-    background-color: #4a154b;
-    color: #fff;
+    background-color: var(--darkPurple);
+    color: var(--white);
   }
 `;

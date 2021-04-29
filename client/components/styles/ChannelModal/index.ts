@@ -15,7 +15,7 @@ display: flex;
 flex-direction: column;
 justify-content: center;
 align-items: center;
-background-color: #fff;
+background-color: var(--white);
 width: 50%;
 height: 50%;
 max-width: 550px;
@@ -42,6 +42,6 @@ width: 24px;
 padding: 0;
 cursor: pointer;
 &:hover {
-  color: #4a154b;
+  color: var(--darkPurple);
 }
 `;

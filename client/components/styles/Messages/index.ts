@@ -21,7 +21,7 @@ export const UserIconWrapper = styled.div`
   align-items: center;
   height: 50px;
   width: 50px;
-  border: 1px solid #D3D3D3;
+  border: 1px solid var(--lightGray);
   border-radius: 10px;
   margin: 0 10px;
 `;
@@ -51,12 +51,12 @@ export const MessageMetaDate = styled.span`
 
 export const MessageButton = styled.button`
   margin-left: 10px;
-  background-color: #fff;
+  background-color: var(--white);
   border: none;
   outline: none;
   &:hover {
     i {
-      color: #4a154b;
+      color: var(--darkPurple);
     }
   }
 `;
@@ -97,7 +97,7 @@ export const MessageContainer = styled.div`
 `;
 
 export const MessageHeaderWrapper = styled.div`
-  border-bottom: solid 1px #d3d3d3;
+  border-bottom: solid 1px var(--lightGray);
   padding: 1rem;
 `;
 

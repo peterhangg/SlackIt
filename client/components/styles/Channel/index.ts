@@ -20,15 +20,15 @@ export const ChannelDescriptionStyles = styled.p`
 // CHANNELS
 export const ChannelContainer = styled.div`
   max-height: 33%;
-  color: #e5e5e5;
+  color: var(--offWhite);
   overflow-y: auto;
 `;
 
 export const AddChannelIcon = styled.button`
   font-size: 1rem;
   padding: 2px 5px;
-  color: #e5e5e5;
-  background-color: #763857;
+  color: var(--offWhite);
+  background-color: var(--purple);
   border: none;
   margin-right: 1rem;
   border-radius: 3px;
@@ -36,8 +36,8 @@ export const AddChannelIcon = styled.button`
   outline: none;
   &:hover {
     cursor: pointer;
-    background-color: #fff;
-    color: #763857;
+    background-color: var(--white);
+    color: var(--purple);
   }
 `;
 
@@ -54,7 +54,7 @@ export const ChannelList = styled.ul`
 export const ChannelListItem = styled.li<ChannelListItemProps>`
   padding: 2px;
   padding-left: 12px;
-  color: #e5e5e5;
+  color: var(--offWhite);
   font-weight: ${({ channelId }) => (channelId ? 'bold' : 'normal')};
   &:hover {
     cursor: pointer;
@@ -64,5 +64,5 @@ export const ChannelListItem = styled.li<ChannelListItemProps>`
 export const ChannelListHeader = styled.h3`
   padding-left: 12px;
   font-weight: bold;
-  color: #fff;
+  color: var(--white);
 `;

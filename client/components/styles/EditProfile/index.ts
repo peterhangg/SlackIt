@@ -30,7 +30,7 @@ export const AvatarStyles = styled.img`
 export const UploadButtonStyles = styled.button`
   margin-bottom: 1.5rem;
   padding: 10px 8px;
-  background-color: #fff;
+  background-color: var(--white);
   border-radius: 5px;
   border: 1px solid grey;
   transition: background-color 0.3s linear, color 0.3s linear;
@@ -38,6 +38,6 @@ export const UploadButtonStyles = styled.button`
   &:hover {
     cursor: pointer;
     background-color: #611f69;
-    color: #fff;
+    color: var(--white);
   }
 `;
