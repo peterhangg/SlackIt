@@ -1,6 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
 import {
   PageContainer,
   HeaderHeroWrapper,
@@ -19,51 +18,8 @@ import {
 } from '../../src/generated/graphql';
 import useForm from '../../src/utils/useForm';
 import { useIsAuthenticated } from '../../src/utils/useIsAuthenticated';
+import { AvatarWrapper, AvatarStyles, UserIconWrapper, UserIcon, UploadButtonStyles } from '../../components/styles/EditProfile';
 const SlackIcon = require('../../asset/slack.svg') as string;
-
-interface EditProfile {}
-
-const ButtonStyles = styled.button`
-  margin-bottom: 1.5rem;
-  padding: 10px 8px;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px solid grey;
-  transition: background-color 0.3s linear, color 0.3s linear;
-  outline: none;
-  &:hover {
-    cursor: pointer;
-    background-color: #763857;
-    color: #fff;
-  }
-`;
-
-export const UserIcon = styled.div`
-  font-size: 5rem;
-`;
-
-const UserIconWrapper = styled.div`
-  display: flex;
-  width: 200px;
-  height: 200px;
-  justify-content: center;
-  align-items: center;
-  border: 1px grey solid;
-  margin-bottom: 1rem;
-  border-radius: 5px;
-`;
-
-const AvatarWrapper = styled.div`
-  width: 200px;
-  height: 200px;
-  margin-bottom: 1rem;
-`;
-
-const AvatarStyles = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`;
 
 const EditProfile: React.FC = ({}) => {
   useIsAuthenticated();
@@ -165,9 +121,9 @@ const EditProfile: React.FC = ({}) => {
           value={inputs.newPassword}
         />
         <>
-          <ButtonStyles type="button" onClick={handleUploadClick}>
+          <UploadButtonStyles type="button" onClick={handleUploadClick}>
             ADD AVATAR
-          </ButtonStyles>
+          </UploadButtonStyles>
           <input
             type="file"
             name="image"

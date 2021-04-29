@@ -13,7 +13,12 @@ import {
 } from './styles/Messages';
 import useForm from '../src/utils/useForm';
 import { Dispatcher } from '../src/utils/types';
-import { ClosedModalButton, ModalWrapper, TeamListContainer, TeamListItems } from './styles/MemberModal';
+import {
+  ClosedModalButton,
+  ModalWrapper,
+  TeamListContainer,
+  TeamListItems,
+} from './styles/MemberModal';
 
 interface MembersModalProps {
   teamId: number;
@@ -41,10 +46,10 @@ const MembersModal: React.FC<MembersModalProps> = ({
   const teamMembers = membersData?.getTeamUsers;
   const teamData = data?.getTeam;
 
-  // FETCH ALL TEAMS ON MOUNT
+  // FETCH ALL TEAM USERS WHEN CHANGING TEAMS
   useEffect(() => {
     searchQuery({ variables: { teamId, searchMember: '' } });
-  }, []);
+  }, [teamId]);
 
   // TEAM SEARCH ON INPUT CHANGE
   useEffect(() => {
@@ -59,6 +64,7 @@ const MembersModal: React.FC<MembersModalProps> = ({
 
   const closeModal = () => {
     setShowMembersModal(false);
+    inputs.name = '';
   };
 
   return (

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import { withApollo } from '../src/apollo/withApollo';
 import {
   GetMeDocument,
@@ -17,6 +18,8 @@ import {
   InputStyles,
   ErrorMessage,
   ButtonStyle,
+  FormMessage,
+  FormMessageLink,
 } from '../components/styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 
@@ -34,7 +37,7 @@ const Login: React.FC = () => {
         query: GetMeDocument,
         data: {
           __typename: 'Query',
-          getMe: data?.login,
+          getMe: data?.login as any,
         },
       });
     },
@@ -80,6 +83,12 @@ const Login: React.FC = () => {
           LOGIN
         </ButtonStyle>
       </FormStyles>
+      <FormMessage>
+        Don't already have an account? { }
+        <NextLink href="/register">
+          <FormMessageLink>Register.</FormMessageLink>
+        </NextLink>
+      </FormMessage>
     </PageContainer>
   );
 };

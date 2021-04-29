@@ -15,22 +15,10 @@ import {
   InputStyles,
   ErrorMessage,
   ButtonStyle,
+  FormMessage,
+  FormMessageLink,
 } from '../components/styles/shared';
-import styled from 'styled-components';
 const SlackIcon = require('../asset/slack.svg') as string;
-
-const CreateTeamMessage = styled.p`
-  color: #3a3b3c;
-  margin-top: 12px;
-`;
-
-const CreateTeamLink = styled.span`
-  font-weight: 700;
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
 
 const createTeam: React.FC = () => {
   useIsAuthenticated();
@@ -90,12 +78,12 @@ const createTeam: React.FC = () => {
           CREATE TEAM
         </ButtonStyle>
       </FormStyles>
-      <CreateTeamMessage>
+      <FormMessage>
         Want to join an existing team instead?
         <NextLink href="/join-team">
-          <CreateTeamLink> Click here.</CreateTeamLink>
+          <FormMessageLink> Click here.</FormMessageLink>
         </NextLink>
-      </CreateTeamMessage>
+      </FormMessage>
     </PageContainer>
   );
 };

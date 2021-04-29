@@ -73,3 +73,16 @@ export const ButtonStyle = styled.button<ButtonProps>`
     background-color: #4a154b;
   }
 `;
+
+export const FormMessage = styled.p`
+  color: #3a3b3c;
+  margin-top: 12px;
+`;
+
+export const FormMessageLink = styled.span`
+  font-weight: 700;
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+`;

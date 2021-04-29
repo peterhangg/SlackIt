@@ -1,12 +1,13 @@
 import React from 'react';
-import useForm from '../src/utils/useForm';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import {
   GetMeDocument,
   GetMeQuery,
   useRegisterMutation,
 } from '../src/generated/graphql';
 import { withApollo } from '../src/apollo/withApollo';
+import useForm from '../src/utils/useForm';
 import {
   PageContainer,
   SlackIconStyles,
@@ -17,6 +18,8 @@ import {
   InputStyles,
   ErrorMessage,
   ButtonStyle,
+  FormMessage,
+  FormMessageLink,
 } from '../components/styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 
@@ -35,7 +38,7 @@ const Register: React.FC = () => {
         query: GetMeDocument,
         data: {
           __typename: 'Query',
-          getMe: data?.register,
+          getMe: data?.register as any,
         },
       });
     },
@@ -59,7 +62,7 @@ const Register: React.FC = () => {
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
         <HeaderHero>SlackIt</HeaderHero>
       </HeaderHeroWrapper>
-      <PageHeader>Register today! We suggest using your work email address.</PageHeader>
+      <PageHeader>We suggest using your work email address.</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
         <InputStyles
@@ -90,6 +93,12 @@ const Register: React.FC = () => {
           SIGN UP
         </ButtonStyle>
       </FormStyles>
+      <FormMessage>
+        Already using SlackIt? { }
+        <NextLink href="/create-team">
+          <FormMessageLink>Login.</FormMessageLink>
+        </NextLink>
+      </FormMessage>
     </PageContainer>
   );
 };

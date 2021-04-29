@@ -3,24 +3,32 @@ import NextLink from 'next/link';
 import {
   JoinedTeamDocument,
   LeftTeamDocument,
-  useGetTeamQuery,
+  useGetTeamUsersQuery,
 } from '../src/generated/graphql';
 import { Dispatcher } from '../src/utils/types';
-import { MemberContainer, MemberHeader, MemberList, MemberListItems, MemberButton } from './styles/member';
+import {
+  MemberContainer,
+  MemberHeader,
+  MemberList,
+  MemberListItems,
+  MemberButton,
+} from './styles/member';
 
 interface MembersProps {
   teamId: number;
   setShowMembersModal: Dispatcher<boolean>;
 }
 
-export const Members: React.FC<MembersProps> = ({ teamId, setShowMembersModal }) => {
-  const { data: teamData, error, subscribeToMore } = useGetTeamQuery({
+export const Members: React.FC<MembersProps> = ({
+  teamId,
+  setShowMembersModal,
+}) => {
+  const { data, subscribeToMore } = useGetTeamUsersQuery({
     variables: { teamId },
     skip: !teamId,
   });
 
-  if (error) return <div>{error.message}</div>;
-  const team = teamData?.getTeam;
+  const teamUsers = data?.getTeamUsers;
 
   useEffect(() => {
     if (teamId) {
@@ -36,10 +44,7 @@ export const Members: React.FC<MembersProps> = ({ teamId, setShowMembersModal })
           const newMember = res.subscriptionData.data.joinedTeam;
           return {
             ...prev,
-            getTeam: {
-              ...prev.getTeam,
-              users: [...prev.getTeam.users, newMember],
-            },
+            getTeamUsers: [...prev.getTeamUsers, newMember],
           };
         },
       });
@@ -56,12 +61,9 @@ export const Members: React.FC<MembersProps> = ({ teamId, setShowMembersModal })
           const oldMember = res.subscriptionData.data.leftTeam;
           return {
             ...prev,
-            getTeam: {
-              ...prev.getTeam,
-              users: prev.getTeam.users.filter(
-                (member) => member.id !== oldMember.id
-              ),
-            },
+            getTeamUsers: prev.getTeamUsers.filter(
+              (member) => member.id !== oldMember.id
+            ),
           };
         },
       });
@@ -77,17 +79,19 @@ export const Members: React.FC<MembersProps> = ({ teamId, setShowMembersModal })
     <MemberContainer>
       <MemberHeader>Members</MemberHeader>
       <MemberList>
-        {team?.users.map((user) => (
+        {teamUsers?.map((user) => (
           <NextLink
             key={`member-${user.id}`}
             href="/dashboard/[teamId]/user/[userId]"
-            as={`/dashboard/${team.id}/user/${user.id}`}
+            as={`/dashboard/${teamId}/user/${user.id}`}
           >
             <MemberListItems>{user.username}</MemberListItems>
           </NextLink>
         ))}
       </MemberList>
-      <MemberButton onClick={() => setShowMembersModal(true)}>View all members</MemberButton>
+      <MemberButton onClick={() => setShowMembersModal(true)}>
+        View all members
+      </MemberButton>
     </MemberContainer>
   );
 };

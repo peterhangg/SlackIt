@@ -7,7 +7,6 @@ import {
   useGetMeQuery,
   useJoinTeamMutation,
 } from '../src/generated/graphql';
-import styled from 'styled-components';
 import {
   PageContainer,
   SlackIconStyles,
@@ -16,47 +15,12 @@ import {
   HeaderHeroWrapper,
   ErrorMessage,
   InputStyles,
+  FormMessage,
+  FormMessageLink,
 } from '../components/styles/shared';
 import useForm from '../src/utils/useForm';
+import { TeamListContainer, TeamListItems } from '../components/styles/JoinTeam';
 const SlackIcon = require('../asset/slack.svg') as string;
-
-const TeamListContainer = styled.ul`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  list-style: none;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-  border-radius: 5px;
-  min-width: 400px;
-  max-height: 600px;
-  height: 100%;
-  overflow-y: auto;
-`;
-
-const TeamListItems = styled.li`
-  width: 100%;
-  text-align: center;
-  margin-bottom: 2px;
-  padding: 15px 10px;
-  transition: ease-out background-color 0.5s;
-  &:hover {
-    cursor: pointer;
-    background-color: #f5f5f5;
-  }
-`;
-
-const CreateTeamMessage = styled.p`
-  color: #3a3b3c;
-  margin-top: 12px;
-`;
-
-const CreateTeamLink = styled.span`
-  font-weight: 700;
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
 
 const JoinTeam: React.FC = ({}) => {
   const router = useRouter();
@@ -135,12 +99,12 @@ const JoinTeam: React.FC = ({}) => {
           </TeamListItems>
         ))}
       </TeamListContainer>
-      <CreateTeamMessage>
+      <FormMessage>
         Want to create a team instead?
         <NextLink href="/create-team">
-          <CreateTeamLink> Click here.</CreateTeamLink>
+          <FormMessageLink> Click here.</FormMessageLink>
         </NextLink>
-      </CreateTeamMessage>
+      </FormMessage>
     </PageContainer>
   );
 };
