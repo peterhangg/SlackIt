@@ -2,14 +2,14 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import {
   PageContainer,
-  HeaderHeroWrapper,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
   ErrorMessage,
   FormStyles,
   InputStyles,
   ButtonStyle,
+  LogoHeader,
+  LogoWrapper,
 } from '../../components/styles/shared';
 import { withApollo } from '../../src/apollo/withApollo';
 import {
@@ -81,10 +81,10 @@ const EditProfile: React.FC = ({}) => {
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader color='var(--white)'>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Edit Your Profile</PageHeader>
       {avatar ? (
         <AvatarWrapper>

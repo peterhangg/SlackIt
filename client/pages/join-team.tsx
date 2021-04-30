@@ -10,13 +10,13 @@ import {
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   ErrorMessage,
   InputStyles,
   FormMessage,
   FormMessageLink,
+  LogoHeader,
+  LogoWrapper,
 } from '../components/styles/shared';
 import useForm from '../src/utils/useForm';
 import { TeamListContainer, TeamListItems } from '../components/styles/JoinTeam';
@@ -76,10 +76,10 @@ const JoinTeam: React.FC = ({}) => {
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Join a team today.</PageHeader>
       {joinTeamError && <ErrorMessage>{joinTeamError.message}</ErrorMessage>}
       <InputStyles
@@ -109,4 +109,4 @@ const JoinTeam: React.FC = ({}) => {
   );
 };
 
-export default withApollo({ ssr: false })(JoinTeam);
+export default withApollo({ ssr: true })(JoinTeam);

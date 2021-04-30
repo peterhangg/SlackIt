@@ -1,15 +1,10 @@
 import React from 'react';
 import NextLink from 'next/link';
-import styled from 'styled-components';
 import { useApolloClient } from '@apollo/client';
 import { ButtonStyle } from '../components/styles/shared';
 import { useGetMeQuery, useLogoutMutation } from '../src/generated/graphql';
 import { isServer } from '../src/utils/isServer';
-
-const ButtonWrapper = styled.div`
-  margin-top: 5%;
-  margin-left: 10%;
-`;
+import { NavButtonContainer, NavButtonStyles } from './styles/NavButtons';
 
 const NavButtons: React.FC = () => {
   const apolloClient = useApolloClient();
@@ -25,27 +20,27 @@ const NavButtons: React.FC = () => {
   };
 
   return (
-    <ButtonWrapper>
+    <NavButtonContainer>
       {!data?.getMe ? (
         <>
           <NextLink href="/login">
-            <ButtonStyle mr="2rem">LOGIN</ButtonStyle>
+            <NavButtonStyles mr="1rem">LOGIN</NavButtonStyles>
           </NextLink>
           <NextLink href="/register">
             <ButtonStyle>REGISTER</ButtonStyle>
           </NextLink>
-          </>
+        </>
       ) : (
         <>
-          <ButtonStyle onClick={logoutHandler} disabled={loading} mr="2rem">
+          <NavButtonStyles mr="1rem" onClick={logoutHandler} disabled={loading}>
             LOGOUT
-          </ButtonStyle>
-          <NextLink href="/create-team">
-            <ButtonStyle>CREATE TEAM</ButtonStyle>
+          </NavButtonStyles>
+          <NextLink href="/dashboard">
+            <NavButtonStyles>DASHBOARD</NavButtonStyles>
           </NextLink>
         </>
       )}
-    </ButtonWrapper>
+    </NavButtonContainer>
   );
 };
 

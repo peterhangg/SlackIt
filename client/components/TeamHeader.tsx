@@ -53,8 +53,14 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
   const [logoutMutation, { loading }] = useLogoutMutation();
 
   const logoutHandler = async () => {
-    await logoutMutation();
+    const logout = await logoutMutation();
     await apolloClient.clearStore();
+
+    if (!logout) {
+      return;
+    }
+
+    router.push('/');
   };
 
   return (
@@ -83,11 +89,9 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
           <NextLink href="/edit-profile">
             <ButtonStyles>EDIT PROFILE</ButtonStyles>
           </NextLink>
-          <NextLink href="/">
-            <ButtonStyles onClick={logoutHandler} disabled={loading}>
-              LOGOUT
-            </ButtonStyles>
-          </NextLink>
+          <ButtonStyles onClick={logoutHandler} disabled={loading}>
+            LOGOUT
+          </ButtonStyles>
         </>
       )}
     </TeadHeaderContainer>

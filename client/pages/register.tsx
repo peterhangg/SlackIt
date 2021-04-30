@@ -11,15 +11,15 @@ import useForm from '../src/utils/useForm';
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   FormStyles,
   InputStyles,
   ErrorMessage,
   ButtonStyle,
   FormMessage,
   FormMessageLink,
+  LogoHeader,
+  LogoWrapper,
 } from '../components/styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 
@@ -58,10 +58,10 @@ const Register: React.FC = () => {
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>We suggest using your work email address.</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>

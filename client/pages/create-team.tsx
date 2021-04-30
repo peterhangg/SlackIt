@@ -8,15 +8,15 @@ import { useIsAuthenticated } from '../src/utils/useIsAuthenticated';
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   FormStyles,
   InputStyles,
   ErrorMessage,
   ButtonStyle,
   FormMessage,
   FormMessageLink,
+  LogoHeader,
+  LogoWrapper,
 } from '../components/styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 
@@ -51,10 +51,10 @@ const createTeam: React.FC = () => {
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Create your workplace team</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
@@ -88,4 +88,4 @@ const createTeam: React.FC = () => {
   );
 };
 
-export default withApollo({ ssr: false })(createTeam);
+export default withApollo({ ssr: true })(createTeam);

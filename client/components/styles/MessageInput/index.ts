@@ -19,7 +19,7 @@ export const MessageInputStyles = styled.input`
   overflow: auto;
   height: 2.5rem;
   text-indent: 10px;
-  border: 1px solid grey;
+  border: 1px solid var(--darkGray);
   border-right: none;
   border-left: none;
   &:focus {
@@ -31,7 +31,7 @@ export const SendbuttonStyles = styled.button`
   padding: 11.5px;
   background-color: var(--white);
   outline: none;
-  border: 1px solid grey;
+  border: 1px solid var(--darkGray);
   border-bottom-right-radius: 5px;
   border-top-right-radius: 3px;
   &:hover:not([disabled]) {
@@ -46,7 +46,7 @@ export const UploadButtonStyles = styled.button`
   padding: 11.5px;
   background-color: var(--white);
   outline: none;
-  border: 1px solid grey;
+  border: 1px solid var(--darkGray);
   border-right: none;
   border-bottom-left-radius: 5px;
   border-top-left-radius: 3px;

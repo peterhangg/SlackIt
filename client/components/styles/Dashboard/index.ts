@@ -8,4 +8,5 @@ export const DashboardContainer = styled.div`
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   height: 100vh;
+  border: 2px solid var(--lightGray);
 `;

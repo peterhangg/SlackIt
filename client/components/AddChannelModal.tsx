@@ -8,10 +8,10 @@ import {
   InputStyles,
   ButtonStyle,
   ErrorMessage,
-  HeaderHero,
-  HeaderHeroWrapper,
   PageHeader,
   SlackIconStyles,
+  LogoHeader,
+  LogoWrapper,
 } from './styles/shared';
 import { ClosedModalButton, ModalWrapper } from './styles/ChannelModal';
 const SlackIcon = require('../asset/slack.svg') as string;
@@ -67,10 +67,10 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     <>
       {showModal && (
         <ModalWrapper>
-          <HeaderHeroWrapper>
+          <LogoWrapper>
             <SlackIconStyles src={SlackIcon} alt="slack icon" />
-            <HeaderHero>SlackIt</HeaderHero>
-          </HeaderHeroWrapper>
+            <LogoHeader>SlackIt</LogoHeader>
+          </LogoWrapper>
           <PageHeader>Create a channel</PageHeader>
           {error && <ErrorMessage>{error.message}</ErrorMessage>}
           <FormStyles onSubmit={handleSubmit}>

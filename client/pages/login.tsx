@@ -11,15 +11,15 @@ import useForm from '../src/utils/useForm';
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   FormStyles,
   InputStyles,
   ErrorMessage,
   ButtonStyle,
   FormMessage,
   FormMessageLink,
+  LogoWrapper,
+  LogoHeader,
 } from '../components/styles/shared';
 const SlackIcon = require('../asset/slack.svg') as string;
 
@@ -49,15 +49,15 @@ const Login: React.FC = () => {
     if (!response) {
       return;
     }
-    router.push('/');
+    router.push('/dashboard');
   };
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Sign in to your workspace</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
@@ -84,7 +84,7 @@ const Login: React.FC = () => {
         </ButtonStyle>
       </FormStyles>
       <FormMessage>
-        Don't already have an account? { }
+        Don't already have an account? {}
         <NextLink href="/register">
           <FormMessageLink>Register.</FormMessageLink>
         </NextLink>

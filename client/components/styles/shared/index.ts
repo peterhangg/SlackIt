@@ -1,31 +1,16 @@
 import styled from 'styled-components';
-import { ButtonProps, FormProps } from './types';
+import { ButtonProps, FormProps, LogoHeaderProps } from './types';
 
 export const PageContainer = styled.div`
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-export const SlackIconStyles = styled.img`
-  margin-right: 0.5rem;
-`;
-
-export const HeaderHero = styled.h1`
-  font-size: 4rem;
-  color: #000000;
+  padding-top: 1rem;
 `;
 
 export const PageHeader = styled.h1`
   margin-bottom: 2rem;
-`;
-
-export const HeaderHeroWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 2rem;
-  margin-bottom: 1rem;
 `;
 
 export const FormStyles = styled.form<FormProps>`
@@ -42,7 +27,7 @@ export const InputStyles = styled.input`
   font-size: 1.25rem;
   margin-bottom: 10px;
   border-radius: 5px;
-  border: 1px solid grey;
+  border: 1px solid var(--darkGray);
   transition: ease-in box-shadow 0.5s;
   width: ${({ width }) => width ? width : '400px'};
   &:focus {
@@ -53,7 +38,7 @@ export const InputStyles = styled.input`
 
 export const ErrorMessage = styled.p`
   font-size: 1rem;
-  color: red;
+  color: var(--red);
   margin-bottom: 1rem;
   font-weight: 700;
 `;
@@ -85,4 +70,20 @@ export const FormMessageLink = styled.span`
     cursor: pointer;
     text-decoration: underline;
   }
+`;
+
+// LOGO 
+export const SlackIconStyles = styled.img`
+  margin-right: 0.5rem;
+`;
+
+export const LogoHeader = styled.h1<LogoHeaderProps>`
+  font-size: 4rem;
+  color: ${({ color }) => color ? color : `var(--black)` };
+`;
+
+export const LogoWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 `;
