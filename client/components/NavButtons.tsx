@@ -1,7 +1,6 @@
 import React from 'react';
 import NextLink from 'next/link';
 import { useApolloClient } from '@apollo/client';
-import { ButtonStyle } from '../components/styles/shared';
 import { useGetMeQuery, useLogoutMutation } from '../src/generated/graphql';
 import { isServer } from '../src/utils/isServer';
 import { NavButtonContainer, NavButtonStyles } from './styles/NavButtons';
@@ -27,7 +26,7 @@ const NavButtons: React.FC = () => {
             <NavButtonStyles mr="1rem">LOGIN</NavButtonStyles>
           </NextLink>
           <NextLink href="/register">
-            <ButtonStyle>REGISTER</ButtonStyle>
+            <NavButtonStyles>REGISTER</NavButtonStyles>
           </NextLink>
         </>
       ) : (

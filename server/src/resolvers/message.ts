@@ -10,7 +10,7 @@ import {
   Subscription,
   Root,
 } from 'type-graphql';
-import { MyContext, Upload } from '../types';
+import { ICloudinary, MyContext, Upload } from '../types';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
@@ -23,7 +23,7 @@ import {
 } from '../utils/subscriptions';
 import { LessThan } from 'typeorm';
 import { PaginatedMessages } from '../utils/types';
-import { uploadCloudinary } from '../config/cloudinary';
+import { uploadCloudinary } from '../utils/cloudinary';
 import { GraphQLUpload } from 'apollo-server-express';
 @Resolver()
 export class MessageResolver {
@@ -85,13 +85,13 @@ export class MessageResolver {
       if (!channel) throw new Error('channel cound not be found');
 
       if (image) {
-        const newImage: any = await uploadCloudinary(image);
+        const newImage: ICloudinary = await uploadCloudinary(image);
 
         if (!newImage) {
           throw new Error('Image not uploaded');
         }
 
-        uploadedImage = newImage;
+        uploadedImage = newImage.url;
       }
 
       const sender = await User.findOne({ id: req.session.userId });

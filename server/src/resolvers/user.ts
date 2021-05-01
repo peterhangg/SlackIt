@@ -13,7 +13,7 @@ import { User } from '../entities/User';
 import { validateRegister } from '../utils/validateRegister';
 import { COOKIE_NAME } from '../utils/constants';
 import { isAutenticated } from '../middleware/isAuthenticated';
-import { uploadCloudinary } from '../config/cloudinary';
+import { uploadCloudinary } from '../utils/cloudinary';
 
 @Resolver()
 export class UserResolver {
@@ -144,7 +144,7 @@ export class UserResolver {
         user.password,
         currentPassword
       );
-      if (!validatePassword) throw new Error('Invlid credentials');
+      if (!validatePassword) throw new Error('Invalid credentials');
 
       if (username) {
         user.username = username;
@@ -160,7 +160,7 @@ export class UserResolver {
         if (!newAvatar) {
           throw new Error('Avatar not uploaded');
         }
-        user.avatar = newAvatar;
+        user.avatar = newAvatar.url;
       }
 
       return user.save();

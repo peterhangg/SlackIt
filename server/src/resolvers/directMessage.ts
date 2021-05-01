@@ -11,12 +11,12 @@ import {
   Root,
 } from 'type-graphql';
 import { getConnection } from 'typeorm';
-import { MyContext, Upload } from '../types';
+import { ICloudinary, MyContext, Upload } from '../types';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { DirectMessage } from '../entities/DirectMessage';
 import { GraphQLUpload } from 'apollo-server-express';
-import { uploadCloudinary } from '../config/cloudinary';
+import { uploadCloudinary } from '../utils/cloudinary';
 import {
   DELETE_DIRECT_MESSAGE,
   EDIT_DIRECT_MESSAGE,
@@ -41,13 +41,13 @@ export class DirectMessageResolver {
       const creator = await User.findOne({ id: req.session.userId });
 
       if (image) {
-        const newImage: any = await uploadCloudinary(image);
+        const newImage: ICloudinary = await uploadCloudinary(image);
 
         if (!newImage) {
           throw new Error('Image not uploaded');
         }
 
-        uploadedImage = newImage;
+        uploadedImage = newImage.url;
       }
 
       const directMessage = await DirectMessage.create({

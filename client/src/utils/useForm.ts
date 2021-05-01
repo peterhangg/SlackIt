@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-const useForm = <T> (initial: T) => {
-  const [inputs, setInputs] = useState(initial);
+const useForm = <T>(initial: T) => {
+  const [inputs, setInputs] = useState<T>(initial);
 
   useEffect(() => {
     setInputs(initial);
@@ -20,9 +20,9 @@ const useForm = <T> (initial: T) => {
     });
   };
 
-  function resetForm() {
+  const resetForm = () => {
     setInputs(initial);
-  }
+  };
 
   const clearForm = () => {
     const emptyState = Object.keys(inputs).reduce(

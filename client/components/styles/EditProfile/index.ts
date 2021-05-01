@@ -18,7 +18,7 @@ export const UserIconWrapper = styled.div`
 export const AvatarWrapper = styled.div`
   width: 200px;
   height: 200px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 `;
 
 export const AvatarStyles = styled.img`

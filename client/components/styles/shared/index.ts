@@ -37,7 +37,6 @@ export const InputStyles = styled.input`
 `;
 
 export const ErrorMessage = styled.p`
-  font-size: 1rem;
   color: var(--red);
   margin-bottom: 1rem;
   font-weight: 700;
