@@ -21,17 +21,18 @@ import {
   LogoWrapper,
   LogoHeader,
 } from '../components/styles/shared';
+import { ILogin } from '../src/utils/types';
 const SlackIcon = require('../asset/slack.svg') as string;
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const { inputs, handleChange } = useForm({
+  const { inputs, handleChange } = useForm<ILogin>({
     email: '',
     password: '',
   });
 
   const [loginMutation, { loading, error }] = useLoginMutation({
-    variables: inputs as any,
+    variables: inputs,
     update(cache, { data }) {
       cache.writeQuery<GetMeQuery>({
         query: GetMeDocument,

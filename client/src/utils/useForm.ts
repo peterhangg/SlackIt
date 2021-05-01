@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { IFormInputs } from './types';
 
-const useForm = (initial: IFormInputs) => {
+const useForm = <T> (initial: T) => {
   const [inputs, setInputs] = useState(initial);
 
   useEffect(() => {
@@ -33,7 +32,7 @@ const useForm = (initial: IFormInputs) => {
       }),
       {}
     );
-    setInputs(emptyState);
+    setInputs(emptyState as T);
   };
 
   return {

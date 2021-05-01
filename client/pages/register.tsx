@@ -21,18 +21,19 @@ import {
   LogoHeader,
   LogoWrapper,
 } from '../components/styles/shared';
+import { IRegister } from '../src/utils/types';
 const SlackIcon = require('../asset/slack.svg') as string;
 
 const Register: React.FC = () => {
   const router = useRouter();
-  const { inputs, handleChange, resetForm } = useForm({
+  const { inputs, handleChange, resetForm } = useForm<IRegister>({
     email: '',
     password: '',
     username: '',
   });
 
   const [registerMutation, { error, loading }] = useRegisterMutation({
-    variables: inputs as any,
+    variables: inputs,
     update: (cache, { data }) => {
       cache.writeQuery<GetMeQuery>({
         query: GetMeDocument,

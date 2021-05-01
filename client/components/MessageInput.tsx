@@ -12,6 +12,7 @@ import {
   FormMessageContainer,
   FormMessageStyles,
 } from './styles/MessageInput';
+import { ICreateMessage } from '../src/utils/types';
 
 interface MessageInputProps {
   channelId: number;
@@ -29,7 +30,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
   const router = useRouter();
   const uploadRef = useRef(null);
   const receiverId = parseInt(router.query.userId as string);
-  const { inputs, handleChange, clearForm } = useForm({
+  const { inputs, handleChange, clearForm } = useForm<ICreateMessage>({
     text: '',
     image: null,
   });

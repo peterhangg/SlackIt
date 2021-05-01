@@ -18,17 +18,18 @@ import {
   LogoHeader,
   LogoWrapper,
 } from '../components/styles/shared';
+import { ICreateTeam } from '../src/utils/types';
 const SlackIcon = require('../asset/slack.svg') as string;
 
 const createTeam: React.FC = () => {
   useIsAuthenticated();
   const router = useRouter();
-  const { inputs, handleChange } = useForm({
+  const { inputs, handleChange } = useForm<ICreateTeam>({
     name: '',
     description: '',
   });
   const [createTeamMutation, { loading, error }] = useCreateTeamMutation({
-    variables: inputs as any,
+    variables: inputs,
     update: (cache) => {
       cache.evict({ fieldName: 'getUserTeams' });
       cache.evict({ fieldName: 'getMe' });

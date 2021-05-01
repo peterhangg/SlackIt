@@ -19,6 +19,7 @@ import {
 import useForm from '../../src/utils/useForm';
 import { useIsAuthenticated } from '../../src/utils/useIsAuthenticated';
 import { AvatarWrapper, AvatarStyles, UserIconWrapper, UserIcon, UploadButtonStyles } from '../../components/styles/EditProfile';
+import { IEditProfile } from '../../src/utils/types';
 const SlackIcon = require('../../asset/slack.svg') as string;
 
 const EditProfile: React.FC = ({}) => {
@@ -27,20 +28,21 @@ const EditProfile: React.FC = ({}) => {
   const router = useRouter();
   const uploadRef = useRef(null);
   const [avatar, setAvatar] = useState<String | ArrayBuffer>(null);
-  const { inputs, handleChange } = useForm({
-    name: data?.getMe.username,
+  const { inputs, handleChange } = useForm<IEditProfile>({
+    username: data?.getMe.username,
     password: '',
     newPassword: '',
     image: null,
   });
-
+  
+  // Set avatar on mount
   useEffect(() => {
     setAvatar(data?.getMe.avatar);
   }, []);
 
   const [editUserMutation, { loading, error }] = useEditUserMutation({
     variables: {
-      username: inputs.name,
+      username: inputs.username,
       currentPassword: inputs.password,
       newPassword: inputs.newPassword,
       image: inputs.image,
@@ -83,7 +85,7 @@ const EditProfile: React.FC = ({}) => {
     <PageContainer>
       <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <LogoHeader color='var(--white)'>SlackIt</LogoHeader>
+        <LogoHeader>SlackIt</LogoHeader>
       </LogoWrapper>
       <PageHeader>Edit Your Profile</PageHeader>
       {avatar ? (
@@ -99,10 +101,10 @@ const EditProfile: React.FC = ({}) => {
       <FormStyles onSubmit={handleSubmit}>
         <InputStyles
           type="text"
-          name="name"
+          name="username"
           placeholder="username"
           onChange={handleChange}
-          value={inputs.name}
+          value={inputs.username}
           required
         />
         <InputStyles

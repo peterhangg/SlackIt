@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useCreateChannelMutation } from '../src/generated/graphql';
-import { Dispatcher } from '../src/utils/types';
+import { Dispatcher, ICreateChannel } from '../src/utils/types';
 import useForm from '../src/utils/useForm';
 import {
   FormStyles,
@@ -27,7 +27,7 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
   teamId,
 }) => {
   const router = useRouter();
-  const { inputs, handleChange, resetForm } = useForm({
+  const { inputs, handleChange, resetForm } = useForm<ICreateChannel>({
     name: '',
     description: '',
   });
@@ -35,8 +35,8 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
   const [createChannelMutation, { loading, error }] = useCreateChannelMutation({
     variables: {
       teamId,
-      name: inputs.name as any,
-      description: inputs.description as any,
+      name: inputs.name,
+      description: inputs.description,
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
