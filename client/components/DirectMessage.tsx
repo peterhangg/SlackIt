@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import {
-  ChatMessageContainer,
+  ChannelMessageContainer,
   MessageList,
   MessageListItems,
   UserIconWrapper,
@@ -14,6 +14,7 @@ import {
   MessageButtonWrapper,
   MessageAvatarWrapper,
   MessageAvatarStyles,
+  MessageImg,
 } from './styles/Messages';
 import { dateFormatter } from '../src/utils/dateFormatter';
 import {
@@ -172,7 +173,7 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
   }, [subscribeToMore, teamId]);
 
   return (
-    <ChatMessageContainer ref={directMessageContainerRef}>
+    <ChannelMessageContainer ref={directMessageContainerRef}>
       <MessageList>
         {directMessages?.map((directMessage) => (
           <MessageListItems key={`directMessage-${directMessage.id}`}>
@@ -239,14 +240,14 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
                     />
                   </FormStyles>
                   {directMessage.image && (
-                    <img src={directMessage.image} alt={directMessage.text} />
+                    <MessageImg src={directMessage.image} alt={directMessage.text} />
                   )}
                 </>
               ) : (
                 <>
                   <p>{directMessage.text}</p>
                   {directMessage.image && (
-                    <img src={directMessage.image} alt={directMessage.text} />
+                    <MessageImg src={directMessage.image} alt={directMessage.text} />
                   )}
                 </>
               )}
@@ -254,7 +255,7 @@ const DirectMessage: React.FC<DirectMessageProps> = ({ teamId }) => {
           </MessageListItems>
         ))}
       </MessageList>
-    </ChatMessageContainer>
+    </ChannelMessageContainer>
   );
 };
 

@@ -1,17 +1,15 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-export const ChatMessageContainer = styled.div`
+export const ChannelMessageContainer = styled.div`
   width: 100%;
-  height: 85%;
+  height: 85vh;
   overflow-y: auto;
 `;
 
 export const MessageList = styled.ul`
   list-style: none;
   display: flex;
-  overflow-y: auto;
   flex-direction: column-reverse;
-  position: relative;
   padding: 5px 10px;
 `;
 
@@ -46,7 +44,7 @@ export const MessageAuther = styled.h3`
 export const MessageMetaDate = styled.span`
   margin-left: 10px;
   font-size: 12px;
-  color: #404040;
+  color: var(--darkGray);
 `;
 
 export const MessageButton = styled.button`
@@ -76,7 +74,7 @@ export const FetchMessageLoader = styled.p`
   position: absolute;
   top: 0;
   padding: 10px;
-`
+`;
 
 export const MessageAvatarWrapper = styled.div`
   width: 50px;
@@ -103,4 +101,9 @@ export const MessageHeaderWrapper = styled.div`
 
 export const MessageHeader = styled.h1`
   font-size: 2rem;
+`;
+
+export const MessageImg = styled.img`
+  max-height: 100%;
+  max-width: 92%;
 `;

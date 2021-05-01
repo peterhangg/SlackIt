@@ -14,13 +14,14 @@ import useForm from '../src/utils/useForm';
 import { InputStyles, FormStyles } from './styles/shared';
 import {
   AuthorWrapper,
-  ChatMessageContainer,
+  ChannelMessageContainer,
   FetchMessageLoader,
   MessageAuther,
   MessageAvatarStyles,
   MessageAvatarWrapper,
   MessageButton,
   MessageButtonWrapper,
+  MessageImg,
   MessageList,
   MessageListItems,
   MessageMetaDate,
@@ -47,7 +48,6 @@ const ChannelMessage: React.FC<ChatMessagesProps> = ({ channelId }) => {
   const {
     data,
     loading,
-    error,
     subscribeToMore,
     fetchMore,
   } = useGetChannelMessagesQuery({
@@ -55,9 +55,6 @@ const ChannelMessage: React.FC<ChatMessagesProps> = ({ channelId }) => {
     skip: !channelId,
     fetchPolicy: 'network-only',
   });
-
-  // TODO: ERROR MESSAGE
-  if (error) return <div>{error.message}</div>;
 
   const [deleteMessageMutation] = useDeleteMessageMutation();
   const [editMessageMutation] = useEditMessageMutation();
@@ -257,7 +254,7 @@ const ChannelMessage: React.FC<ChatMessagesProps> = ({ channelId }) => {
   }, [subscribeToMore, channelId]);
 
   return (
-    <ChatMessageContainer ref={messageContainerRef} onScroll={handleScroll}>
+    <ChannelMessageContainer ref={messageContainerRef} onScroll={handleScroll}>
       <MessageList>
         {fetchMoreMessages && (
           <FetchMessageLoader>Loading History</FetchMessageLoader>
@@ -320,14 +317,14 @@ const ChannelMessage: React.FC<ChatMessagesProps> = ({ channelId }) => {
                     />
                   </FormStyles>
                   {message.image && (
-                    <img src={message.image} alt={message.text} />
+                    <MessageImg src={message.image} alt={message.text} />
                   )}
                 </>
               ) : (
                 <>
                   <p>{message.text}</p>
                   {message.image && (
-                    <img src={message.image} alt={message.text} />
+                    <MessageImg src={message.image} alt={message.text} />
                   )}
                 </>
               )}
@@ -335,7 +332,7 @@ const ChannelMessage: React.FC<ChatMessagesProps> = ({ channelId }) => {
           </MessageListItems>
         ))}
       </MessageList>
-    </ChatMessageContainer>
+    </ChannelMessageContainer>
   );
 };
 

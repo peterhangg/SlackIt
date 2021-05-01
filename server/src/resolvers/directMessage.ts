@@ -101,9 +101,10 @@ export class DirectMessageResolver {
       const directMessageUsers = getConnection().query(
         `
           select distinct on (u.id) u.id, u.username from direct_message dm
-          join "user" u on (dm."receiverId" = u.id) or 
-          (dm."senderId" = u.id) where (dm."receiverId" = $1 or dm."senderId" = $1)
-          and dm."teamId" = $2 
+          join "user" u on (dm."receiverId" = u.id) 
+          or (dm."senderId" = u.id) 
+          where (dm."receiverId" = $1 or dm."senderId" = $1)
+          and dm."teamId" = $2 and u.id != $1 
         `,
         [req.session.userId, teamId]
       );
