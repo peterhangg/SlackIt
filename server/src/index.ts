@@ -13,6 +13,7 @@ import { getSchema } from './utils/schema';
 import { COOKIE_NAME, NODE_ENV } from './utils/constants';
 import { dbOptions } from './config/dbConfig';
 import { graphqlUploadExpress } from 'graphql-upload';
+import { MyContext } from './utils/types'
 
 const main = async () => {
   await createConnection(dbOptions);
@@ -61,7 +62,7 @@ const main = async () => {
     uploads: false,
     introspection: true,
     playground: true,
-    context: ({ req, res }) => ({ req, res, redis }),
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
     subscriptions: {
       onConnect: () => console.log("ws connected!"),
       onDisconnect: () => console.log('ws disconnected'),

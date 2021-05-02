@@ -1,22 +1,5 @@
-import { Request, Response } from 'express';
-import { Session, SessionData } from 'express-session';
-import { Redis } from 'ioredis';
-import { Stream } from 'stream';
+import { File } from  './types';
 
-export type MyContext = {
-  req: Request & {
-    session: Session & Partial<SessionData> & { userId?: number };
-  };
-  redis: Redis;
-  res: Response;
-};
-
-export type File = {
-  filename: string;
-  mimetype: string;
-  encoding: string;
-  createReadStream: () => Stream;
-};
 export interface Upload {
   file: File;
 }

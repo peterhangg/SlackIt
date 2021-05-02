@@ -1,7 +1,7 @@
 const cloudinary = require('cloudinary').v2;
 import { cloudinaryConfig } from '../config/cloudinaryConfig';
 
-import { Upload, ICloudinary } from '../types';
+import { Upload, ICloudinary } from '../utils/interfaces';
 
 export const uploadCloudinary = async (image: Upload) => {
   cloudinary.config(cloudinaryConfig);

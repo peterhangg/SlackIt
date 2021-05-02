@@ -1,4 +1,4 @@
-import { ICloudinaryConfig } from "../types";
+import { ICloudinaryConfig } from "../utils/interfaces";
 
 export const cloudinaryConfig: ICloudinaryConfig = {
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

@@ -11,7 +11,8 @@ import {
   Root,
 } from 'type-graphql';
 import { getConnection } from 'typeorm';
-import { ICloudinary, MyContext, Upload } from '../types';
+import { MyContext } from '../utils/types';
+import { ICloudinary, Upload } from '../utils/interfaces';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { DirectMessage } from '../entities/DirectMessage';
@@ -168,7 +169,6 @@ export class DirectMessageResolver {
       directMessage.text = text;
 
       await directMessage.save();
-      console.log(directMessage);
       await pubSub.publish(EDIT_DIRECT_MESSAGE, directMessage);
       return directMessage;
     } catch (err) {

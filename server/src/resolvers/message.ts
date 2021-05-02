@@ -12,7 +12,8 @@ import {
 } from 'type-graphql';
 import { GraphQLUpload } from 'apollo-server-express';
 import { LessThan } from 'typeorm';
-import { ICloudinary, MyContext, Upload } from '../types';
+import { MyContext } from '../utils/types';
+import { ICloudinary, Upload } from '../utils/interfaces';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';

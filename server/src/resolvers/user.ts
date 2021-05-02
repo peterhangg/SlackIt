@@ -8,7 +8,8 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { GraphQLUpload } from 'apollo-server-express';
-import { MyContext, Upload } from '../types';
+import { MyContext } from '../utils/types';
+import { Upload } from '../utils/interfaces';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validateRegister';
 import { COOKIE_NAME } from '../utils/constants';
