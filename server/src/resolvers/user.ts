@@ -15,7 +15,7 @@ import { COOKIE_NAME } from '../utils/constants';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { uploadCloudinary } from '../utils/cloudinary';
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
   // GET USER
   @Query(() => User)

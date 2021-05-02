@@ -10,6 +10,8 @@ import {
   Subscription,
   Root,
 } from 'type-graphql';
+import { GraphQLUpload } from 'apollo-server-express';
+import { LessThan } from 'typeorm';
 import { ICloudinary, MyContext, Upload } from '../types';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
@@ -21,11 +23,9 @@ import {
   DELETE_MESSAGE,
   EDIT_MESSAGE,
 } from '../utils/subscriptions';
-import { LessThan } from 'typeorm';
 import { PaginatedMessages } from '../utils/types';
 import { uploadCloudinary } from '../utils/cloudinary';
-import { GraphQLUpload } from 'apollo-server-express';
-@Resolver()
+@Resolver(Message)
 export class MessageResolver {
   // GET CHANNEL MESSAGES
   @Query(() => PaginatedMessages)

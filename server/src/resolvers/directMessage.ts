@@ -23,7 +23,7 @@ import {
   NEW_DIRECT_MESSAGE,
 } from '../utils/subscriptions';
 
-@Resolver()
+@Resolver(DirectMessage)
 export class DirectMessageResolver {
   // CREATE DIRECT MESSAGE
   @UseMiddleware(isAutenticated)
@@ -81,7 +81,7 @@ export class DirectMessageResolver {
           { receiverId, teamId, senderId: req.session.userId },
           { receiverId: req.session.userId, teamId, senderId: receiverId },
         ],
-        order: { createdAt: 'ASC' },
+        order: { createdAt: 'DESC' },
       });
 
       return directMessages;

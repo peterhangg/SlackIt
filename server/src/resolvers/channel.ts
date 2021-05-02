@@ -16,7 +16,7 @@ import { Team } from '../entities/Team';
 import { Channel } from '../entities/Channel';
 import { CHANNEL_ADDED } from '../utils/subscriptions';
 
-@Resolver()
+@Resolver(Channel)
 export class ChannelResolver {
   // GET CHANNEL
   @Query(() => Channel)
