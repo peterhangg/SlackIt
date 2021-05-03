@@ -10,7 +10,10 @@ import {
   Subscription,
   Root,
 } from 'type-graphql';
-import { MyContext, Upload } from '../types';
+import { GraphQLUpload } from 'apollo-server-express';
+import { LessThan } from 'typeorm';
+import { MyContext } from '../utils/types';
+import { ICloudinary, Upload } from '../utils/interfaces';
 import { Channel } from '../entities/Channel';
 import { Message } from '../entities/Message';
 import { User } from '../entities/User';
@@ -21,11 +24,9 @@ import {
   DELETE_MESSAGE,
   EDIT_MESSAGE,
 } from '../utils/subscriptions';
-import { LessThan } from 'typeorm';
 import { PaginatedMessages } from '../utils/types';
-import { uploadCloudinary } from '../config/cloudinary';
-import { GraphQLUpload } from 'apollo-server-express';
-@Resolver()
+import { uploadCloudinary } from '../utils/cloudinary';
+@Resolver(Message)
 export class MessageResolver {
   // GET CHANNEL MESSAGES
   @Query(() => PaginatedMessages)
@@ -85,13 +86,13 @@ export class MessageResolver {
       if (!channel) throw new Error('channel cound not be found');
 
       if (image) {
-        const newImage: any = await uploadCloudinary(image);
+        const newImage: ICloudinary = await uploadCloudinary(image);
 
         if (!newImage) {
           throw new Error('Image not uploaded');
         }
 
-        uploadedImage = newImage;
+        uploadedImage = newImage.url;
       }
 
       const sender = await User.findOne({ id: req.session.userId });

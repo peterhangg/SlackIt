@@ -1,25 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useGetChannelQuery } from '../src/generated/graphql';
+import { ChannelDescriptionContainer, ChannelDescriptionHeader, ChannelDescriptionStyles } from './styles/Channel';
 
 interface ChannelDescriptionProps {
   channelId: number;
 }
-
-const ChannelDescriptionContainer = styled.div`
-  padding: 0 5px 5px 5px;
-`;
-
-const ChannelDescriptionHeader = styled.h1`
-  font-size: 1.75rem;
-  margin-left: 10px;
-  margin-top: 1rem;
-`;
-
-const ChannelDescriptionStyles = styled.p`
-  padding: 4px;
-  padding-left: 12px;
-`;
 
 const ChannelDescription: React.FC<ChannelDescriptionProps> = ({
   channelId,

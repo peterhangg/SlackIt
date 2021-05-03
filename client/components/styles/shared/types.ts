@@ -5,3 +5,7 @@ export interface ButtonProps {
 export interface FormProps {
   readonly width?: string;
 };
+
+export interface LogoHeaderProps {
+  readonly color?: string;
+};

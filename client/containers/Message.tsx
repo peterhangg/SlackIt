@@ -1,32 +1,21 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import styled from 'styled-components';
 import { useGetChannelQuery, useGetUserQuery } from '../src/generated/graphql';
-import ChatMessages from './ChatMessages';
-import DirectMessage from './DirectMessage';
-import MessageInput from './MessageInput';
+import ChannelMessage from '../components/ChannelMessage';
+import DirectMessage from '../components/DirectMessage';
+import MessageInput from '../components/MessageInput';
+import {
+  MessageContainer,
+  MessageHeaderWrapper,
+  MessageHeader,
+} from '../components/styles/Messages';
 
 interface MessagesProps {
   channelId: number;
   teamId: number;
 }
 
-const MessageContainer = styled.div`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
-
-const MessageHeaderWrapper = styled.div`
-  border-bottom: solid 1px #d3d3d3;
-  padding: 1rem;
-`;
-
-const MessageHeader = styled.h1`
-  font-size: 2rem;
-`;
-
-export const Messages: React.FC<MessagesProps> = ({ channelId, teamId }) => {
+const Message: React.FC<MessagesProps> = ({ channelId, teamId }) => {
   const router = useRouter();
   const receiverId = parseInt(router.query.userId as string);
 
@@ -51,10 +40,19 @@ export const Messages: React.FC<MessagesProps> = ({ channelId, teamId }) => {
           <MessageHeader># {data?.getChannel.name}</MessageHeader>
         )}
       </MessageHeaderWrapper>
-      {receiverId ? <DirectMessage teamId={teamId} /> : <ChatMessages channelId={channelId} />}
-      <MessageInput channelId={channelId} channelName={data?.getChannel.name} teamId={teamId} username={userData?.getUser.username}/>
+      {receiverId ? (
+        <DirectMessage teamId={teamId} />
+      ) : (
+        <ChannelMessage channelId={channelId} />
+      )}
+      <MessageInput
+        channelId={channelId}
+        channelName={data?.getChannel.name}
+        teamId={teamId}
+        username={userData?.getUser.username}
+      />
     </MessageContainer>
   );
 };
 
-export default Messages;
+export default Message;

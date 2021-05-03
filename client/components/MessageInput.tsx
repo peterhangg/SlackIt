@@ -1,11 +1,18 @@
 import React, { useRef } from 'react';
-import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import {
   useCreateDirectMessageMutation,
   useCreateMessageMutation,
 } from '../src/generated/graphql';
 import useForm from '../src/utils/useForm';
+import {
+  UploadButtonStyles,
+  MessageInputStyles,
+  SendbuttonStyles,
+  FormMessageContainer,
+  FormMessageStyles,
+} from './styles/MessageInput';
+import { ICreateMessage } from '../src/utils/types';
 
 interface MessageInputProps {
   channelId: number;
@@ -14,71 +21,16 @@ interface MessageInputProps {
   username: string;
 }
 
-const FormContainer = styled.div`
-  width: 100%;
-  flex-grow: 1;
-`;
-
-const FormStyles = styled.form`
-  width: 90%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: auto;
-`;
-
-const InputStyles = styled.input`
-  width: 80%;
-  overflow: auto;
-  height: 2.5rem;
-  text-indent: 10px;
-  border: 1px solid grey;
-  border-right: none;
-  border-left: none;
-`;
-
-const SendbuttonStyles = styled.button`
-  padding: 11.5px;
-  background-color: #fff;
-  outline: none;
-  border: 1px solid grey;
-  border-bottom-right-radius: 5px;
-  border-top-right-radius: 3px;
-  &:hover:not([disabled]) {
-    background-color: #4a154b;
-    i {
-      color: #fff;
-    }
-  }
-`;
-
-const UploadButtonStyles = styled.button`
-  padding: 11.5px;
-  background-color: #fff;
-  outline: none;
-  border: 1px solid grey;
-  border-right: none;
-  border-bottom-left-radius: 5px;
-  border-top-left-radius: 3px;
-  &:hover:not([disabled]) {
-    background-color: #4a154b;
-    i {
-      color: #fff;
-    }
-  }
-`;
-
 const MessageInput: React.FC<MessageInputProps> = ({
   channelId,
   channelName,
   teamId,
-  username
+  username,
 }) => {
   const router = useRouter();
   const uploadRef = useRef(null);
   const receiverId = parseInt(router.query.userId as string);
-  const { inputs, handleChange, clearForm } = useForm({
+  const { inputs, handleChange, clearForm } = useForm<ICreateMessage>({
     text: '',
     image: null,
   });
@@ -102,7 +54,7 @@ const MessageInput: React.FC<MessageInputProps> = ({
       teamId,
       receiverId,
       text: inputs.text,
-      image: inputs.image  || ''
+      image: inputs.image || '',
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getDirectMessages' });
@@ -110,15 +62,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
     },
   });
 
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     let response: any;
-    
+
     if (receiverId) {
-      response = await createDirectMessage().catch((err) =>
-        console.error(err)
-      )
+      response = await createDirectMessage().catch((err) => console.error(err));
     } else {
       response = await createMessageMutation().catch((err) =>
         console.error(err)
@@ -136,9 +85,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   return (
-    <FormContainer>
-      {error || DirectMessageError && <h2>{error.message || DirectMessageError.message}</h2>}
-      <FormStyles onSubmit={handleSubmit}>
+    <FormMessageContainer>
+      {error ||
+        (DirectMessageError && (
+          <h2>{error.message || DirectMessageError.message}</h2>
+        ))}
+      <FormMessageStyles onSubmit={handleSubmit}>
         <>
           <UploadButtonStyles type="button" onClick={handleUploadClick}>
             <i className="fas fa-upload fa-lg" />
@@ -152,10 +104,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
             style={{ display: 'none' }}
           />
         </>
-        <InputStyles
+        <MessageInputStyles
           type="textarea"
           name="text"
-          placeholder={!receiverId ? `Message # ${channelName}` : `Message # ${username}`}
+          placeholder={
+            !receiverId ? `Message # ${channelName}` : `Message # ${username}`
+          }
           onChange={handleChange}
           value={inputs.text}
         />
@@ -165,8 +119,8 @@ const MessageInput: React.FC<MessageInputProps> = ({
         >
           <i className="fas fa-paper-plane fa-lg" />
         </SendbuttonStyles>
-      </FormStyles>
-    </FormContainer>
+      </FormMessageStyles>
+    </FormMessageContainer>
   );
 };
 

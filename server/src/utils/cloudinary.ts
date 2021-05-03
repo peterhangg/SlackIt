@@ -1,21 +1,19 @@
 const cloudinary = require('cloudinary').v2;
-import { Upload, ICloudinary } from '../types';
+import { cloudinaryConfig } from '../config/cloudinaryConfig';
+
+import { Upload, ICloudinary } from '../utils/interfaces';
 
 export const uploadCloudinary = async (image: Upload) => {
-  cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_KEY,
-    api_secret: process.env.CLOUDINARY_SECRET,
-  });
+  cloudinary.config(cloudinaryConfig);
 
-  const { createReadStream } = await image.file;
+  const { createReadStream } = image.file;
 
   try {
     const result: ICloudinary = await new Promise((resolve, reject) => {
       createReadStream().pipe(
         cloudinary.uploader.upload_stream(
           {
-            folder: 'slackit',
+            folder: process.env.CLOUDINARY_FOLDER,
           },
           (error: any, result: ICloudinary) => {
             if (error) {
@@ -28,7 +26,7 @@ export const uploadCloudinary = async (image: Upload) => {
       );
     });
 
-    return result.url;
+    return result;
   } catch (e) {
     throw new Error('Error on uploading image');
   }

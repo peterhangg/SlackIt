@@ -9,9 +9,16 @@ import { DirectMessageResolver } from '../resolvers/directMessage';
 
 export const getSchema = async () => {
   const schema = await buildSchema({
-    resolvers: [HelloResolver, UserResolver, TeamResolver, ChannelResolver, MessageResolver, DirectMessageResolver],
+    resolvers: [
+      HelloResolver,
+      UserResolver,
+      TeamResolver,
+      ChannelResolver,
+      MessageResolver,
+      DirectMessageResolver,
+    ],
     validate: false,
-    pubSub: redisPubSub
+    pubSub: redisPubSub,
   });
 
   return schema;

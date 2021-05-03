@@ -13,7 +13,7 @@ import {
 import { getRepository, ILike } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import argon2 from 'argon2';
-import { MyContext } from '../types';
+import { MyContext } from '../utils/types';
 import { User } from '../entities/User';
 import { Team } from '../entities/Team';
 import { isAutenticated } from '../middleware/isAuthenticated';
@@ -89,13 +89,16 @@ export class TeamResolver {
       });
       if (!team) throw new Error('This team could not be found');
 
-      const regex = new RegExp(`^${searchMember}.*`, 'i');
+      const sortedTeamUsers = team.users.sort((a, b) =>
+        a.username.localeCompare(b.username)
+      );
 
-      const filterUsers = team.users.filter((user) =>
+      const regex = new RegExp(`^${searchMember}.*`, 'i');
+      const filterUsers = sortedTeamUsers.filter((user) =>
         regex.test(user.username)
       );
 
-      return searchMember ? filterUsers : team.users;
+      return searchMember ? filterUsers : sortedTeamUsers;
     } catch (err) {
       throw new Error(err);
     }

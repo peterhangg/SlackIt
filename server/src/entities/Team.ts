@@ -30,11 +30,11 @@ export class Team extends BaseEntity {
   description!: string;
 
   @Field(() => String)
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)' })
   createdAt: Date;
 
   @Field(() => String)
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP(6)', onUpdate: 'CURRENT_TIMESTAMP(6)' })
   updatedAt: Date;
 
   @ManyToMany(() => User, (user) => user.teams, {

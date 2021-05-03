@@ -11,19 +11,20 @@ import {
   Root,
 } from 'type-graphql';
 import { getConnection } from 'typeorm';
-import { MyContext, Upload } from '../types';
+import { MyContext } from '../utils/types';
+import { ICloudinary, Upload } from '../utils/interfaces';
 import { User } from '../entities/User';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { DirectMessage } from '../entities/DirectMessage';
 import { GraphQLUpload } from 'apollo-server-express';
-import { uploadCloudinary } from '../config/cloudinary';
+import { uploadCloudinary } from '../utils/cloudinary';
 import {
   DELETE_DIRECT_MESSAGE,
   EDIT_DIRECT_MESSAGE,
   NEW_DIRECT_MESSAGE,
 } from '../utils/subscriptions';
 
-@Resolver()
+@Resolver(DirectMessage)
 export class DirectMessageResolver {
   // CREATE DIRECT MESSAGE
   @UseMiddleware(isAutenticated)
@@ -41,13 +42,13 @@ export class DirectMessageResolver {
       const creator = await User.findOne({ id: req.session.userId });
 
       if (image) {
-        const newImage: any = await uploadCloudinary(image);
+        const newImage: ICloudinary = await uploadCloudinary(image);
 
         if (!newImage) {
           throw new Error('Image not uploaded');
         }
 
-        uploadedImage = newImage;
+        uploadedImage = newImage.url;
       }
 
       const directMessage = await DirectMessage.create({
@@ -81,7 +82,7 @@ export class DirectMessageResolver {
           { receiverId, teamId, senderId: req.session.userId },
           { receiverId: req.session.userId, teamId, senderId: receiverId },
         ],
-        order: { createdAt: 'ASC' },
+        order: { createdAt: 'DESC' },
       });
 
       return directMessages;
@@ -101,9 +102,10 @@ export class DirectMessageResolver {
       const directMessageUsers = getConnection().query(
         `
           select distinct on (u.id) u.id, u.username from direct_message dm
-          join "user" u on (dm."receiverId" = u.id) or 
-          (dm."senderId" = u.id) where (dm."receiverId" = $1 or dm."senderId" = $1)
-          and dm."teamId" = $2 
+          join "user" u on (dm."receiverId" = u.id) 
+          or (dm."senderId" = u.id) 
+          where (dm."receiverId" = $1 or dm."senderId" = $1)
+          and dm."teamId" = $2 and u.id != $1 
         `,
         [req.session.userId, teamId]
       );
@@ -167,7 +169,6 @@ export class DirectMessageResolver {
       directMessage.text = text;
 
       await directMessage.save();
-      console.log(directMessage);
       await pubSub.publish(EDIT_DIRECT_MESSAGE, directMessage);
       return directMessage;
     } catch (err) {

@@ -1,41 +1,45 @@
 import React from 'react';
-import useForm from '../src/utils/useForm';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import {
   GetMeDocument,
   GetMeQuery,
   useRegisterMutation,
 } from '../src/generated/graphql';
 import { withApollo } from '../src/apollo/withApollo';
+import useForm from '../src/utils/useForm';
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   FormStyles,
   InputStyles,
   ErrorMessage,
   ButtonStyle,
+  FormMessage,
+  FormMessageLink,
+  LogoHeader,
+  LogoWrapper,
 } from '../components/styles/shared';
+import { IRegister } from '../src/utils/types';
 const SlackIcon = require('../asset/slack.svg') as string;
 
 const Register: React.FC = () => {
   const router = useRouter();
-  const { inputs, handleChange, resetForm } = useForm({
+  const { inputs, handleChange, resetForm } = useForm<IRegister>({
     email: '',
     password: '',
     username: '',
   });
 
   const [registerMutation, { error, loading }] = useRegisterMutation({
-    variables: inputs as any,
+    variables: inputs,
     update: (cache, { data }) => {
       cache.writeQuery<GetMeQuery>({
         query: GetMeDocument,
         data: {
           __typename: 'Query',
-          getMe: data?.register,
+          getMe: data?.register as any,
         },
       });
     },
@@ -55,11 +59,11 @@ const Register: React.FC = () => {
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
-      <PageHeader>Register today! We suggest using your work email address.</PageHeader>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
+      <PageHeader>We suggest using your work email address.</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
         <InputStyles
@@ -90,6 +94,12 @@ const Register: React.FC = () => {
           SIGN UP
         </ButtonStyle>
       </FormStyles>
+      <FormMessage>
+        Already using SlackIt? { }
+        <NextLink href="/create-team">
+          <FormMessageLink>Login.</FormMessageLink>
+        </NextLink>
+      </FormMessage>
     </PageContainer>
   );
 };

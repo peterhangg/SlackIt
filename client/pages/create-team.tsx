@@ -8,41 +8,31 @@ import { useIsAuthenticated } from '../src/utils/useIsAuthenticated';
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   FormStyles,
   InputStyles,
   ErrorMessage,
   ButtonStyle,
+  FormMessage,
+  FormMessageLink,
+  LogoHeader,
+  LogoWrapper,
 } from '../components/styles/shared';
-import styled from 'styled-components';
+import { ICreateTeam } from '../src/utils/types';
 const SlackIcon = require('../asset/slack.svg') as string;
-
-const CreateTeamMessage = styled.p`
-  color: #3a3b3c;
-  margin-top: 12px;
-`;
-
-const CreateTeamLink = styled.span`
-  font-weight: 700;
-  &:hover {
-    cursor: pointer;
-    text-decoration: underline;
-  }
-`;
 
 const createTeam: React.FC = () => {
   useIsAuthenticated();
   const router = useRouter();
-  const { inputs, handleChange } = useForm({
+  const { inputs, handleChange } = useForm<ICreateTeam>({
     name: '',
     description: '',
   });
   const [createTeamMutation, { loading, error }] = useCreateTeamMutation({
-    variables: inputs as any,
+    variables: inputs,
     update: (cache) => {
       cache.evict({ fieldName: 'getUserTeams' });
+      cache.evict({ fieldName: 'getMe' });
     },
   });
 
@@ -57,15 +47,15 @@ const createTeam: React.FC = () => {
     }
 
     const createdTeamData = response?.data.createTeam;
-    router.push(`/dashboard/${createdTeamData?.id}`);
+    router.push(`/dashboard/${createdTeamData.id}`);
   };
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Create your workplace team</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
@@ -89,14 +79,14 @@ const createTeam: React.FC = () => {
           CREATE TEAM
         </ButtonStyle>
       </FormStyles>
-      <CreateTeamMessage>
+      <FormMessage>
         Want to join an existing team instead?
         <NextLink href="/join-team">
-          <CreateTeamLink> Click here.</CreateTeamLink>
+          <FormMessageLink> Click here.</FormMessageLink>
         </NextLink>
-      </CreateTeamMessage>
+      </FormMessage>
     </PageContainer>
   );
 };
 
-export default withApollo({ ssr: false })(createTeam);
+export default withApollo({ ssr: true })(createTeam);

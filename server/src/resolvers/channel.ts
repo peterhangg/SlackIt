@@ -10,13 +10,13 @@ import {
   Subscription,
   Root,
 } from 'type-graphql';
-import { MyContext } from '../types';
+import { MyContext } from '../utils/types';
 import { isAutenticated } from '../middleware/isAuthenticated';
 import { Team } from '../entities/Team';
 import { Channel } from '../entities/Channel';
 import { CHANNEL_ADDED } from '../utils/subscriptions';
 
-@Resolver()
+@Resolver(Channel)
 export class ChannelResolver {
   // GET CHANNEL
   @Query(() => Channel)

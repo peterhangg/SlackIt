@@ -1,19 +1,19 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import styled, { keyframes } from 'styled-components';
 import { useCreateChannelMutation } from '../src/generated/graphql';
-import { Dispatcher } from '../src/utils/types';
+import { Dispatcher, ICreateChannel } from '../src/utils/types';
 import useForm from '../src/utils/useForm';
 import {
   FormStyles,
   InputStyles,
   ButtonStyle,
   ErrorMessage,
-  HeaderHero,
-  HeaderHeroWrapper,
   PageHeader,
   SlackIconStyles,
+  LogoHeader,
+  LogoWrapper,
 } from './styles/shared';
+import { ClosedModalButton, ModalWrapper } from './styles/ChannelModal';
 const SlackIcon = require('../asset/slack.svg') as string;
 interface AddChannelModelProps {
   teamId: number;
@@ -21,58 +21,13 @@ interface AddChannelModelProps {
   setShowModal: Dispatcher<boolean>;
 }
 
-export const FadeIn = keyframes`
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1
-  }
-`;
-
-const ModalWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #fff;
-  width: 50%;
-  height: 50%;
-  max-width: 550px;
-  max-height: 450px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
-  animation: 1s ${FadeIn} ease-in;
-  z-index: 1000;
-`;
-
-export const ClosedModalButton = styled.button`
-  background: none;
-  border: none;
-  outline: none;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  height: 24px;
-  width: 24px;
-  padding: 0;
-  cursor: pointer;
-  &:hover {
-    color: #4a154b;
-  }
-`;
-
 const AddChannelModal: React.FC<AddChannelModelProps> = ({
   showModal,
   setShowModal,
   teamId,
 }) => {
   const router = useRouter();
-  const { inputs, handleChange, resetForm } = useForm({
+  const { inputs, handleChange, resetForm } = useForm<ICreateChannel>({
     name: '',
     description: '',
   });
@@ -80,8 +35,8 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
   const [createChannelMutation, { loading, error }] = useCreateChannelMutation({
     variables: {
       teamId,
-      name: inputs.name as any,
-      description: inputs.description as any,
+      name: inputs.name,
+      description: inputs.description,
     },
     update: (cache) => {
       cache.evict({ fieldName: 'getChannel' }),
@@ -112,10 +67,10 @@ const AddChannelModal: React.FC<AddChannelModelProps> = ({
     <>
       {showModal && (
         <ModalWrapper>
-          <HeaderHeroWrapper>
+          <LogoWrapper>
             <SlackIconStyles src={SlackIcon} alt="slack icon" />
-            <HeaderHero>SlackIt</HeaderHero>
-          </HeaderHeroWrapper>
+            <LogoHeader>SlackIt</LogoHeader>
+          </LogoWrapper>
           <PageHeader>Create a channel</PageHeader>
           {error && <ErrorMessage>{error.message}</ErrorMessage>}
           <FormStyles onSubmit={handleSubmit}>

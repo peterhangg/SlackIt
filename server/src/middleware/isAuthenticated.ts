@@ -1,4 +1,4 @@
-import { MyContext } from '../types';
+import { MyContext } from '../utils/types';
 import { MiddlewareFn } from 'type-graphql';
 
 export const isAutenticated: MiddlewareFn<MyContext> = ({ context }, next) => {

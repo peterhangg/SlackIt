@@ -10,9 +10,10 @@ import connectRedis from 'connect-redis';
 import cors from 'cors';
 import { createServer } from 'http';
 import { getSchema } from './utils/schema';
-import { COOKIE_NAME, NODE_ENV } from './utils/constants';
+import { COOKIE_NAME, NODE_PROD } from './utils/constants';
 import { dbOptions } from './config/dbConfig';
 import { graphqlUploadExpress } from 'graphql-upload';
+import { MyContext } from './utils/types'
 
 const main = async () => {
   await createConnection(dbOptions);
@@ -45,7 +46,7 @@ const main = async () => {
       maxAge: 1000 * 60 * 6 * 24 * 365,
       httpOnly: true,
       sameSite: 'lax',
-      secure: NODE_ENV,
+      secure: NODE_PROD,
       domain: undefined,
     },
     saveUninitialized: false,
@@ -59,16 +60,16 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema,
     uploads: false,
-    introspection: true,
-    playground: true,
-    context: ({ req, res }) => ({ req, res, redis }),
+    introspection: !NODE_PROD,
+    playground: !NODE_PROD,
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
     subscriptions: {
       onConnect: () => console.log("ws connected!"),
       onDisconnect: () => console.log('ws disconnected'),
     },
   });
 
-  app.use(graphqlUploadExpress({ maxFileSize: 5000000, maxFiles: 10 }));
+  app.use(graphqlUploadExpress({ maxFiles: 10 }));
   apolloServer.applyMiddleware({
     app,
     cors: false,

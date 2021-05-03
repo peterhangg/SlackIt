@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import { withApollo } from '../src/apollo/withApollo';
 import {
   GetMeDocument,
@@ -10,31 +11,34 @@ import useForm from '../src/utils/useForm';
 import {
   PageContainer,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
-  HeaderHeroWrapper,
   FormStyles,
   InputStyles,
   ErrorMessage,
   ButtonStyle,
+  FormMessage,
+  FormMessageLink,
+  LogoWrapper,
+  LogoHeader,
 } from '../components/styles/shared';
+import { ILogin } from '../src/utils/types';
 const SlackIcon = require('../asset/slack.svg') as string;
 
 const Login: React.FC = () => {
   const router = useRouter();
-  const { inputs, handleChange } = useForm({
+  const { inputs, handleChange } = useForm<ILogin>({
     email: '',
     password: '',
   });
 
   const [loginMutation, { loading, error }] = useLoginMutation({
-    variables: inputs as any,
+    variables: inputs,
     update(cache, { data }) {
       cache.writeQuery<GetMeQuery>({
         query: GetMeDocument,
         data: {
           __typename: 'Query',
-          getMe: data?.login,
+          getMe: data?.login as any,
         },
       });
     },
@@ -46,15 +50,15 @@ const Login: React.FC = () => {
     if (!response) {
       return;
     }
-    router.push('/');
+    router.push('/dashboard');
   };
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Sign in to your workspace</PageHeader>
       {error && <ErrorMessage>{error.message}</ErrorMessage>}
       <FormStyles onSubmit={handleSubmit}>
@@ -80,6 +84,12 @@ const Login: React.FC = () => {
           LOGIN
         </ButtonStyle>
       </FormStyles>
+      <FormMessage>
+        Don't already have an account? {}
+        <NextLink href="/register">
+          <FormMessageLink>Register.</FormMessageLink>
+        </NextLink>
+      </FormMessage>
     </PageContainer>
   );
 };

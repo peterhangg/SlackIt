@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { IFormInputs } from './types';
 
-const useForm = (initial: IFormInputs) => {
-  const [inputs, setInputs] = useState(initial);
+const useForm = <T>(initial: T) => {
+  const [inputs, setInputs] = useState<T>(initial);
 
   useEffect(() => {
     setInputs(initial);
@@ -21,9 +20,9 @@ const useForm = (initial: IFormInputs) => {
     });
   };
 
-  function resetForm() {
+  const resetForm = () => {
     setInputs(initial);
-  }
+  };
 
   const clearForm = () => {
     const emptyState = Object.keys(inputs).reduce(
@@ -33,7 +32,7 @@ const useForm = (initial: IFormInputs) => {
       }),
       {}
     );
-    setInputs(emptyState);
+    setInputs(emptyState as T);
   };
 
   return {

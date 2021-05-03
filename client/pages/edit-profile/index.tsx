@@ -1,16 +1,15 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
 import {
   PageContainer,
-  HeaderHeroWrapper,
   SlackIconStyles,
-  HeaderHero,
   PageHeader,
   ErrorMessage,
   FormStyles,
   InputStyles,
   ButtonStyle,
+  LogoHeader,
+  LogoWrapper,
 } from '../../components/styles/shared';
 import { withApollo } from '../../src/apollo/withApollo';
 import {
@@ -19,51 +18,9 @@ import {
 } from '../../src/generated/graphql';
 import useForm from '../../src/utils/useForm';
 import { useIsAuthenticated } from '../../src/utils/useIsAuthenticated';
+import { AvatarWrapper, AvatarStyles, UserIconWrapper, UserIcon, UploadButtonStyles } from '../../components/styles/EditProfile';
+import { IEditProfile } from '../../src/utils/types';
 const SlackIcon = require('../../asset/slack.svg') as string;
-
-interface EditProfile {}
-
-const ButtonStyles = styled.button`
-  margin-bottom: 1.5rem;
-  padding: 10px 8px;
-  background-color: #fff;
-  border-radius: 5px;
-  border: 1px solid grey;
-  transition: background-color 0.3s linear, color 0.3s linear;
-  outline: none;
-  &:hover {
-    cursor: pointer;
-    background-color: #763857;
-    color: #fff;
-  }
-`;
-
-export const UserIcon = styled.div`
-  font-size: 5rem;
-`;
-
-const UserIconWrapper = styled.div`
-  display: flex;
-  width: 200px;
-  height: 200px;
-  justify-content: center;
-  align-items: center;
-  border: 1px grey solid;
-  margin-bottom: 1rem;
-  border-radius: 5px;
-`;
-
-const AvatarWrapper = styled.div`
-  width: 200px;
-  height: 200px;
-  margin-bottom: 1rem;
-`;
-
-const AvatarStyles = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-`;
 
 const EditProfile: React.FC = ({}) => {
   useIsAuthenticated();
@@ -71,20 +28,21 @@ const EditProfile: React.FC = ({}) => {
   const router = useRouter();
   const uploadRef = useRef(null);
   const [avatar, setAvatar] = useState<String | ArrayBuffer>(null);
-  const { inputs, handleChange } = useForm({
-    name: data?.getMe.username,
+  const { inputs, handleChange } = useForm<IEditProfile>({
+    username: data?.getMe.username,
     password: '',
     newPassword: '',
     image: null,
   });
-
+  
+  // Set avatar on mount
   useEffect(() => {
     setAvatar(data?.getMe.avatar);
   }, []);
 
   const [editUserMutation, { loading, error }] = useEditUserMutation({
     variables: {
-      username: inputs.name,
+      username: inputs.username,
       currentPassword: inputs.password,
       newPassword: inputs.newPassword,
       image: inputs.image,
@@ -125,10 +83,10 @@ const EditProfile: React.FC = ({}) => {
 
   return (
     <PageContainer>
-      <HeaderHeroWrapper>
+      <LogoWrapper>
         <SlackIconStyles src={SlackIcon} alt="slack icon" />
-        <HeaderHero>SlackIt</HeaderHero>
-      </HeaderHeroWrapper>
+        <LogoHeader>SlackIt</LogoHeader>
+      </LogoWrapper>
       <PageHeader>Edit Your Profile</PageHeader>
       {avatar ? (
         <AvatarWrapper>
@@ -143,10 +101,10 @@ const EditProfile: React.FC = ({}) => {
       <FormStyles onSubmit={handleSubmit}>
         <InputStyles
           type="text"
-          name="name"
+          name="username"
           placeholder="username"
           onChange={handleChange}
-          value={inputs.name}
+          value={inputs.username}
           required
         />
         <InputStyles
@@ -165,9 +123,9 @@ const EditProfile: React.FC = ({}) => {
           value={inputs.newPassword}
         />
         <>
-          <ButtonStyles type="button" onClick={handleUploadClick}>
+          <UploadButtonStyles type="button" onClick={handleUploadClick}>
             ADD AVATAR
-          </ButtonStyles>
+          </UploadButtonStyles>
           <input
             type="file"
             name="image"

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { useApolloClient } from '@apollo/client';
 import NextLink from 'next/link';
 import {
@@ -7,66 +6,20 @@ import {
   useLogoutMutation,
 } from '../src/generated/graphql';
 import { useRouter } from 'next/router';
+import {
+  ButtonStyles,
+  DisplayButtonIcon,
+  TeadHeaderContainer,
+  TeamHeaderWrapper,
+  TeamNameHeader,
+  UsernameHeader,
+} from './styles/TeamHeader';
 
 interface TeamHeaderProps {
   teamName: string;
   username: string;
   teamId: number;
 }
-
-const TeamContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  margin-bottom: 1rem;
-`;
-
-const TeamNameHeader = styled.h1`
-  font-size: 2rem;
-  color: #fff;
-`;
-
-const DisplayButtonIcon = styled.button`
-  font-size: 1rem;
-  padding: 2px 5px;
-  color: #e5e5e5;
-  background-color: #763857;
-  border: none;
-  border-radius: 3px;
-  transition: background-color 0.3s linear, color 0.3s linear;
-  outline: none;
-  &:hover {
-    cursor: pointer;
-    background-color: #fff;
-    color: #763857;
-  }
-`;
-
-const TeamHeaderWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-`;
-
-const ButtonStyles = styled.button`
-  margin-bottom: 5px;
-  padding: 5px;
-  background-color: #763857;
-  border: 1px solid #fff;
-  color: #fff;
-  border-radius: 5px;
-  outline: none;
-  transition: background-color 0.3s linear, color 0.3s linear;
-  &:hover {
-    cursor: pointer;
-    background-color: #fff;
-    color: #763857;
-  }
-`;
-
-const UsernameHeader = styled.h3`
-  color: #e5e5e5;
-`;
 
 const TeamHeader: React.FC<TeamHeaderProps> = ({
   teamName,
@@ -100,12 +53,18 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
   const [logoutMutation, { loading }] = useLogoutMutation();
 
   const logoutHandler = async () => {
-    await logoutMutation();
+    const logout = await logoutMutation();
     await apolloClient.clearStore();
+
+    if (!logout) {
+      return;
+    }
+
+    router.push('/');
   };
 
   return (
-    <TeamContainer>
+    <TeadHeaderContainer>
       <TeamHeaderWrapper>
         <TeamNameHeader>{teamName}</TeamNameHeader>
         <DisplayButtonIcon onClick={() => setShowLeaveButton(!showLeaveButton)}>
@@ -130,14 +89,12 @@ const TeamHeader: React.FC<TeamHeaderProps> = ({
           <NextLink href="/edit-profile">
             <ButtonStyles>EDIT PROFILE</ButtonStyles>
           </NextLink>
-          <NextLink href="/">
-            <ButtonStyles onClick={logoutHandler} disabled={loading}>
-              LOGOUT
-            </ButtonStyles>
-          </NextLink>
+          <ButtonStyles onClick={logoutHandler} disabled={loading}>
+            LOGOUT
+          </ButtonStyles>
         </>
       )}
-    </TeamContainer>
+    </TeadHeaderContainer>
   );
 };
 

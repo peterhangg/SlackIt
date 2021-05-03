@@ -8,14 +8,15 @@ import {
   UseMiddleware,
 } from 'type-graphql';
 import { GraphQLUpload } from 'apollo-server-express';
-import { MyContext, Upload } from '../types';
+import { MyContext } from '../utils/types';
+import { Upload } from '../utils/interfaces';
 import { User } from '../entities/User';
 import { validateRegister } from '../utils/validateRegister';
 import { COOKIE_NAME } from '../utils/constants';
 import { isAutenticated } from '../middleware/isAuthenticated';
-import { uploadCloudinary } from '../config/cloudinary';
+import { uploadCloudinary } from '../utils/cloudinary';
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
   // GET USER
   @Query(() => User)
@@ -144,7 +145,7 @@ export class UserResolver {
         user.password,
         currentPassword
       );
-      if (!validatePassword) throw new Error('Invlid credentials');
+      if (!validatePassword) throw new Error('Invalid credentials');
 
       if (username) {
         user.username = username;
@@ -160,7 +161,7 @@ export class UserResolver {
         if (!newAvatar) {
           throw new Error('Avatar not uploaded');
         }
-        user.avatar = newAvatar;
+        user.avatar = newAvatar.url;
       }
 
       return user.save();
