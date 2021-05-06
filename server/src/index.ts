@@ -13,17 +13,18 @@ import { getSchema } from './utils/schema';
 import { COOKIE_NAME, NODE_PROD } from './utils/constants';
 import { dbOptions } from './config/dbConfig';
 import { graphqlUploadExpress } from 'graphql-upload';
-import { MyContext } from './utils/types'
+import { MyContext } from './utils/types';
+const PORT = process.env.PORT || 8080;
 
 const main = async () => {
   await createConnection(dbOptions);
+
   const app = express();
 
-  const RedisStore = connectRedis(session);
   const redis = new Redis(process.env.REDIS_URL);
-
+  const RedisStore = connectRedis(session);
+  
   app.set('trust proxy', 1);
-
   app.use(
     cors({
       origin: process.env.CORS_ORIGIN,
@@ -47,7 +48,7 @@ const main = async () => {
       httpOnly: true,
       sameSite: 'lax',
       secure: NODE_PROD,
-      domain: undefined,
+      domain: NODE_PROD ? process.env.COOKIE_DOMAIN : undefined,
     },
     saveUninitialized: false,
     secret: process.env.SESSION_SECRET,
@@ -60,11 +61,11 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema,
     uploads: false,
-    introspection: !NODE_PROD,
-    playground: !NODE_PROD,
+    introspection: true,
+    playground: true,
     context: ({ req, res }): MyContext => ({ req, res, redis }),
     subscriptions: {
-      onConnect: () => console.log("ws connected!"),
+      onConnect: () => console.log('ws connected!'),
       onDisconnect: () => console.log('ws disconnected'),
     },
   });
@@ -74,11 +75,16 @@ const main = async () => {
     app,
     cors: false,
   });
-
+  
   const ws = createServer(app);
+
   apolloServer.installSubscriptionHandlers(ws);
 
-  ws.listen(parseInt(process.env.PORT), () => {
+  redis.on('error', function (err) {
+    console.log('REDIS ERROR: ', err);
+  });
+
+  ws.listen(PORT, () => {
     console.log(
       `🚀 Server ready at http://localhost:${process.env.PORT}/graphql`
     );

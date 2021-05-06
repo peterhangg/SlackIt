@@ -12,7 +12,7 @@ const uploadLink = createUploadLink({
   credentials: 'include',
 });
 
-const wsLink = process.browser
+const wsLink = (process as any).browser
   ? new WebSocketLink({
       uri:  process.env.NEXT_PUBLIC_WS_URL as string,
       options: {
@@ -48,7 +48,7 @@ const createApolloClient = (ctx: NextPageContext) => {
 
   const linkWithAuth = authLink.concat(uploadLink as any);
 
-  const link = process.browser
+  const link = (process as any).browser
     ? split(
         ({ query }) => {
           const { kind, operation }: any = getMainDefinition(query);
@@ -56,13 +56,13 @@ const createApolloClient = (ctx: NextPageContext) => {
             kind === 'OperationDefinition' && operation === 'subscription'
           );
         },
-        wsLink,
-        linkWithAuth
+        wsLink as any,
+        linkWithAuth as any
       )
     : linkWithAuth;
 
   return new ApolloClient({
-    link: errorLink.concat(link as any),
+    link: errorLink.concat(link as any) as any,
     cache: new InMemoryCache(),
   });
 };
