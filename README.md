@@ -65,7 +65,7 @@ Both ```client``` and ```server``` directories require a ```.env``` file. Rename
 In server directory, rename ```ormconfig-example.json``` to ```ormconfig.json``` to match the database config to your ```psql``` configurations for this project.
 
 To run this project create a seperate terminal window and run both of these commands from root:
-* Replace ```yarn dev``` with ```npm run dev``` if using ```npm``
+* Replace ```yarn dev``` with ```npm run dev``` if using ```npm```.
 
 ```
 $ cd client && yarn dev
@@ -80,5 +80,5 @@ $ cd server && yarn dev
 - Responsive design for mobile
 - Batching sequel queries for more optimization
 - Private teams and channels
-- Document (PDF, DOCS, etc) uploads (currently only supporting image docs)
+- Document (PDF, DOC, etc) uploads (currently only supports images)
 - User status
