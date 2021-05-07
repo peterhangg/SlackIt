@@ -66,7 +66,7 @@ const JoinTeam: React.FC = ({}) => {
     router.push(`/dashboard/${teamId}`);
   };
 
-  const userTeams = userData?.getMe.teams;
+  const userTeams = userData?.getMe?.teams;
   const allTeams = data?.getAllTeams;
 
   const uniqueTeams = allTeams?.filter(

@@ -4,37 +4,33 @@ import { getMainDefinition } from 'apollo-utilities';
 import { NextPageContext } from 'next';
 import { createUploadLink } from 'apollo-upload-client';
 import { setContext } from 'apollo-link-context';
-import { onError } from 'apollo-link-error';
+import { errorLink } from '../utils/errorLink';
 import createWithApollo from './createWithApollo';
 
+const apiURI =
+  process.env.NEXT_PUBLIC_PROD === 'false'
+    ? process.env.NEXT_PUBLIC_API_DEV_URL
+    : process.env.NEXT_PUBLIC_API_URL;
+
+const wsURI =
+  process.env.NEXT_PUBLIC_PROD === 'false'
+    ? process.env.NEXT_PUBLIC_WS_DEV_URL
+    : process.env.NEXT_PUBLIC_WS_URL;
+
 const uploadLink = createUploadLink({
-  uri: process.env.NEXT_PUBLIC_API_URL as string,
+  uri: apiURI as string,
   credentials: 'include',
 });
 
-const wsLink = process.browser
+const wsLink = (process as any).browser
   ? new WebSocketLink({
-      uri:  process.env.NEXT_PUBLIC_WS_URL as string,
+      uri: wsURI as string,
       options: {
         reconnect: true,
         lazy: true,
       },
     })
   : null;
-
-
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    graphQLErrors.map(({ message, locations, path }) => {
-      console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      );
-    });
-  }
-  if (networkError) {
-    console.log(`[Network error]: ${networkError}`);
-  }
-});
 
 const createApolloClient = (ctx: NextPageContext) => {
   const authLink = setContext((_, { headers }) => ({
@@ -48,21 +44,19 @@ const createApolloClient = (ctx: NextPageContext) => {
 
   const linkWithAuth = authLink.concat(uploadLink as any);
 
-  const link = process.browser
+  const link = (process as any).browser
     ? split(
         ({ query }) => {
           const { kind, operation }: any = getMainDefinition(query);
-          return (
-            kind === 'OperationDefinition' && operation === 'subscription'
-          );
+          return kind === 'OperationDefinition' && operation === 'subscription';
         },
-        wsLink,
-        linkWithAuth
+        wsLink as any,
+        linkWithAuth as any
       )
     : linkWithAuth;
 
   return new ApolloClient({
-    link: errorLink.concat(link as any),
+    link: errorLink.concat(link as any) as any,
     cache: new InMemoryCache(),
   });
 };

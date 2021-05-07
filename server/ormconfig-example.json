@@ -4,7 +4,7 @@
   "port": 5432,
   "username": "postgres",
   "password": "postgres",
-  "database": "postgres",
+  "database": "database-project-name",
   "entities": ["dist/entities/*.js"],
   "migrations": ["dist/migrations/*.js"]
 }

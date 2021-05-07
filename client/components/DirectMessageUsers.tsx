@@ -10,7 +10,7 @@ interface DirectMessageUsersProps {
 
 const DirectMessageUsers: React.FC<DirectMessageUsersProps> = ({ teamId }) => {
   const router = useRouter();
-  const { data } = useDirectMessageUsersQuery({
+  const { data, subscribeToMore } = useDirectMessageUsersQuery({
     variables: { teamId },
     skip: !teamId
   });
