@@ -20,7 +20,7 @@ import {
 } from '../components/styles/shared';
 import useForm from '../src/utils/useForm';
 import { TeamListContainer, TeamListItems } from '../components/styles/JoinTeam';
-const SlackIcon = require('../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 
 const JoinTeam: React.FC = ({}) => {
   const router = useRouter();

@@ -22,7 +22,7 @@ const uploadLink = createUploadLink({
   credentials: 'include',
 });
 
-const wsLink = (process as any).browser
+const wsLink = process.browser
   ? new WebSocketLink({
       uri: wsURI as string,
       options: {
@@ -44,7 +44,7 @@ const createApolloClient = (ctx: NextPageContext) => {
 
   const linkWithAuth = authLink.concat(uploadLink as any);
 
-  const link = (process as any).browser
+  const link = process.browser
     ? split(
         ({ query }) => {
           const { kind, operation }: any = getMainDefinition(query);

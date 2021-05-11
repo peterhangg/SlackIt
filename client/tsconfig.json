@@ -2,12 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "lib": [
-      "dom",
-      "es6",
-      "es2017",
-      "esnext.asynciterable"
-    ],
+    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
     "skipLibCheck": true,
     "sourceMap": true,
     "outDir": "./dist",
@@ -35,11 +30,13 @@
     "jsx": "preserve"
   },
   "typeRoots": ["./node_modules/@types"],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "include": [
     "./src/**/*.tsx",
-    "./src/**/*.ts"
-, "src/apollo/apollo.js"  ]
+    "./src/**/*.ts",
+    "images.d.ts",
+    "global.d.ts",
+    "src/apollo/withApollo.ts",
+    "src/apollo/createWithApollo.tsx"
+, "next.config.js"  ]
 }

@@ -14,7 +14,7 @@ import {
   LogoWrapper,
 } from './styles/shared';
 import { ClosedModalButton, ModalWrapper } from './styles/ChannelModal';
-const SlackIcon = require('../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 interface AddChannelModelProps {
   teamId: number;
   showModal: boolean;

@@ -22,7 +22,7 @@ import {
   LogoWrapper,
 } from '../components/styles/shared';
 import { IRegister } from '../src/utils/types';
-const SlackIcon = require('../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 
 const Register: React.FC = () => {
   const router = useRouter();

@@ -11,7 +11,7 @@ import {
   SlackIconStyles,
 } from '../components/styles/shared';
 import { withApollo } from '../src/apollo/withApollo';
-const SlackIcon = require('../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 
 const Index = () => {
   return (
