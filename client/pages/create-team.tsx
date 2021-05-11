@@ -19,7 +19,7 @@ import {
   LogoWrapper,
 } from '../components/styles/shared';
 import { ICreateTeam } from '../src/utils/types';
-const SlackIcon = require('../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 
 const createTeam: React.FC = () => {
   useIsAuthenticated();

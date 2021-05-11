@@ -20,7 +20,7 @@ import useForm from '../../src/utils/useForm';
 import { useIsAuthenticated } from '../../src/utils/useIsAuthenticated';
 import { AvatarWrapper, AvatarStyles, UserIconWrapper, UserIcon, UploadButtonStyles } from '../../components/styles/EditProfile';
 import { IEditProfile } from '../../src/utils/types';
-const SlackIcon = require('../../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 
 const EditProfile: React.FC = ({}) => {
   useIsAuthenticated();

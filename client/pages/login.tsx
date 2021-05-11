@@ -22,7 +22,7 @@ import {
   LogoHeader,
 } from '../components/styles/shared';
 import { ILogin } from '../src/utils/types';
-const SlackIcon = require('../asset/slack.svg') as string;
+import SlackIcon from '../asset/slack.svg';
 
 const Login: React.FC = () => {
   const router = useRouter();
