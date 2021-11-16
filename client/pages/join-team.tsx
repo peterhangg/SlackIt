@@ -19,7 +19,10 @@ import {
   LogoWrapper,
 } from '../components/styles/shared';
 import useForm from '../src/utils/useForm';
-import { TeamListContainer, TeamListItems } from '../components/styles/JoinTeam';
+import {
+  TeamListContainer,
+  TeamListItems,
+} from '../components/styles/JoinTeam';
 import SlackIcon from '../asset/slack.svg';
 
 const JoinTeam: React.FC = ({}) => {
@@ -102,6 +105,12 @@ const JoinTeam: React.FC = ({}) => {
       <FormMessage>
         Want to create a team instead?
         <NextLink href="/create-team">
+          <FormMessageLink> Click here.</FormMessageLink>
+        </NextLink>
+      </FormMessage>
+      <FormMessage>
+        Back to dashboard
+        <NextLink href="/dashboard">
           <FormMessageLink> Click here.</FormMessageLink>
         </NextLink>
       </FormMessage>

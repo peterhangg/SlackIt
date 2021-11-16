@@ -208,7 +208,7 @@ export class DirectMessageResolver {
     return payload;
   }
 
-  // SUBSCRIPTION DELETE DIRECT MESSAGE
+  // SUBSCRIPTION EDIT DIRECT MESSAGE
   @Subscription(() => DirectMessage, {
     topics: EDIT_DIRECT_MESSAGE,
     filter: ({ payload, args }) =>

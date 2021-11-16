@@ -85,6 +85,12 @@ const createTeam: React.FC = () => {
           <FormMessageLink> Click here.</FormMessageLink>
         </NextLink>
       </FormMessage>
+      <FormMessage>
+        Back to dashboard
+        <NextLink href="/dashboard">
+          <FormMessageLink> Click here.</FormMessageLink>
+        </NextLink>
+      </FormMessage>
     </PageContainer>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 import {
   PageContainer,
   SlackIconStyles,
@@ -10,6 +11,8 @@ import {
   ButtonStyle,
   LogoHeader,
   LogoWrapper,
+  FormMessage,
+  FormMessageLink,
 } from '../../components/styles/shared';
 import { withApollo } from '../../src/apollo/withApollo';
 import {
@@ -18,9 +21,15 @@ import {
 } from '../../src/generated/graphql';
 import useForm from '../../src/utils/useForm';
 import { useIsAuthenticated } from '../../src/utils/useIsAuthenticated';
-import { AvatarWrapper, AvatarStyles, UserIconWrapper, UserIcon, UploadButtonStyles } from '../../components/styles/EditProfile';
+import {
+  AvatarWrapper,
+  AvatarStyles,
+  UserIconWrapper,
+  UserIcon,
+  UploadButtonStyles,
+} from '../../components/styles/EditProfile';
 import { IEditProfile } from '../../src/utils/types';
-import SlackIcon from '../asset/slack.svg';
+import SlackIcon from '../../asset/slack.svg';
 
 const EditProfile: React.FC = ({}) => {
   useIsAuthenticated();
@@ -34,7 +43,7 @@ const EditProfile: React.FC = ({}) => {
     newPassword: '',
     image: null,
   });
-  
+
   // Set avatar on mount
   useEffect(() => {
     setAvatar(data?.getMe.avatar);
@@ -138,6 +147,12 @@ const EditProfile: React.FC = ({}) => {
         <ButtonStyle type="submit" disabled={loading}>
           UPDATE PROFILE
         </ButtonStyle>
+        <FormMessage>
+          Back to dashboard
+          <NextLink href="/dashboard">
+            <FormMessageLink> Click here.</FormMessageLink>
+          </NextLink>
+        </FormMessage>
       </FormStyles>
     </PageContainer>
   );
